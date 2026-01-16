@@ -3,104 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Professional IT consulting services for your business">
-    <title>IT Consulting Firm</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-        }
-        header {
-            background: #2c3e50;
-            color: white;
-            padding: 1rem 0;
-        }
-        nav {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-        }
-        nav a {
-            color: white;
-            text-decoration: none;
-        }
-        .hero {
-            background: #34495e;
-            color: white;
-            text-align: center;
-            padding: 4rem 2rem;
-        }
-        .hero h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-        section {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 3rem 2rem;
-        }
-        h2 {
-            margin-bottom: 1.5rem;
-            color: #2c3e50;
-        }
-        footer {
-            background: #2c3e50;
-            color: white;
-            text-align: center;
-            padding: 2rem;
-            margin-top: 2rem;
-        }
-    </style>
+    <meta name="description" content="Purpeon Digital - Professional IT consulting services for your business">
+    <title>Purpeon Digital - IT Consulting</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
         <nav>
-            <h1>IT Consulting</h1>
-            <ul>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
+            <h1><span class="emoji">🌸</span><span class="text">Purpeon Digital</span></h1>
+            <div class="nav-right">
+                <ul>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                    <span id="theme-icon">🌙</span>
+                </button>
+            </div>
         </nav>
     </header>
 
+    <main>
     <section class="hero">
-        <h1>Expert IT Solutions for Your Business</h1>
-        <p>Transform your technology infrastructure with our professional consulting services</p>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Transform Your Business with Digital Excellence</h1>
+                <p>Lightning fast, highly scalable solutions. Built for modern enterprises, backed by expert support and innovation.</p>
+                <p class="hero-tagline">Give your business the competitive edge it deserves.</p>
+                <div class="hero-buttons">
+                    <button class="btn-primary">Start Free Trial</button>
+                    <button class="btn-secondary">Contact Sales</button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="digital_flower.jpg" alt="Digital Flower">
+                <div class="hero-badge">Digitalis Purpurea</div>
+            </div>
+        </div>
+        
+        <div class="hero-features">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Lightning Fast</h3>
+                <p>Optimized performance with cutting-edge technology to accelerate your digital transformation journey.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Unmatched Experience</h3>
+                <p>24/7 support from experienced engineers, backed by our 99.99% uptime guarantee.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Your Data, Your Rules</h3>
+                <p>Protected by industry regulations and best practices. Security and compliance prioritized.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💎</div>
+                <h3>No Hidden Costs</h3>
+                <p>Transparent pricing every month. Just fixed, clear pricing with no surprises.</p>
+            </div>
+        </div>
     </section>
 
-    <section id="services">
-        <h2>Our Services</h2>
-        <p>We provide comprehensive IT consulting services tailored to your business needs.</p>
+    <section id="services" class="services-section">
+        <div class="services-content">
+            <div class="services-image">
+                <img src="digital_flower.jpg" alt="Services Visualization">
+                <div class="services-badge">Innovative Solutions</div>
+            </div>
+            <div class="services-text">
+                <h2>Our Services</h2>
+                <p>We provide comprehensive IT consulting services tailored to your business needs. Our expert team specializes in digital transformation, cloud migration, cybersecurity, and IT infrastructure optimization.</p>
+                <p>Whether you're a startup looking to establish your technology foundation or an enterprise seeking to modernize legacy systems, we have the expertise to guide you through every step of your digital journey.</p>
+                <div class="services-list">
+                    <div class="service-item">
+                        <span class="service-icon">☁️</span>
+                        <div>
+                            <h4>Cloud Solutions</h4>
+                            <p>Scalable infrastructure and migration expertise</p>
+                        </div>
+                    </div>
+                    <div class="service-item">
+                        <span class="service-icon">🔐</span>
+                        <div>
+                            <h4>Cybersecurity</h4>
+                            <p>Advanced protection and compliance</p>
+                        </div>
+                    </div>
+                    <div class="service-item">
+                        <span class="service-icon">⚙️</span>
+                        <div>
+                            <h4>DevOps</h4>
+                            <p>Automation and continuous delivery</p>
+                        </div>
+                    </div>
+                    <div class="service-item">
+                        <span class="service-icon">📊</span>
+                        <div>
+                            <h4>Strategic Planning</h4>
+                            <p>IT roadmap and architecture design</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
     <section id="about">
-        <h2>About Us</h2>
-        <p>Our team of experienced IT professionals is dedicated to helping businesses succeed through technology.</p>
+        <div>
+            <h2>About Us</h2>
+            <p>Purpeon Digital is a leading IT consulting firm with years of experience helping businesses navigate the complexities of modern technology. Our team of experienced IT professionals is dedicated to helping businesses succeed through innovative technology solutions.</p>
+            <p>We believe in building lasting partnerships with our clients, understanding their unique challenges, and delivering customized solutions that create real business value. Our approach combines technical excellence with strategic thinking to ensure every project delivers measurable results.</p>
+            <p>With expertise spanning cloud computing, cybersecurity, enterprise software, and emerging technologies, we're equipped to handle projects of any scale. Our commitment to staying ahead of industry trends means you get access to the latest innovations and best practices.</p>
+        </div>
     </section>
 
     <section id="contact">
-        <h2>Contact Us</h2>
-        <p>Email: contact@example.com</p>
-        <p>Phone: (555) 123-4567</p>
+        <div>
+            <h2>Contact Us</h2>
+            <p>Ready to transform your business with technology? Get in touch with our team today to discuss your project and discover how we can help you achieve your goals.</p>
+            <p><strong>Email:</strong> contact@purpeondigital.com</p>
+            <p><strong>Phone:</strong> (555) 123-4567</p>
+            <p>We're here to answer your questions and provide expert guidance on your IT initiatives. Whether you need a consultation, have a specific project in mind, or just want to learn more about our services, we'd love to hear from you.</p>
+        </div>
     </section>
+    </main>
 
     <footer>
-        <p>&copy; 2026 IT Consulting Firm. All rights reserved.</p>
+        <p>&copy; 2026 Purpeon Digital. All rights reserved.</p>
     </footer>
+    
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            const themeIcon = document.getElementById('theme-icon');
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+        }
+        
+        // Load saved theme on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const themeIcon = document.getElementById('theme-icon');
+            
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            themeIcon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+        });
+        
+        // Smooth scroll with offset for fixed header
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const headerOffset = 80;
+                    const elementPosition = target.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
