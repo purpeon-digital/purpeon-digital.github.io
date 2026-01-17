@@ -61,7 +61,7 @@ function scrollToSection(e: Event, href: string) {
     <nav>
       <a href="#" class="logo" @click.prevent="scrollToSection($event, '#')">
         <span class="logo-icon">
-          <img src="/public/logo.png" alt="Logo" width="40" height="40" />
+          <img src="/logo.png" alt="Logo" width="40" height="40" />
         </span>
         <span class="logo-text">Purpeon <span class="logo-accent">Digital</span></span>
       </a>
