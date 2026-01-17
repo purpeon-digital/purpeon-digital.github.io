@@ -39,7 +39,7 @@ const values = computed(() => {
           >
             <span class="value-icon">{{ value.icon }}</span>
             <div>
-              <h4>{{ value.title }}</h4>
+              <h3>{{ value.title }}</h3>
               <p>{{ value.description }}</p>
             </div>
           </div>

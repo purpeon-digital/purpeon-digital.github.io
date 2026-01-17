@@ -43,7 +43,7 @@ const contactMethods = computed(() => {
           >
             <span class="contact-icon"><iconify-icon :icon="method.icon" width="24" height="24" style="color: #C7719E"></iconify-icon></span>
             <div>
-              <h4>{{ method.label }}</h4>
+              <h3>{{ method.label }}</h3>
               <p>{{ method.value }}</p>
             </div>
           </a>

@@ -39,7 +39,7 @@ const services = computed(() => {
           >
             <span class="service-icon">{{ service.icon }}</span>
             <div>
-              <h4>{{ service.title }}</h4>
+              <h3>{{ service.title }}</h3>
               <p>{{ service.description }}</p>
             </div>
           </div>
