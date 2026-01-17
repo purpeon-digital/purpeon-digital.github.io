@@ -3,6 +3,13 @@ html {
     scroll-behavior: smooth;
 }
 
+/* Disable scroll snap on small screens */
+@media (max-width: 768px) {
+    html {
+        scroll-snap-type: none;
+    }
+}
+
 /* Prevent layout shift during hydration */
 body {
     opacity: 1;
