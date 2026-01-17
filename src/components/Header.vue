@@ -33,6 +33,15 @@ function scrollToSection(e: Event, href: string) {
     document.body.style.overflow = '';
   }
   
+  // Handle scrolling to top for home/logo
+  if (href === '#' || href === '#top') {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    return;
+  }
+  
   const target = document.querySelector(href);
   if (target) {
     const headerOffset = 80;

@@ -97,27 +97,28 @@
     "description": "Vi er her for å svare på spørsmåla dine og gi ekspertveiledning om dine IT-initiativ. Anten du treng ein konsultasjon, har eit spesifikt prosjekt i tankane, eller berre vil lære meir om tenestene våre, vil vi gjerne høyre frå deg.",
     "methods": [
       {
-        "icon": "📧",
+        "icon": "fa6-solid:paper-plane",
         "label": "E-post",
-        "value": "support@purpeondigital.com",
-        "href": "mailto:support@purpeondigital.com"
+        "value": "support@purpeon.com",
+        "href": "mailto:support@purpeon.com"
       },
       {
-        "icon": "📞",
+        "icon": "fa6-solid:phone",
         "label": "Telefon",
         "value": "+47 959 92 555",
         "href": "tel:+4795992555"
       },
       {
-        "icon": "📍",
+        "icon": "fa7-solid:map-location-dot",
         "label": "Stad",
-        "value": "Førde, Norge"
+        "value": "PEAK Sunnfjord, Hafstadvegen 23-25, 6800 Førde"
+      },
+      {
+        "icon": "fa6-solid:newspaper",
+        "label": "Organisasjonsnummer",
+        "value": "836 295 722"
       }
-    ],
-    "cta": {
-      "call": "Ring oss",
-      "message": "Send melding"
-    }
+    ]
   },
   "language": {
     "select": "Språk",

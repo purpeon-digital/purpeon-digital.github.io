@@ -10,7 +10,7 @@ interface Props {
 const { 
   title = 'Purpeon Digital - IT Consulting',
   description = 'Purpeon Digital - Professional IT consulting services for your business',
-  locale
+  locale = 'no'
 } = Astro.props;
 ---
 
@@ -39,7 +39,7 @@ const {
       window.__INITIAL_LOCALE__ = locale;
       
       // Set initial theme from localStorage - must happen before any component loads
-      window.__INITIAL_THEME__ = localStorage.getItem('theme') || 'light';
+      window.__INITIAL_THEME__ = localStorage.getItem('theme') || 'dark';
       document.documentElement.setAttribute('data-theme', window.__INITIAL_THEME__);
       
       // Save the locale to localStorage if viewing a language page
@@ -50,6 +50,9 @@ const {
           localStorage.setItem('locale', locale);
         }
       }
+    </script>
+    <script>
+      import 'iconify-icon';
     </script>
   </head>
   <body class="loading">

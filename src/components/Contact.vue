@@ -41,17 +41,12 @@ const contactMethods = computed(() => {
             class="contact-card"
             :class="{ 'no-link': !method.href }"
           >
-            <span class="contact-icon">{{ method.icon }}</span>
+            <span class="contact-icon"><iconify-icon :icon="method.icon" width="24" height="24" style="color: #C7719E"></iconify-icon></span>
             <div>
               <h4>{{ method.label }}</h4>
               <p>{{ method.value }}</p>
             </div>
           </a>
-        </div>
-
-        <div class="contact-cta">
-          <button class="btn-primary">{{ t('contact.cta.call') }}</button>
-          <button class="btn-secondary">{{ t('contact.cta.message') }}</button>
         </div>
       </div>
     </div>
