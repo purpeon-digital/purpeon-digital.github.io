@@ -25,7 +25,7 @@ const services = computed(() => {
   <section id="services" class="services-section">
     <div class="services-content">
       <div class="services-image">
-        <img src="/laptop.jpg" height="750px" width="500px" alt="Photo by https://unsplash.com/@markusspiske?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText Markus Spiske https://unsplash.com/photos/a-close-up-of-a-laptop-on-a-table-jbRFQ1wZTYY?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText Unsplash" />
+        <img src="/laptop.webp" height="750px" width="500px" alt="Photo by https://unsplash.com/@markusspiske?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText Markus Spiske https://unsplash.com/photos/a-close-up-of-a-laptop-on-a-table-jbRFQ1wZTYY?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText Unsplash" />
       </div>
       <div class="services-text">
         <h2>{{ t('services.title') }}</h2>

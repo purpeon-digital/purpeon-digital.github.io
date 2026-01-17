@@ -37,7 +37,7 @@ const features = computed(() => {
       <div class="hero-image">
         <img src="/hero-render.jpg"
           alt="Photo by https://unsplash.com/@solenfeyissa?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText Solen Feyissa on https://unsplash.com/photos/a-close-up-of-a-cell-phone-with-a-blurry-background-_Cb6oD5oiVE?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText Unsplash"
-          width="400" height="600" />
+          fetchpriority="high" width="400" height="600" />
       </div>
     </div>
 
