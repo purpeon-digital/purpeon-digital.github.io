@@ -38,6 +38,10 @@ const {
       // Set initial locale from SSR - must happen before any component loads
       window.__INITIAL_LOCALE__ = locale;
       
+      // Set initial theme from localStorage - must happen before any component loads
+      window.__INITIAL_THEME__ = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', window.__INITIAL_THEME__);
+      
       // Save the locale to localStorage if viewing a language page
       // but don't redirect to avoid flicker
       if (typeof localStorage !== 'undefined') {
@@ -57,11 +61,3 @@ const {
     </script>
   </body>
 </html>
-
-<script is:inline>
-  // Load saved theme on page load
-  (function() {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-  })();
-</script>
