@@ -7,7 +7,7 @@ const props = defineProps<{
   locale: Locale;
 }>();
 
-const { t } = useI18n();
+const { t } = useI18n(props.locale);
 const currentTheme = ref('light');
 const mobileMenuOpen = ref(false);
 

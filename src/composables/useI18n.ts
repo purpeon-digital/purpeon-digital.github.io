@@ -23,13 +23,12 @@ const getCurrentLocale = (): Locale => {
 };
 
 // Global reactive state - shared across all components
-// Initialize with 'no' for SSR, will be synced on client
-const currentLocale = ref<Locale>('no');
-
-// Immediately sync on client-side module load
-if (typeof window !== 'undefined') {
-  currentLocale.value = getCurrentLocale();
-}
+// Initialize with locale from window.__INITIAL_LOCALE__ if available, otherwise 'no'
+const currentLocale = ref<Locale>(
+  typeof window !== 'undefined' && (window as any).__INITIAL_LOCALE__
+    ? (window as any).__INITIAL_LOCALE__
+    : 'no'
+);
 
 type TranslationSchema = typeof en;
 
@@ -54,7 +53,12 @@ function getNestedValue(obj: any, path: string): any {
   return path.split('.').reduce((acc, part) => acc?.[part], obj) ?? path;
 }
 
-export function useI18n() {
+export function useI18n(initialLocale?: Locale) {
+  // If initialLocale is provided (from component prop), use it immediately
+  if (initialLocale && currentLocale.value !== initialLocale) {
+    currentLocale.value = initialLocale;
+  }
+  
   // Sync locale on every component mount to ensure it matches SSR
   onMounted(() => {
     const ssrLocale = getCurrentLocale();

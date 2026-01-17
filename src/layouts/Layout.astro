@@ -25,6 +25,15 @@ const {
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
     <link rel="manifest" href="/favicon/site.webmanifest">
     <title>{title}</title>
+    <style>
+      /* Anti-flicker: hide body until hydration completes */
+      body.loading {
+        visibility: hidden;
+      }
+      body.loaded {
+        visibility: visible;
+      }
+    </style>
     <script is:inline define:vars={{ locale }}>
       // Set initial locale from SSR - must happen before any component loads
       window.__INITIAL_LOCALE__ = locale;
@@ -39,8 +48,13 @@ const {
       }
     </script>
   </head>
-  <body>
+  <body class="loading">
     <slot />
+    <script is:inline>
+      // Show body immediately after DOM is ready
+      document.body.classList.remove('loading');
+      document.body.classList.add('loaded');
+    </script>
   </body>
 </html>
 

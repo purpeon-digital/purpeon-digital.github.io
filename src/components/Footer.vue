@@ -5,8 +5,12 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from '@/composables/useI18n';
+import { useI18n, type Locale } from '@/composables/useI18n';
 
-const { t } = useI18n();
+const props = defineProps<{
+  locale: Locale;
+}>();
+
+const { t } = useI18n(props.locale);
 const currentYear = new Date().getFullYear();
 </script>
