@@ -14,24 +14,24 @@
     },
     "features": [
       {
-        "icon": "⚡",
-        "title": "Lynrask",
-        "description": "Optimalisert yting med moderne teknologi som set fart på den digitale omstillinga di."
+        "icon": "fa7-solid:map-location-dot",
+        "title": "Lokal tilhøyring",
+        "description": "Frå Førde, med lokal forankring og global rekkevidde."
       },
       {
-        "icon": "🔧",
-        "title": "Driftstryggleik og kompetanse",
-        "description": "Støtte frå erfarne ingeniørar med garantert respons neste arbeidsdag."
+        "icon": "fa7-solid:wrench",
+        "title": "Solid håndverk",
+        "description": "Erfarne konsulentar med brei teknisk kompetanse."
       },
       {
-        "icon": "🔒",
-        "title": "Trygg databehandling på europeisk sky",
-        "description": "Vi har solid GDPR-kompetanse og nyttar primært europeiske skytenester. Trygg databehandling, i tråd med regelverket, som standard."
+        "icon": "fa7-solid:lock",
+        "title": "Trygg databehandling",
+        "description": "Trygg og sikker databehandling, dine data er i trygge hender."
       },
       {
-        "icon": "📌",
-        "title": "Rett innsats på rett stad",
-        "description": "Vi brukar tida på det som gir verdi: analyse, utvikling og løysing. Prisinga blir tilpassa behov og omfang."
+        "icon": "fa7-solid:check-circle",
+        "title": "Løysingsfokus",
+        "description": "Effektive løysingar som gir verdi frå analyse til ferdig resultat, til rett pris."
       }
     ]
   },

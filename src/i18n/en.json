@@ -14,24 +14,24 @@
     },
     "features": [
       {
-        "icon": "📦",
-        "title": "Lightning Fast",
-        "description": "Optimised performance with groundbreaking technology to accelerate your digital transformation journey."
+        "icon": "fa7-solid:map-location-dot",
+        "title": "Local Roots",
+        "description": "Based in Førde, locally rooted with a global reach."
       },
       {
-        "icon": "🎯",
-        "title": "Unmatched Experience",
-        "description": "24/7 support from experienced engineers, backed by our 99.99% uptime guarantee."
+        "icon": "fa7-solid:wrench",
+        "title": "Craftsmanship",
+        "description": "Experienced consultants with broad technical expertise."
       },
       {
-        "icon": "🔒",
-        "title": "Your Data, Your Rules",
-        "description": "Protected by industry regulations and best practice. Security and compliance prioritised."
+        "icon": "fa7-solid:lock",
+        "title": "Secure Data Handling",
+        "description": "Safe and secure data handling, your data is in safe hands."
       },
       {
-        "icon": "💎",
-        "title": "No Hidden Costs",
-        "description": "Transparent pricing every month. Fixed, clear pricing without surprises."
+        "icon": "fa7-solid:check-circle",
+        "title": "Results-Oriented",
+        "description": "Effective solutions that deliver value from analysis to final outcome, at the right price."
       }
     ]
   },
