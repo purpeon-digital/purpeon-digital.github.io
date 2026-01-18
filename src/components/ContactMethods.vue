@@ -18,7 +18,7 @@ const { t, locale } = useI18n(props.locale);
 const contactMethods = computed(() => {
   // Track locale for reactivity
   const _ = locale.value;
-  return t('contact.methods');
+  return t('contact.methods') as ContactMethod[];
 });
 </script>
 

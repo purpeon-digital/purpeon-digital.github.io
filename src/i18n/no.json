@@ -41,22 +41,22 @@
     "description": "Vi har lang erfaring med små og store programvareløysingar, frå titals til millionar av brukarar. I tillegg har vi erfaring med elektronikkløysingar, frå spesifikasjon og sertifisering til implementering og design.",
     "items": [
       {
-        "icon": "☁️",
+        "icon": "fa7-solid:cloud",
         "title": "Skyløysingar",
         "description": "Skalerbar infrastruktur og migreringsekspertise"
       },
       {
-        "icon": "🤖",
+        "icon": "fa7-solid:robot",
         "title": "KI",
         "description": "Lang erfaring med kunstig intelligens"
       },
       {
-        "icon": "⚙️",
+        "icon": "fa7-solid:cog",
         "title": "Heilskaplege løysingar",
         "description": "Ekspertise innan både programvare, infrastruktur, elektronikk og rådgjeving"
       },
       {
-        "icon": "📊",
+        "icon": "fa7-solid:chart-bar",
         "title": "Rådgjeving",
         "description": "Programvare, hardware og IT-arkitekturdesign"
       }
@@ -70,22 +70,22 @@
     "description3": "Namnet Purpeon Digital kjem frå blomsten revebjelle (Digitalis purpurea), som også var fylkesblomsten i Sogn og Fjordane, og spegler dermed vår lokale tilknyting og identitet.",
     "values": [
       {
-        "icon": "🤝",
+        "icon": "fa7-solid:handshake-alt",
         "title": "Partnarskap",
         "description": "Vi byggjer varige relasjonar basert på tillit og gjensidig suksess."
       },
       {
-        "icon": "🎯",
+        "icon": "fa7-solid:face-grin-stars",
         "title": "Fortreffelighet",
         "description": "Kvart prosjekt får vår fulle forplikting til kvalitet og presisjon."
       },
       {
-        "icon": "💡",
+        "icon": "fa7-solid:lightbulb",
         "title": "Innovasjon",
         "description": "Vi held oss føre teknologitrendar for å levere banebrytande løysingar."
       },
       {
-        "icon": "🔍",
+        "icon": "fa7-solid:book-open-reader",
         "title": "Openheit",
         "description": "Klar kommunikasjon og ærlige råd ved kvart steg."
       }
@@ -99,8 +99,8 @@
       {
         "icon": "fa6-solid:paper-plane",
         "label": "E-post",
-        "value": "support@purpeon.com",
-        "href": "mailto:support@purpeon.com"
+        "value": "kontakt@purpeon.com",
+        "href": "mailto:kontakt@purpeon.com"
       },
       {
         "icon": "fa6-solid:phone",

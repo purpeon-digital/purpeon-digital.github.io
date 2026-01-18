@@ -37,7 +37,7 @@ const services = computed(() => {
             :key="service.title" 
             class="service-item"
           >
-            <span class="service-icon">{{ service.icon }}</span>
+            <span class="service-icon"><iconify-icon :icon="service.icon" width="24" height="24"></iconify-icon></span>
             <div>
               <h3>{{ service.title }}</h3>
               <p>{{ service.description }}</p>

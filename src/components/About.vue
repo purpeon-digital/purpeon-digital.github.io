@@ -17,7 +17,7 @@ const { t, locale } = useI18n(props.locale);
 const values = computed(() => {
   // Track locale for reactivity
   const _ = locale.value;
-  return t('about.values');
+  return t('about.values') as Value[];
 });
 </script>
 
@@ -37,7 +37,7 @@ const values = computed(() => {
             :key="value.title" 
             class="value-card"
           >
-            <span class="value-icon">{{ value.icon }}</span>
+            <span class="value-icon"><iconify-icon :icon="value.icon" width="24" height="24"></iconify-icon></span>
             <div>
               <h3>{{ value.title }}</h3>
               <p>{{ value.description }}</p>

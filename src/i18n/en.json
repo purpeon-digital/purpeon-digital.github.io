@@ -41,22 +41,22 @@
     "description": "We have extensive experience with small and large software solutions, from dozens to millions of users. Additionally, we have experience with electronics solutions, from specification and certification to implementation and design.",
     "items": [
       {
-        "icon": "☁️",
+        "icon": "fa7-solid:cloud",
         "title": "Cloud Solutions",
         "description": "Scalable infrastructure and migration expertise"
       },
       {
-        "icon": "🤖",
+        "icon": "fa7-solid:robot",
         "title": "AI",
         "description": "Extensive experience with artificial intelligence"
       },
       {
-        "icon": "⚙️",
+        "icon": "fa7-solid:cog",
         "title": "Comprehensive Solutions",
         "description": "Expertise in software, infrastructure, electronics and consultancy"
       },
       {
-        "icon": "📊",
+        "icon": "fa7-solid:chart-bar",
         "title": "Consultancy",
         "description": "Software, hardware and IT architecture design"
       }
@@ -70,22 +70,22 @@
     "description3": "The name Purpeon Digital comes from the flower foxglove (Digitalis purpurea), which was also the county flower of Sogn og Fjordane, thus reflecting our local connection and identity.",
     "values": [
       {
-        "icon": "🤝",
+        "icon": "fa7-solid:handshake-alt",
         "title": "Partnership",
         "description": "We build lasting relationships based on trust and mutual success."
       },
       {
-        "icon": "🎯",
+        "icon": "fa7-solid:face-grin-stars",
         "title": "Excellence",
         "description": "Every project receives our full commitment to quality and precision."
       },
       {
-        "icon": "💡",
+        "icon": "fa7-solid:lightbulb",
         "title": "Innovation",
         "description": "We stay ahead of technology trends to deliver groundbreaking solutions."
       },
       {
-        "icon": "🔍",
+        "icon": "fa7-solid:book-open-reader",
         "title": "Transparency",
         "description": "Clear communication and honest advice at every step."
       }
@@ -99,8 +99,8 @@
       {
         "icon": "fa6-solid:paper-plane",
         "label": "Email",
-        "value": "support@purpeon.com",
-        "href": "mailto:support@purpeon.com"
+        "value": "kontakt@purpeon.com",
+        "href": "mailto:kontakt@purpeon.com"
       },
       {
         "icon": "fa6-solid:phone",
