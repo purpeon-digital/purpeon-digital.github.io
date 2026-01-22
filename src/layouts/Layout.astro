@@ -24,6 +24,7 @@ const {
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
     <link rel="manifest" href="/favicon/site.webmanifest">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/theme-toggles@4.10.1/css/classic.min.css">
     <title>{title}</title>
     <style>
       /* Anti-flicker: hide body until hydration completes */
@@ -38,17 +39,29 @@ const {
       // Set initial locale from SSR - must happen before any component loads
       window.__INITIAL_LOCALE__ = locale;
       
-      // Set initial theme from localStorage - must happen before any component loads
-      window.__INITIAL_THEME__ = localStorage.getItem('theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', window.__INITIAL_THEME__);
+      // Set initial theme from persisted value or system preference - must happen before any component loads
+      let storedTheme = null;
+
+      try {
+        storedTheme = localStorage.getItem('theme');
+      } catch (e) {
+        // localStorage can fail (e.g., Safari private mode); ignore and use preference
+      }
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const initialTheme = storedTheme || (systemPrefersDark ? 'dark' : 'light');
+
+      window.__INITIAL_THEME__ = initialTheme;
+      document.documentElement.setAttribute('data-theme', initialTheme);
       
       // Save the locale to localStorage if viewing a language page
       // but don't redirect to avoid flicker
-      if (typeof localStorage !== 'undefined') {
+      try {
         const savedLocale = localStorage.getItem('locale');
         if (!savedLocale || (savedLocale !== locale)) {
           localStorage.setItem('locale', locale);
         }
+      } catch (e) {
+        // Ignore storage failures
       }
     </script>
     <script>
