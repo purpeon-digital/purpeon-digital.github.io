@@ -1,12 +1,14 @@
 html {
-    scroll-snap-type: y mandatory;
     scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+    scroll-padding-top: 56px;
+    height: 100%;
 }
 
-/* Disable scroll snap on small screens */
 @media (max-width: 768px) {
     html {
         scroll-snap-type: none;
+        scroll-padding-top: 52px;
     }
 }
 
@@ -204,6 +206,7 @@ html {
 
 html, body {
     height: 100%;
+    width: 100%;
 }
 
 body {
@@ -214,26 +217,34 @@ body {
     flex-direction: column;
     background: var(--bg-primary);
     transition: background 0.3s ease, color 0.3s ease;
+    width: 100%;
 }
 
 main {
     flex: 1 0 auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Header */
 header {
     background: var(--header-bg);
     color: white;
-    padding: 0.75rem 0;
+    padding: 0;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
+    width: 100%;
+    height: 56px;
     z-index: 100;
     box-shadow: 0 2px 20px var(--shadow-color);
     backdrop-filter: blur(12px);
     transition: all 0.3s ease;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
 }
 
 nav {
@@ -243,7 +254,8 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 56px;
+    width: 100%;
+    height: 100%;
 }
 
 /* Logo */
@@ -464,17 +476,19 @@ nav {
             var(--hero-grad-4) 100%
         );
     color: var(--hero-text-color);
-    padding: 6rem 2rem 3rem;
+    padding: 7rem 2rem 2rem;
     position: relative;
     overflow: hidden;
+    width: 100%;
     min-height: 100vh;
+    height: auto;
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 100vw;
-    margin-left: calc(-50vw + 50%);
     scroll-snap-align: start;
+    scroll-snap-stop: always;
     transition: background 0.5s ease, color 0.3s ease;
 }
 
@@ -710,14 +724,16 @@ nav {
     padding: 6rem 2rem;
     position: relative;
     overflow: hidden;
+    width: 100%;
     min-height: 100vh;
+    height: auto;
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 100vw;
-    margin-left: calc(-50vw + 50%);
     scroll-snap-align: start;
+    scroll-snap-stop: always;
     transition: background 0.5s ease, color 0.3s ease;
 }
 
@@ -860,14 +876,16 @@ nav {
     padding: 6rem 2rem;
     position: relative;
     overflow: hidden;
+    width: 100%;
     min-height: 100vh;
+    height: auto;
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 100vw;
-    margin-left: calc(-50vw + 50%);
     scroll-snap-align: start;
+    scroll-snap-stop: always;
     transition: background 0.5s ease, color 0.3s ease;
 }
 
@@ -1067,15 +1085,26 @@ nav {
     padding: 6rem 2rem;
     position: relative;
     overflow: hidden;
+    width: 100%;
     min-height: 100vh;
+    height: auto;
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    width: 100vw;
-    margin-left: calc(-50vw + 50%);
     scroll-snap-align: start;
+    scroll-snap-stop: always;
     transition: background 0.5s ease, color 0.3s ease;
+}
+
+.contact-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1400px;
+    height: 100%;
+    gap: 2rem;
 }
 
 .contact-content {
@@ -1161,6 +1190,64 @@ nav {
 .contact-section .btn-secondary:hover {
     background: rgba(244, 114, 182, 0.15);
     border-color: rgba(244, 114, 182, 0.6);
+}
+
+.contact-footer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding-top: 2rem;
+    margin-top: auto;
+}
+
+.footer-divider {
+    width: 100%;
+    max-width: 1200px;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.2) 20%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0.2) 80%,
+        transparent 100%
+    );
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.footer-text {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.5px;
+    font-weight: 300;
+    text-transform: uppercase;
+    tracking: 1px;
+    transition: color 0.3s ease;
+}
+
+.footer-text:hover {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="light"] .footer-text {
+    color: rgba(45, 45, 45, 0.6);
+}
+
+[data-theme="light"] .footer-text:hover {
+    color: rgba(45, 45, 45, 0.8);
+}
+
+[data-theme="light"] .footer-divider {
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(45, 45, 45, 0.15) 20%,
+        rgba(45, 45, 45, 0.2) 50%,
+        rgba(45, 45, 45, 0.15) 80%,
+        transparent 100%
+    );
 }
 
 /* General Sections */
@@ -1280,20 +1367,29 @@ section {
     color: #2d2d2d;
 }
 
+/* =================================================================
+   FULLSCREEN VIEWPORT SECTION STYLING
+   All sections are perfectly sized to viewport height on desktop
+   ================================================================= */
+
 .hero {
     max-width: none;
+    width: 100%;
 }
 
 .services-section {
     max-width: none;
+    width: 100%;
 }
 
 .about-section {
     max-width: none;
+    width: 100%;
 }
 
 .contact-section {
     max-width: none;
+    width: 100%;
 }
 
 section:not(.hero):not(.services-section):not(.about-section):not(.contact-section) {
@@ -1342,6 +1438,7 @@ footer {
     text-align: center;
     padding: 2rem 1rem;
     flex-shrink: 0;
+    width: 100%;
     box-shadow: 0 -4px 20px var(--shadow-color);
     scroll-snap-align: start;
 }
@@ -1351,6 +1448,11 @@ iconify-icon {
  width: 1em;
  height: 1em;
 }
+
+/* =================================================================
+   DESKTOP & LAPTOP STYLING (1200px and up)
+   Sections are fixed at 100vh height with proper scroll snap
+   ================================================================= */
 
 /* Tablet and small desktop optimizations */
 @media (max-width: 1200px) {
@@ -1387,8 +1489,22 @@ iconify-icon {
     }
 }
 
-/* Mobile optimizations */
+/* =================================================================
+   TABLET STYLING (1024px to 1199px)
+   Sections still at 100vh, content adjusts with padding
+   ================================================================= */
+
+/* =================================================================
+   MOBILE STYLING (768px and below)
+   Sections collapse to auto height, fullscreen sections disabled
+   ================================================================= */
+
 @media (max-width: 768px) {
+    /* Update header height for mobile */
+    header {
+        height: 52px;
+    }
+    
     nav {
         padding: 0 1rem;
         height: auto;
@@ -1420,7 +1536,7 @@ iconify-icon {
     
     .nav-right {
         position: fixed;
-        top: 56px;
+        top: 52px;
         left: 0;
         right: 0;
         width: 100%;
@@ -1435,7 +1551,7 @@ iconify-icon {
     }
     
     .nav-right.mobile-open {
-        max-height: calc(100vh - 56px);
+        max-height: calc(100vh - 52px);
         padding: 2rem 1.5rem;
         overflow-x: hidden;
         overflow-y: visible;
@@ -1480,15 +1596,23 @@ iconify-icon {
         border-radius: 6px;
     }
     
+    /* ===== CRITICAL: Switch sections from 100vh fixed to auto height ===== */
+    
     section {
+        width: 100%;
         padding: 3rem 1.5rem;
+        height: auto;
         min-height: auto;
+        scroll-snap-align: none;
+        scroll-snap-stop: normal;
     }
     
     .hero {
         height: auto;
-        min-height: 100vh;
-        padding: 6rem 1.5rem 3rem;
+        min-height: auto;
+        padding: 5rem 1.5rem 3rem;
+        scroll-snap-align: none;
+        scroll-snap-stop: normal;
     }
     
     .hero-content {
@@ -1507,6 +1631,13 @@ iconify-icon {
     .hero-features {
         grid-template-columns: repeat(2, 1fr);
         gap: 1.5rem;
+    }
+    
+    .services-section {
+        height: auto;
+        min-height: auto;
+        scroll-snap-align: none;
+        scroll-snap-stop: normal;
     }
     
     .services-content {
@@ -1529,7 +1660,11 @@ iconify-icon {
     
     /* About Section Mobile */
     .about-section {
-        padding: 6rem 1.5rem;
+        height: auto;
+        min-height: auto;
+        scroll-snap-align: none;
+        scroll-snap-stop: normal;
+        padding: 3rem 1.5rem;
     }
     
     .about-content {
@@ -1569,7 +1704,11 @@ iconify-icon {
     
     /* Contact Section Mobile */
     .contact-section {
-        padding: 6rem 1.5rem;
+        height: auto;
+        min-height: auto;
+        scroll-snap-align: none;
+        scroll-snap-stop: normal;
+        padding: 3rem 1.5rem;
     }
     
     .contact-content {
@@ -1586,6 +1725,11 @@ iconify-icon {
     }
 }
 
+/* =================================================================
+   SMALL MOBILE STYLING (480px and below)
+   Further refinements for small screens
+   ================================================================= */
+
 @media (max-width: 480px) {
     nav ul {
         gap: 0.5rem;
@@ -1596,7 +1740,7 @@ iconify-icon {
     }
     
     .hero {
-        padding: 5rem 1rem 2rem;
+        padding: 4.5rem 1rem 2rem;
     }
     
     section {
@@ -1615,8 +1759,7 @@ iconify-icon {
     
     .hero-buttons {
         flex-direction: column;
-    }
-    
+        margin-bottom: 3rem;
     .btn-primary, .btn-secondary {
         width: 100%;
     }
@@ -1633,7 +1776,7 @@ iconify-icon {
     
     /* About Section Small Mobile */
     .about-section {
-        padding: 4rem 1rem;
+        padding: 2rem 1rem;
     }
     
     .value-card {
@@ -1648,6 +1791,21 @@ iconify-icon {
     
     /* Contact Section Small Mobile */
     .contact-section {
-        padding: 4rem 1rem;
+        padding: 2rem 1rem;
+    }
+
+    .contact-wrapper {
+        gap: 1.5rem;
+    }
+
+    .contact-footer {
+        gap: 1rem;
+        padding-top: 1.5rem;
+    }
+
+    .footer-text {
+        font-size: 0.85rem;
     }
 }
+
+

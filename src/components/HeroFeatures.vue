@@ -35,6 +35,30 @@ const props = defineProps<{
   margin-top: auto;
 }
 
+/* Tablet: 2x2 layout */
+@media (max-width: 1200px) {
+  .hero-features {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+/* Mobile: 1x4 layout */
+@media (max-width: 768px) {
+  .hero-features {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Small mobile: compact 1x4 layout */
+@media (max-width: 480px) {
+  .hero-features {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
 .feature-card {
   background: var(--hero-feature-bg);
   backdrop-filter: blur(10px);
@@ -138,18 +162,11 @@ const props = defineProps<{
   color: #2d2d2d;
 }
 
-/* Mobile compact layout for feature cards */
-@media (max-width: 600px) {
-  .hero-features {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-    width: 100%;
-  }
-
+/* Small mobile: compact cards */
+@media (max-width: 480px) {
   .feature-card {
     padding: 0.85rem;
     border-radius: 12px;
-    box-shadow: none;
   }
 
   .feature-header {
@@ -171,20 +188,14 @@ const props = defineProps<{
   }
 
   .feature-card h2 {
-    font-size: 1.05rem;
+    font-size: 1rem;
     line-height: 1.2;
-    margin: 0;
   }
 
   .feature-card p {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     line-height: 1.4;
-    margin-top: 0.15rem;
-    margin-bottom: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    margin: 0.25rem 0 0 0;
   }
 }
 </style>
