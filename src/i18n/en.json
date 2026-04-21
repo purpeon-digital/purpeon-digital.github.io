@@ -1,11 +1,14 @@
 {
   "nav": {
     "services": "Our Services",
+    "team": "The Team",
     "about": "About Us",
     "contact": "Contact Us"
   },
   "hero": {
     "title": "Comprehensive Solutions and Local Expertise",
+    "titleStart": "Comprehensive Solutions and",
+    "titleEm": "Local Expertise.",
     "subtitle": "Solutions and consultancy for software development, infrastructure and electronics.",
     "tagline": "Scalable solutions tailored to your needs.",
     "cta": {
@@ -37,6 +40,9 @@
   },
   "services": {
     "title": "Our Services",
+    "eyebrow": "What we do · From analysis to ops",
+    "titleStart": "Our",
+    "titleEm": "services.",
     "intro": "We offer comprehensive IT and hardware consultancy services tailored to your business needs. Our expertise lies in holistic software solutions, project management, and electronics.",
     "description": "We have extensive experience with small and large software solutions, from dozens to millions of users. Additionally, we have experience with electronics solutions, from specification and certification to implementation and design.",
     "items": [
@@ -64,6 +70,9 @@
   },
   "about": {
     "title": "About Us",
+    "eyebrow": "Foxglove roots · Sogn og Fjordane",
+    "titleStart": "About",
+    "titleEm": "us.",
     "lead": "Purpeon Digital is an innovative consultancy firm, and our consultants have many years of experience helping businesses navigate the complexity of modern technology.",
     "description1": "Extensive experience from various industries, both public and private sector, gives us unique insight into the challenges businesses face today.",
     "description2": "With expertise spanning both IT and hardware, we are in a unique position to offer comprehensive technology solutions.",
@@ -91,8 +100,61 @@
       }
     ]
   },
+  "team": {
+    "eyebrow": "Meet the consultants · Førde",
+    "titleStart": "Four heads,",
+    "titleEm": "one flock.",
+    "lede": "We're a small, seasoned team with long tenures at both large enterprises and scrappy startups. Click around — the portrait morphs between us so you can meet us one at a time.",
+    "hintLabel": "Use",
+    "hintSwap": "to browse, or",
+    "hintAutoplay": "for autoplay",
+    "chipExperience": "+ yrs experience",
+    "controls": {
+      "prev": "Previous member",
+      "next": "Next member",
+      "play": "Start autoplay",
+      "pause": "Pause autoplay"
+    },
+    "members": [
+      {
+        "id": "dagfinn",
+        "name": "Dagfinn Olav Marsfjell Reiakvam",
+        "shortName": "Dagfinn",
+        "role": "Solutions architect",
+        "bio": "Dagfinn has thirteen years behind him designing architecture for systems that have to handle millions of users — and still sleep soundly at night. He's the one you call when \"it's just one small thing\" turns out not to be.",
+        "tags": ["Architecture", "Cloud", "Go / Rust"]
+      },
+      {
+        "id": "finn",
+        "name": "Finn Michael Halvorsen",
+        "shortName": "Finn",
+        "role": "Senior developer",
+        "bio": "Finn writes code the way others write poetry — careful, rhythmic, and often rewritten twice before it lands. Specialty: turning ugly MVPs into something that can actually run in production past Christmas.",
+        "tags": ["TypeScript", "React", "Refactor"]
+      },
+      {
+        "id": "kjell",
+        "name": "Kjell Ingo Rotnes",
+        "shortName": "Kjell Ingo",
+        "role": "Electronics & hardware",
+        "bio": "Kjell Ingo keeps track of the things the rest of us forget — EMC, thermal budget, and the fact that a customer should one day be able to change a battery without a soldering iron. A steady voice between the schematics.",
+        "tags": ["PCB", "EMC", "Embedded"]
+      },
+      {
+        "id": "roger",
+        "name": "Roger Karlsen",
+        "shortName": "Roger",
+        "role": "AI & data engineer",
+        "bio": "Roger was one of the people who picked up language models before most of us knew what they were called. He enjoys showing that \"the simple analysis\" is often the most valuable — provided you can trust the data.",
+        "tags": ["ML / AI", "Data", "Python"]
+      }
+    ]
+  },
   "contact": {
     "title": "Contact Us",
+    "eyebrow": "Ready to chat · Tech, projects or advice",
+    "titleStart": "Contact",
+    "titleEm": "us.",
     "lead": "Ready to transform your business with technology? Get in touch with our team today.",
     "description": "We are here to answer your questions and provide expert guidance on your IT initiatives. Whether you need a consultation, have a specific project in mind, or simply want to learn more about our services, we would love to hear from you.",
     "email": "Email",

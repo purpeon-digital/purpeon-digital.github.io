@@ -30,7 +30,10 @@ const features = computed(() => {
       <div class="hero-text">
         <div class="hero-title-row flex items-start gap-4 max-md:mb-4 md:block">
           <div class="flex-1 min-w-0">
-            <h1 class="hero-heading text-[clamp(1.75rem,6vw,4rem)] mb-6 max-md:mb-0 leading-[1.1] font-bold text-[var(--hero-text-color)]">{{ t('hero.title') }}</h1>
+            <h1 class="section-title hero-heading mb-6 max-md:mb-0 text-[var(--hero-text-color)]">
+              {{ t('hero.titleStart') }}
+              <em>{{ t('hero.titleEm') }}</em>
+            </h1>
           </div>
           <img
             src="/logo.svg"

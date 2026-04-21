@@ -3,6 +3,7 @@ import Layout from '@/layouts/Layout.astro';
 import Header from '@/components/Header.vue';
 import Hero from '@/components/Hero.vue';
 import Services from '@/components/Services.vue';
+import Team from '@/components/Team.vue';
 import About from '@/components/About.vue';
 import Contact from '@/components/Contact.vue';
 import NoCookiesToast from '@/components/NoCookiesToast.vue';
@@ -25,6 +26,7 @@ const locale = lang || 'no';
   <main>
     <Hero client:load locale={locale} />
     <Services client:visible locale={locale} />
+    <Team client:visible locale={locale} />
     <About client:visible locale={locale} />
     <Contact client:visible locale={locale} />
   </main>

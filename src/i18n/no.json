@@ -1,11 +1,14 @@
 {
   "nav": {
     "services": "Våre Tenester",
+    "team": "Teamet",
     "about": "Om oss",
     "contact": "Kontakt Oss"
   },
   "hero": {
     "title": "Heilskaplege løysingar med lokal forankring",
+    "titleStart": "Heilskaplege løysingar med",
+    "titleEm": "lokal forankring.",
     "subtitle": "Løysingar og rådgjeving for programvareutvikling, infrastruktur og elektronikk.",
     "tagline": "Løysingar som skalerer, tilpassa behova dine.",
     "cta": {
@@ -37,6 +40,9 @@
   },
   "services": {
     "title": "Våre tenester",
+    "eyebrow": "Kva vi gjer · Frå analyse til drift",
+    "titleStart": "Våre",
+    "titleEm": "tenester.",
     "intro": "Vi tilbyr omfattande IT- og HW-konsulenttenester tilpassa dine forretningsbehov. Vår ekspertise er heilskaplege programvareløysingar, prosjektleiing og elektronikk.",
     "description": "Vi har lang erfaring med små og store programvareløysingar, frå titals til millionar av brukarar. I tillegg har vi erfaring med elektronikkløysingar, frå spesifikasjon og sertifisering til implementering og design.",
     "items": [
@@ -64,6 +70,9 @@
   },
   "about": {
     "title": "Om oss",
+    "eyebrow": "Revebjelle-røter · Sogn og Fjordane",
+    "titleStart": "Om",
+    "titleEm": "oss.",
     "lead": "Purpeon Digital er eit nytenkande konsulentselskap, og våre konsulentar har mange års erfaring med å hjelpe bedrifter med å navigere i kompleksiteten i moderne teknologi.",
     "description1": "Lang erfaring frå ulike bransjar, både offentleg og privat sektor, gjev oss ei unik innsikt i utfordringane bedrifter står overfor i dag.",
     "description2": "Med ekspertise som spenner over både IT og hardware, står vi i ei unik stilling til å tilby heilskaplege teknologiløysingar.",
@@ -91,8 +100,61 @@
       }
     ]
   },
+  "team": {
+    "eyebrow": "Møt konsulentane · Førde",
+    "titleStart": "Fire hovud,",
+    "titleEm": "éin flokk.",
+    "lede": "Vi er eit lite, erfare team med lang fartstid frå både store konsern og nyleg etablerte startups. Klikk deg rundt — portrettet morfar mellom oss, slik at du får kjenne oss ein om gongen.",
+    "hintLabel": "Bruk",
+    "hintSwap": "for å bla, eller",
+    "hintAutoplay": "for autospel",
+    "chipExperience": "+ års erfaring",
+    "controls": {
+      "prev": "Førre medlem",
+      "next": "Neste medlem",
+      "play": "Spel autospel",
+      "pause": "Pause autospel"
+    },
+    "members": [
+      {
+        "id": "dagfinn",
+        "name": "Dagfinn Olav Marsfjell Reiakvam",
+        "shortName": "Dagfinn",
+        "role": "Løysingsarkitekt",
+        "bio": "Dagfinn har tretten år bak seg med å teikne arkitektur for system som må tole millionar av brukarar — og sova godt likevel. Han er mannen du ringjer når «det er berre ein liten ting» viser seg å ikkje vere det.",
+        "tags": ["Arkitektur", "Sky", "Go / Rust"]
+      },
+      {
+        "id": "finn",
+        "name": "Finn Michael Halvorsen",
+        "shortName": "Finn",
+        "role": "Senior utviklar",
+        "bio": "Finn skriv kode slik andre skriv dikt — nøye, rytmisk, og ofte sletta to gonger før det står. Spesialitet: å skrive om stygge MVP-ar til noko som faktisk kan stå i drift over jul.",
+        "tags": ["TypeScript", "React", "Refaktor"]
+      },
+      {
+        "id": "kjell",
+        "name": "Kjell Ingo Rotnes",
+        "shortName": "Kjell Ingo",
+        "role": "Elektronikk & maskinvare",
+        "bio": "Kjell Ingo tek omsyn til ting dei fleste av oss gløymer — som EMC, termisk budsjett og at ein kunde ein gong skal kunne bytte batteri utan loddekolbe. Ei roleg stemme mellom skjemaene.",
+        "tags": ["PCB", "EMC", "Embedded"]
+      },
+      {
+        "id": "roger",
+        "name": "Roger Karlsen",
+        "shortName": "Roger",
+        "role": "KI & dataingeniør",
+        "bio": "Roger er ein av dei som tok i bruk språkmodellar før alle andre visste kva dei heitte. Han likar godt å vise fram at «den enkle analysen» ofte er den mest verdifulle — så sant ein stoler på datagrunnlaget.",
+        "tags": ["ML / KI", "Data", "Python"]
+      }
+    ]
+  },
   "contact": {
     "title": "Kontakt oss",
+    "eyebrow": "Klar for prat · Teknologi, prosjekt eller rådgjeving",
+    "titleStart": "Kontakt",
+    "titleEm": "oss.",
     "lead": "Klar til å transformere bedrifta di med teknologi? Ta kontakt med teamet vårt i dag.",
     "description": "Vi er her for å svare på spørsmåla dine og gi ekspertveiledning om dine IT-initiativ. Anten du treng ein konsultasjon, har eit spesifikt prosjekt i tankane, eller berre vil lære meir om tenestene våre, vil vi gjerne høyre frå deg.",
     "email": "E-post",
