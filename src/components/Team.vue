@@ -1,13 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue';
 import { useI18n, type Locale } from '@/composables/useI18n';
-import IconMapPin from '~icons/fa7-solid/map-location-dot';
-import IconClock from '~icons/fa7-solid/clock';
-import IconCode from '~icons/fa7-solid/code';
-import IconChevronLeft from '~icons/fa7-solid/chevron-left';
-import IconChevronRight from '~icons/fa7-solid/chevron-right';
-import IconPlay from '~icons/fa7-solid/play';
-import IconPause from '~icons/fa7-solid/pause';
 import IconCheck from '~icons/fa7-solid/check';
 
 interface Member {
@@ -16,7 +9,6 @@ interface Member {
   shortName: string;
   role: string;
   bio: string;
-  tags: string[];
 }
 
 const props = defineProps<{
@@ -27,10 +19,10 @@ const { t, locale } = useI18n(props.locale);
 
 // Stock portraits — replace with real photos at /public/team/*.jpg when available
 const PHOTOS: Record<string, string> = {
-  dagfinn: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&h=800&fit=crop&crop=faces',
-  finn: 'https://images.unsplash.com/photo-1463453091185-61582044d556?w=800&h=800&fit=crop&crop=faces',
-  kjell: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=800&fit=crop&crop=faces',
-  roger: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=800&h=800&fit=crop&crop=faces',
+  dagfinn: '/team/dagfinn.png',
+  finn: '/team/fimmi.png',
+  kjell: '/team/kjell.png',
+  roger: '/team/roger.png',
 };
 
 // Morph paths cycle through organic blobs as you scrub members. Each path is
@@ -45,18 +37,24 @@ function mulberry32(seed: number) {
   };
 }
 
-function makeSmoothBlob(seed: number, numPoints = 6, variance = 0.16): string {
-  const cx = 200;
-  const cy = 200;
-  const baseR = 160;
-  const tension = 0.28; // Catmull-Rom → Bezier tension; higher = rounder curves
+const BLOB_CX = 200;
+const BLOB_CY = 200;
+const BLOB_BASE_R = 160;
+const BLOB_TENSION = 0.28; // Catmull-Rom → Bezier tension; higher = rounder curves
+
+function makeBasePoints(seed: number, numPoints = 6, variance = 0.16): [number, number][] {
   const rand = mulberry32(seed);
   const pts: [number, number][] = [];
   for (let i = 0; i < numPoints; i++) {
     const angle = (i / numPoints) * Math.PI * 2 - Math.PI / 2;
-    const r = baseR * (1 + (rand() - 0.5) * 2 * variance);
-    pts.push([cx + r * Math.cos(angle), cy + r * Math.sin(angle)]);
+    const r = BLOB_BASE_R * (1 + (rand() - 0.5) * 2 * variance);
+    pts.push([BLOB_CX + r * Math.cos(angle), BLOB_CY + r * Math.sin(angle)]);
   }
+  return pts;
+}
+
+function pointsToPath(pts: [number, number][]): string {
+  const numPoints = pts.length;
   const f = (n: number) => n.toFixed(2);
   let d = `M${f(pts[0][0])},${f(pts[0][1])}`;
   for (let i = 0; i < numPoints; i++) {
@@ -64,16 +62,37 @@ function makeSmoothBlob(seed: number, numPoints = 6, variance = 0.16): string {
     const p1 = pts[(i + 1) % numPoints];
     const pPrev = pts[(i - 1 + numPoints) % numPoints];
     const pNext = pts[(i + 2) % numPoints];
-    const c1x = p0[0] + tension * (p1[0] - pPrev[0]);
-    const c1y = p0[1] + tension * (p1[1] - pPrev[1]);
-    const c2x = p1[0] - tension * (pNext[0] - p0[0]);
-    const c2y = p1[1] - tension * (pNext[1] - p0[1]);
+    const c1x = p0[0] + BLOB_TENSION * (p1[0] - pPrev[0]);
+    const c1y = p0[1] + BLOB_TENSION * (p1[1] - pPrev[1]);
+    const c2x = p1[0] - BLOB_TENSION * (pNext[0] - p0[0]);
+    const c2y = p1[1] - BLOB_TENSION * (pNext[1] - p0[1]);
     d += ` C${f(c1x)},${f(c1y)} ${f(c2x)},${f(c2y)} ${f(p1[0])},${f(p1[1])}`;
   }
   return d + ' Z';
 }
 
-const BLOB_PATHS = [17, 42, 91, 128].map((s) => makeSmoothBlob(s));
+// For each member-seed, pre-compute a small loop of variants that perturb
+// each anchor's radius by a tiny per-point delta. Cycling through them
+// makes the blob breathe in-place without leaving its silhouette family.
+function makeBreathingVariants(seed: number, count = 4, breathAmp = 0.022): string[] {
+  const base = makeBasePoints(seed);
+  const breathRand = mulberry32(seed * 31 + 7);
+  return Array.from({ length: count }, () => {
+    const perturbed = base.map(([x, y]) => {
+      const dx = x - BLOB_CX;
+      const dy = y - BLOB_CY;
+      const r = Math.hypot(dx, dy);
+      const a = Math.atan2(dy, dx);
+      const off = (breathRand() - 0.5) * 2 * breathAmp * BLOB_BASE_R;
+      const newR = r + off;
+      return [BLOB_CX + newR * Math.cos(a), BLOB_CY + newR * Math.sin(a)] as [number, number];
+    });
+    return pointsToPath(perturbed);
+  });
+}
+
+const BLOB_VARIANTS = [17, 42, 91, 128].map((s) => makeBreathingVariants(s));
+const BREATH_COUNT = BLOB_VARIANTS[0].length;
 
 const members = computed<Member[]>(() => {
   // Track locale for reactivity
@@ -84,7 +103,7 @@ const members = computed<Member[]>(() => {
 const activeIdx = ref(0);
 const prevIdx = ref<number | null>(null);
 const isMorphing = ref(false);
-const shapeStep = ref(0);
+const breathStep = ref(0);
 const autoplay = ref(true);
 // Flipped by IntersectionObserver — lets us pause timers & CSS animations
 // whenever the section is scrolled out of view, so decorative work never
@@ -92,9 +111,9 @@ const autoplay = ref(true);
 const inView = ref(false);
 
 const active = computed(() => members.value[activeIdx.value] ?? members.value[0]);
-const currentPath = computed(() => BLOB_PATHS[shapeStep.value % BLOB_PATHS.length]);
-
-const yearsChip = computed(() => Math.max(8, 13 - activeIdx.value));
+const currentPath = computed(
+  () => BLOB_VARIANTS[activeIdx.value % BLOB_VARIANTS.length][breathStep.value % BREATH_COUNT],
+);
 
 // Only the currently-active and the outgoing (prev) photo need to be in the
 // DOM. Clipping all four stacked images forced extra GPU layers and blew the
@@ -109,6 +128,7 @@ const visiblePhotos = computed(() => {
 const sectionEl = ref<HTMLElement | null>(null);
 let morphTimer: number | null = null;
 let autoplayTimer: number | null = null;
+let breathTimer: number | null = null;
 let io: IntersectionObserver | null = null;
 
 function go(i: number) {
@@ -116,7 +136,6 @@ function go(i: number) {
   prevIdx.value = activeIdx.value;
   activeIdx.value = i;
   isMorphing.value = true;
-  shapeStep.value += 1;
   if (morphTimer) window.clearTimeout(morphTimer);
   morphTimer = window.setTimeout(() => {
     prevIdx.value = null;
@@ -128,37 +147,28 @@ function goNext() {
   if (!members.value.length) return;
   go((activeIdx.value + 1) % members.value.length);
 }
-function goPrev() {
-  if (!members.value.length) return;
-  go((activeIdx.value - 1 + members.value.length) % members.value.length);
-}
 
 function pauseAutoplay() {
   autoplay.value = false;
-}
-function toggleAutoplay() {
-  autoplay.value = !autoplay.value;
-}
-
-function onKey(e: KeyboardEvent) {
-  // Ignore keys when the section isn't on screen — otherwise arrow keys
-  // would steal scroll.
-  if (!inView.value) return;
-  const el = e.target as HTMLElement | null;
-  if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) return;
-  if (e.key === 'ArrowRight') { goNext(); e.preventDefault(); }
-  else if (e.key === 'ArrowLeft') { goPrev(); e.preventDefault(); }
-  else if (e.key === ' ') { toggleAutoplay(); e.preventDefault(); }
 }
 
 function scheduleAutoplay() {
   if (autoplayTimer) window.clearInterval(autoplayTimer);
   if (!autoplay.value || !inView.value) return;
-  autoplayTimer = window.setInterval(() => goNext(), 3800);
+  autoplayTimer = window.setInterval(() => goNext(), 4800);
+}
+
+// Ambient "breathing" — only ticks while the section is on-screen and the
+// visitor isn't in a reduced-motion preference. The path tween itself is
+// handled in CSS via `transition: d`.
+function scheduleBreathing() {
+  if (breathTimer) window.clearInterval(breathTimer);
+  if (!inView.value) return;
+  if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  breathTimer = window.setInterval(() => { breathStep.value += 1; }, 2600);
 }
 
 onMounted(() => {
-  window.addEventListener('keydown', onKey);
   if (sectionEl.value && 'IntersectionObserver' in window) {
     io = new IntersectionObserver(
       (entries) => {
@@ -173,13 +183,14 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener('keydown', onKey);
   if (autoplayTimer) window.clearInterval(autoplayTimer);
+  if (breathTimer) window.clearInterval(breathTimer);
   if (morphTimer) window.clearTimeout(morphTimer);
   io?.disconnect();
 });
 
 watch([autoplay, activeIdx, inView], () => scheduleAutoplay());
+watch(inView, () => scheduleBreathing());
 </script>
 
 <template>
@@ -205,8 +216,15 @@ watch([autoplay, activeIdx, inView], () => scheduleAutoplay());
       </header>
 
       <div class="stage">
-        <!-- Left: morphing portrait -->
-        <div class="morph" :class="{ 'is-morphing': isMorphing }">
+        <!-- Left: morphing portrait. Clicking it locks the carousel so a
+             visitor can read the bio without it sliding away. -->
+        <div
+          class="morph"
+          :class="{ 'is-morphing': isMorphing, 'is-interactive': autoplay }"
+          :role="autoplay ? 'button' : undefined"
+          :tabindex="autoplay ? 0 : undefined"
+          @click="pauseAutoplay"
+        >
           <svg class="morph-svg" viewBox="0 0 400 400" aria-hidden="true">
             <defs>
               <linearGradient id="team-morph-grad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -215,7 +233,7 @@ watch([autoplay, activeIdx, inView], () => scheduleAutoplay());
                 <stop offset="100%" stop-color="#f472b6"/>
               </linearGradient>
               <clipPath id="team-morph-clip">
-                <path :d="currentPath"/>
+                <path class="morph-clip-path" :d="currentPath"/>
               </clipPath>
             </defs>
             <path class="morph-shape" :d="currentPath"/>
@@ -256,29 +274,6 @@ watch([autoplay, activeIdx, inView], () => scheduleAutoplay());
               />
             </template>
           </div>
-
-          <!-- Floating chips -->
-          <div class="float-chip top-right">
-            <IconMapPin />
-            <span>Førde</span>
-          </div>
-          <div class="float-chip mid-right">
-            <IconClock />
-            <span>{{ yearsChip }}{{ t('team.chipExperience') }}</span>
-          </div>
-          <div class="float-chip bot-left">
-            <IconCode />
-            <span>{{ active.tags[0] }}</span>
-          </div>
-
-          <!-- Name plate -->
-          <div class="name-plate" aria-live="polite">
-            <span class="dot" aria-hidden="true"></span>
-            <div>
-              <div class="name">{{ active.shortName }}</div>
-              <div class="role">{{ active.role }}</div>
-            </div>
-          </div>
         </div>
 
         <!-- Right: bio + selector -->
@@ -288,20 +283,16 @@ watch([autoplay, activeIdx, inView], () => scheduleAutoplay());
               <div class="bio-role">{{ active.role }}</div>
               <h3 class="bio-name">{{ active.name }}</h3>
               <p class="bio-text">{{ active.bio }}</p>
-              <div class="bio-tags">
-                <span v-for="tag in active.tags" :key="tag" class="bio-tag">{{ tag }}</span>
-              </div>
             </div>
           </article>
 
-          <div class="selector" role="tablist" :aria-label="t('nav.team')">
+          <div class="selector" :aria-label="t('nav.team')">
             <button
               v-for="(m, i) in members"
               :key="m.id"
               class="pick"
               :class="{ 'is-active': i === activeIdx }"
-              :aria-selected="i === activeIdx"
-              role="tab"
+              :aria-pressed="i === activeIdx"
               type="button"
               @click="() => { pauseAutoplay(); go(i); }"
               @mouseenter="() => { if (!autoplay) go(i); }"
@@ -319,46 +310,6 @@ watch([autoplay, activeIdx, inView], () => scheduleAutoplay());
         </div>
       </div>
 
-      <div class="toolbar">
-        <div class="hint">
-          {{ t('team.hintLabel') }}
-          <span class="kbd">←</span>
-          <span class="kbd">→</span>
-          {{ t('team.hintSwap') }}
-          <span class="kbd">Space</span>
-          {{ t('team.hintAutoplay') }}
-        </div>
-        <div class="toolbar-actions">
-          <button
-            class="ctrl"
-            type="button"
-            :aria-label="t('team.controls.prev')"
-            :title="t('team.controls.prev')"
-            @click="() => { pauseAutoplay(); goPrev(); }"
-          >
-            <IconChevronLeft />
-          </button>
-          <button
-            class="ctrl"
-            type="button"
-            :aria-label="autoplay ? t('team.controls.pause') : t('team.controls.play')"
-            :title="autoplay ? t('team.controls.pause') : t('team.controls.play')"
-            @click="toggleAutoplay"
-          >
-            <IconPause v-if="autoplay" />
-            <IconPlay v-else />
-          </button>
-          <button
-            class="ctrl"
-            type="button"
-            :aria-label="t('team.controls.next')"
-            :title="t('team.controls.next')"
-            @click="() => { pauseAutoplay(); goNext(); }"
-          >
-            <IconChevronRight />
-          </button>
-        </div>
-      </div>
     </div>
   </section>
 </template>
@@ -437,9 +388,15 @@ watch([autoplay, activeIdx, inView], () => scheduleAutoplay());
   height: 100%;
   overflow: visible;
 }
+.morph-shape,
+.morph-clip-path {
+  /* Both the visible fill and the photo's clip share the same d, so they
+     must tween together — otherwise the photo silhouette snaps while the
+     pink shape breathes around it. */
+  transition: d 1.6s cubic-bezier(0.45, 0.05, 0.35, 1);
+}
 .morph-shape {
   fill: url(#team-morph-grad);
-  transition: d 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 /* Faked drop-shadow via a static sibling layer — painting a radial gradient
    behind the morph is dramatically cheaper than a full-tree drop-shadow
@@ -528,108 +485,30 @@ watch([autoplay, activeIdx, inView], () => scheduleAutoplay());
   transform: scale(1.08);
   transition: opacity 0.55s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
+/* Use a keyframe (not a transition) for the entrance, because the incoming
+   photo is mounted in the same tick that `is-active` is applied — a CSS
+   transition wouldn't fire on the very first frame, so going to a later
+   slide popped in over the outgoing fade. */
 .morph-photo.is-active {
   opacity: 1;
   transform: scale(1);
+  animation: photo-enter 0.55s ease both;
 }
 .morph-photo.is-leaving {
   opacity: 0;
   transform: scale(0.96);
 }
-
-/* Float chips */
-.float-chip {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(107, 70, 193, 0.25);
-  border-radius: 999px;
-  padding: 0.45rem 0.85rem;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--color-accent-primary);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  box-shadow: 0 8px 24px rgba(76, 29, 149, 0.18);
-  white-space: nowrap;
-}
-:global([data-theme="dark"]) .float-chip {
-  background: rgba(26, 15, 46, 0.8);
-  border-color: rgba(167, 139, 250, 0.3);
-  color: #c3b0ff;
-}
-.float-chip :deep(svg) { width: 12px; height: 12px; }
-
-.float-chip.top-right { top: 8%; right: -6%; animation: team-chip-float1 6s ease-in-out infinite; }
-.float-chip.mid-right { top: 45%; right: -12%; animation: team-chip-float2 7s ease-in-out infinite; }
-.float-chip.bot-left  { bottom: 12%; left: -10%; animation: team-chip-float3 8s ease-in-out infinite; }
-
-@keyframes team-chip-float1 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-@keyframes team-chip-float2 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(14px); } }
-@keyframes team-chip-float3 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-
-/* Mobile: chips crowd the shrunken portrait and add layers we don't need. */
-@media (max-width: 900px) {
-  .float-chip { display: none; }
+@keyframes photo-enter {
+  from { opacity: 0; transform: scale(1.08); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
-/* Name plate */
-.name-plate {
-  position: absolute;
-  left: -12px;
-  bottom: -8px;
-  background: var(--team-card-bg);
-  backdrop-filter: blur(14px);
-  border: 1px solid var(--team-card-border);
-  border-radius: 18px;
-  padding: 0.85rem 1.15rem;
-  box-shadow: 0 14px 40px rgba(76, 29, 149, 0.25);
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  min-width: 260px;
-}
-:global([data-theme="dark"]) .name-plate {
-  background: rgba(30, 10, 55, 0.65);
-  border-color: rgba(167, 139, 250, 0.25);
-}
-.name-plate .dot {
-  width: 10px;
-  height: 10px;
+/* Interactive portrait: subtle affordance — only while autoplay is running. */
+.morph.is-interactive { cursor: pointer; }
+.morph.is-interactive:focus-visible {
+  outline: 2px solid rgba(236, 72, 153, 0.7);
+  outline-offset: 6px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ec4899, #a78bfa);
-  box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.18);
-  flex-shrink: 0;
-}
-.name-plate .name {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: var(--team-heading-color);
-  letter-spacing: -0.005em;
-  line-height: 1.2;
-}
-.name-plate .role {
-  font-size: 0.78rem;
-  color: var(--color-text-secondary);
-  margin-top: 2px;
-}
-:global([data-theme="dark"]) .name-plate .role { color: rgba(255, 255, 255, 0.6); }
-
-/* Mobile: unpin the name plate and let it flow below the portrait as a
-   centered band. Floating corner placement looks cramped at small widths. */
-@media (max-width: 900px) {
-  .morph { padding-bottom: 4.5rem; }
-  .name-plate {
-    position: absolute;
-    left: 50%;
-    right: auto;
-    bottom: 0;
-    transform: translateX(-50%);
-    min-width: 0;
-    max-width: 100%;
-    width: max-content;
-    padding: 0.7rem 1rem;
-  }
 }
 
 /* ---------- Right column ---------- */
@@ -683,27 +562,6 @@ watch([autoplay, activeIdx, inView], () => scheduleAutoplay());
   margin: 0;
 }
 :global([data-theme="dark"]) .bio-text { color: rgba(255, 255, 255, 0.86); }
-
-.bio-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 1.1rem;
-}
-.bio-tag {
-  font-size: 0.78rem;
-  font-weight: 500;
-  padding: 0.35rem 0.7rem;
-  background: rgba(167, 139, 250, 0.18);
-  color: var(--color-accent-primary);
-  border: 1px solid rgba(167, 139, 250, 0.3);
-  border-radius: 999px;
-}
-:global([data-theme="dark"]) .bio-tag {
-  color: #e5d7ff;
-  background: rgba(167, 139, 250, 0.15);
-  border-color: rgba(167, 139, 250, 0.25);
-}
 
 .bio-card.is-swapping .bio-content {
   animation: team-bio-swap 0.6s ease;
@@ -848,85 +706,12 @@ watch([autoplay, activeIdx, inView], () => scheduleAutoplay());
   height: 12px;
 }
 
-/* ---------- Toolbar ---------- */
-.toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 2.75rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(167, 139, 250, 0.2);
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-.hint {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-size: 0.85rem;
-  color: var(--color-text-secondary);
-  flex-wrap: wrap;
-}
-:global([data-theme="dark"]) .hint { color: rgba(255, 255, 255, 0.6); }
-
-.kbd {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 22px;
-  height: 22px;
-  padding: 0 0.4rem;
-  border-radius: 6px;
-  background: rgba(107, 70, 193, 0.15);
-  border: 1px solid rgba(107, 70, 193, 0.3);
-  font-family: ui-monospace, 'SF Mono', monospace;
-  font-size: 0.72rem;
-  color: var(--color-accent-primary);
-}
-:global([data-theme="dark"]) .kbd {
-  background: rgba(157, 111, 255, 0.15);
-  border-color: rgba(157, 111, 255, 0.3);
-  color: #c3b0ff;
-}
-
-.toolbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.ctrl {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: rgba(167, 139, 250, 0.12);
-  border: 1px solid rgba(167, 139, 250, 0.3);
-  color: var(--color-accent-primary);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s ease, transform 0.15s ease;
-}
-.ctrl:hover {
-  background: rgba(167, 139, 250, 0.22);
-  transform: translateY(-1px);
-}
-.ctrl:focus-visible {
-  outline: 2px solid rgba(236, 72, 153, 0.7);
-  outline-offset: 2px;
-}
-:global([data-theme="dark"]) .ctrl { color: #c3b0ff; }
-.ctrl :deep(svg) { width: 16px; height: 16px; }
-
 /* When the section is off-screen, kill every ambient animation so the
    compositor only works on the real scroll. This is what gives us back
    the frame budget scroll-side. */
 .team-section.is-idle .orbit-arc,
 .team-section.is-idle .orbit-bead,
-.team-section.is-idle .section-eyebrow-dot,
-.team-section.is-idle .float-chip.top-right,
-.team-section.is-idle .float-chip.mid-right,
-.team-section.is-idle .float-chip.bot-left {
+.team-section.is-idle .section-eyebrow-dot {
   animation: none !important;
 }
 
@@ -935,17 +720,19 @@ watch([autoplay, activeIdx, inView], () => scheduleAutoplay());
   .orbit-arc,
   .orbit-bead,
   .section-eyebrow-dot,
-  .float-chip.top-right,
-  .float-chip.mid-right,
-  .float-chip.bot-left,
   .morph.is-morphing .morph-shape,
   .morph.is-morphing .orbit-arc,
   .bio-card.is-swapping .bio-content {
     animation: none !important;
   }
+  .morph-shape,
+  .morph-clip-path {
+    transition: none;
+  }
   .morph-photo {
     transition: opacity 0.2s ease;
     transform: none !important;
+    animation: none !important;
   }
 }
 

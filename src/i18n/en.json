@@ -104,49 +104,35 @@
     "eyebrow": "Meet the consultants · Førde",
     "titleStart": "Four heads,",
     "titleEm": "one flock.",
-    "lede": "We're a small, seasoned team with long tenures at both large enterprises and scrappy startups. Click around — the portrait morphs between us so you can meet us one at a time.",
-    "hintLabel": "Use",
-    "hintSwap": "to browse, or",
-    "hintAutoplay": "for autoplay",
-    "chipExperience": "+ yrs experience",
-    "controls": {
-      "prev": "Previous member",
-      "next": "Next member",
-      "play": "Start autoplay",
-      "pause": "Pause autoplay"
-    },
+    "lede": "We're a small, seasoned team with long experience from both large enterprises and scrappy startups. Click around and get to know us, one at a time.",
     "members": [
       {
         "id": "dagfinn",
         "name": "Dagfinn Olav Marsfjell Reiakvam",
         "shortName": "Dagfinn",
         "role": "Solutions architect",
-        "bio": "Dagfinn has thirteen years behind him designing architecture for systems that have to handle millions of users — and still sleep soundly at night. He's the one you call when \"it's just one small thing\" turns out not to be.",
-        "tags": ["Architecture", "Cloud", "Go / Rust"]
+        "bio": "Dagfinn has thirteen years behind him designing architecture for systems that have to handle millions of users — and still sleep soundly at night. He's the one you call when \"it's just one small thing\" turns out not to be."
       },
       {
         "id": "finn",
-        "name": "Finn Michael Halvorsen",
-        "shortName": "Finn",
+        "name": "Finn Michael \"Fimmi\" Halvorsen",
+        "shortName": "Fimmi",
         "role": "Senior developer",
-        "bio": "Finn writes code the way others write poetry — careful, rhythmic, and often rewritten twice before it lands. Specialty: turning ugly MVPs into something that can actually run in production past Christmas.",
-        "tags": ["TypeScript", "React", "Refactor"]
+        "bio": "Finn writes code the way others write poetry — careful, rhythmic, and often rewritten twice before it lands. Specialty: turning ugly MVPs into something that can actually run in production past Christmas."
       },
       {
         "id": "kjell",
-        "name": "Kjell Ingo Rotnes",
-        "shortName": "Kjell Ingo",
+        "name": "Kjell Inge Rotnes",
+        "shortName": "Kjell Inge",
         "role": "Electronics & hardware",
-        "bio": "Kjell Ingo keeps track of the things the rest of us forget — EMC, thermal budget, and the fact that a customer should one day be able to change a battery without a soldering iron. A steady voice between the schematics.",
-        "tags": ["PCB", "EMC", "Embedded"]
+        "bio": "Kjell Inge keeps track of the things the rest of us forget — EMC, thermal budget, and the fact that a customer should one day be able to change a battery without a soldering iron. A steady voice between the schematics."
       },
       {
         "id": "roger",
         "name": "Roger Karlsen",
         "shortName": "Roger",
         "role": "AI & data engineer",
-        "bio": "Roger was one of the people who picked up language models before most of us knew what they were called. He enjoys showing that \"the simple analysis\" is often the most valuable — provided you can trust the data.",
-        "tags": ["ML / AI", "Data", "Python"]
+        "bio": "Roger was one of the people who picked up language models before most of us knew what they were called. He enjoys showing that \"the simple analysis\" is often the most valuable — provided you can trust the data."
       }
     ]
   },

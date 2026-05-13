@@ -101,52 +101,38 @@
     ]
   },
   "team": {
-    "eyebrow": "Møt konsulentane · Førde",
+    "eyebrow": "Møt oss · Førde",
     "titleStart": "Fire hovud,",
     "titleEm": "éin flokk.",
-    "lede": "Vi er eit lite, erfare team med lang fartstid frå både store konsern og nyleg etablerte startups. Klikk deg rundt — portrettet morfar mellom oss, slik at du får kjenne oss ein om gongen.",
-    "hintLabel": "Bruk",
-    "hintSwap": "for å bla, eller",
-    "hintAutoplay": "for autospel",
-    "chipExperience": "+ års erfaring",
-    "controls": {
-      "prev": "Førre medlem",
-      "next": "Neste medlem",
-      "play": "Spel autospel",
-      "pause": "Pause autospel"
-    },
+    "lede": "Vi er eit lite, erfare team med lang fartstid frå både store konsern og nyleg etablerte startups. Klikk deg rundt og bli kjend med oss, ein om gongen.",
     "members": [
       {
         "id": "dagfinn",
         "name": "Dagfinn Olav Marsfjell Reiakvam",
         "shortName": "Dagfinn",
-        "role": "Løysingsarkitekt",
-        "bio": "Dagfinn har tretten år bak seg med å teikne arkitektur for system som må tole millionar av brukarar — og sova godt likevel. Han er mannen du ringjer når «det er berre ein liten ting» viser seg å ikkje vere det.",
-        "tags": ["Arkitektur", "Sky", "Go / Rust"]
+        "role": "Dagleg leiar og elektronikkingeniør",
+        "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
       },
       {
         "id": "finn",
-        "name": "Finn Michael Halvorsen",
-        "shortName": "Finn",
-        "role": "Senior utviklar",
-        "bio": "Finn skriv kode slik andre skriv dikt — nøye, rytmisk, og ofte sletta to gonger før det står. Spesialitet: å skrive om stygge MVP-ar til noko som faktisk kan stå i drift over jul.",
-        "tags": ["TypeScript", "React", "Refaktor"]
+        "name": "Finn Michael «Fimmi» Halvorsen",
+        "shortName": "Fimmi",
+        "role": "Systemutviklar",
+        "bio": "Finn Michael - Fimmi - har lang erfaring som full-stack utviklar, lorem ipsum dolor sit amet, consectetur adipiscing elit."
       },
       {
         "id": "kjell",
-        "name": "Kjell Ingo Rotnes",
-        "shortName": "Kjell Ingo",
-        "role": "Elektronikk & maskinvare",
-        "bio": "Kjell Ingo tek omsyn til ting dei fleste av oss gløymer — som EMC, termisk budsjett og at ein kunde ein gong skal kunne bytte batteri utan loddekolbe. Ei roleg stemme mellom skjemaene.",
-        "tags": ["PCB", "EMC", "Embedded"]
+        "name": "Kjell Inge Rotnes",
+        "shortName": "Kjell Inge",
+        "role": "Medeigar",
+        "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
       },
       {
         "id": "roger",
         "name": "Roger Karlsen",
         "shortName": "Roger",
-        "role": "KI & dataingeniør",
-        "bio": "Roger er ein av dei som tok i bruk språkmodellar før alle andre visste kva dei heitte. Han likar godt å vise fram at «den enkle analysen» ofte er den mest verdifulle — så sant ein stoler på datagrunnlaget.",
-        "tags": ["ML / KI", "Data", "Python"]
+        "role": "Medeigar",
+        "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
       }
     ]
   },
