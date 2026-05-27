@@ -102,37 +102,37 @@
   },
   "team": {
     "eyebrow": "Meet the consultants · Førde",
-    "titleStart": "Four heads,",
-    "titleEm": "one flock.",
-    "lede": "We're a small, seasoned team with long experience from both large enterprises and scrappy startups. Click around and get to know us, one at a time.",
+    "titleStart": "The people behind",
+    "titleEm": "Purpeon.",
+    "lede": "We're a small, seasoned team with long experience from both large enterprises and early-stage startups. Together we cover software, infrastructure, and electronics, and we take on both short engagements and longer collaborations.",
     "members": [
       {
         "id": "dagfinn",
         "name": "Dagfinn Olav Marsfjell Reiakvam",
         "shortName": "Dagfinn",
-        "role": "Solutions architect",
-        "bio": "Dagfinn has thirteen years behind him designing architecture for systems that have to handle millions of users — and still sleep soundly at night. He's the one you call when \"it's just one small thing\" turns out not to be."
+        "role": "Managing director & electronics engineer",
+        "bio": "Dagfinn is our managing director and has long experience as an electronics engineer, with deep expertise in embedded systems and IoT solutions. He has worked on everything from prototyping to mass production, and has a solid grasp of both hardware and software."
       },
       {
         "id": "finn",
         "name": "Finn Michael \"Fimmi\" Halvorsen",
         "shortName": "Fimmi",
-        "role": "Senior developer",
-        "bio": "Finn writes code the way others write poetry — careful, rhythmic, and often rewritten twice before it lands. Specialty: turning ugly MVPs into something that can actually run in production past Christmas."
+        "role": "Software developer",
+        "bio": "Fimmi holds an MSc in communications technology and has long experience as a full-stack developer. He has worked on everything from small projects to large enterprise solutions, and has a solid grasp of modern technology."
       },
       {
         "id": "kjell",
         "name": "Kjell Inge Rotnes",
         "shortName": "Kjell Inge",
-        "role": "Electronics & hardware",
-        "bio": "Kjell Inge keeps track of the things the rest of us forget — EMC, thermal budget, and the fact that a customer should one day be able to change a battery without a soldering iron. A steady voice between the schematics."
+        "role": "Co-owner",
+        "bio": "Kjell Inge is a co-owner and has long experience as a software developer and architect, with deep expertise in scalable solutions and cloud infrastructure."
       },
       {
         "id": "roger",
         "name": "Roger Karlsen",
         "shortName": "Roger",
-        "role": "AI & data engineer",
-        "bio": "Roger was one of the people who picked up language models before most of us knew what they were called. He enjoys showing that \"the simple analysis\" is often the most valuable — provided you can trust the data."
+        "role": "Co-owner",
+        "bio": "Roger is a co-owner of Purpeon and has experience as a software developer in the banking and energy sectors. He was an early adopter of AI and already has several years of experience with AI development and autonomous agents."
       }
     ]
   },

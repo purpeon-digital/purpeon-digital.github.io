@@ -102,37 +102,37 @@
   },
   "team": {
     "eyebrow": "Møt oss · Førde",
-    "titleStart": "Fire hovud,",
-    "titleEm": "éin flokk.",
-    "lede": "Vi er eit lite, erfare team med lang fartstid frå både store konsern og nyleg etablerte startups. Klikk deg rundt og bli kjend med oss, ein om gongen.",
+    "titleStart": "Folka bak",
+    "titleEm": "Purpeon.",
+    "lede": "Vi er eit lite, erfare team med lang fartstid frå både store konsern og nyleg etablerte startups. Saman dekkjer vi programvare, infrastruktur og elektronikk, og vi tek på oss både korte oppdrag og lengre samarbeid.",
     "members": [
       {
         "id": "dagfinn",
         "name": "Dagfinn Olav Marsfjell Reiakvam",
         "shortName": "Dagfinn",
         "role": "Dagleg leiar og elektronikkingeniør",
-        "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        "bio": "Dagfinn er dagleg leiar og har lang erfaring som elektronikkingeniør, med spisskompetanse innan embedded systems og IoT-løysingar. Han har jobba med alt frå prototyping til masseproduksjon, og har ein solid forståing av både maskinvare og programvare."
       },
       {
         "id": "finn",
         "name": "Finn Michael «Fimmi» Halvorsen",
         "shortName": "Fimmi",
         "role": "Systemutviklar",
-        "bio": "Finn Michael - Fimmi - har lang erfaring som full-stack utviklar, lorem ipsum dolor sit amet, consectetur adipiscing elit."
+        "bio": "Fimmi er sivilingeniør innan kommunikasjonsteknologi og har lang erfaring som full-stack utviklar. Han har jobba med alt frå små prosjekt til store enterprise-løysingar, og har ein solid forståing av moderne teknologi."
       },
       {
         "id": "kjell",
         "name": "Kjell Inge Rotnes",
         "shortName": "Kjell Inge",
         "role": "Medeigar",
-        "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        "bio": "Kjell Inge er medeigar og har lang efaring som systemutviklar og arktitekt, med spisskompetanse innan skalerbare løysingar og skyinfrastruktur."
       },
       {
         "id": "roger",
         "name": "Roger Karlsen",
         "shortName": "Roger",
         "role": "Medeigar",
-        "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        "bio": "Roger er medeigar i Purpeon og har erfaring som systemutviklar i bank og energisektoren. Han var tidleg ute med å ta i bruk KI, og har allereie fleire års erfaring med KI-utvikling og sjølvstendige agentar."
       }
     ]
   },

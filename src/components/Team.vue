@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onBeforeUnmount, ref, watch } from 'vue';
 import { useI18n, type Locale } from '@/composables/useI18n';
 import IconCheck from '~icons/fa7-solid/check';
 
@@ -19,10 +19,10 @@ const { t, locale } = useI18n(props.locale);
 
 // Stock portraits — replace with real photos at /public/team/*.jpg when available
 const PHOTOS: Record<string, string> = {
-  dagfinn: '/team/dagfinn.png',
-  finn: '/team/fimmi.png',
-  kjell: '/team/kjell.png',
-  roger: '/team/roger.png',
+  dagfinn: '/team/dagfinn.webp',
+  finn: '/team/fimmi.webp',
+  kjell: '/team/kjell.webp',
+  roger: '/team/roger.webp',
 };
 
 // Morph paths cycle through organic blobs as you scrub members. Each path is
@@ -126,10 +126,12 @@ const visiblePhotos = computed(() => {
 });
 
 const sectionEl = ref<HTMLElement | null>(null);
+const bioCardEl = ref<HTMLElement | null>(null);
 let morphTimer: number | null = null;
 let autoplayTimer: number | null = null;
 let breathTimer: number | null = null;
 let io: IntersectionObserver | null = null;
+let heightAnim: Animation | null = null;
 
 function go(i: number) {
   if (i === activeIdx.value) return;
@@ -191,6 +193,24 @@ onBeforeUnmount(() => {
 
 watch([autoplay, activeIdx, inView], () => scheduleAutoplay());
 watch(inView, () => scheduleBreathing());
+
+// Tween the bio-card's height when the member swaps. `height: auto` doesn't
+// participate in CSS transitions across content changes, so we measure
+// before/after and animate the delta via Web Animations API.
+watch(activeIdx, async () => {
+  const el = bioCardEl.value;
+  if (!el) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const fromHeight = el.offsetHeight;
+  await nextTick();
+  const toHeight = el.offsetHeight;
+  if (fromHeight === toHeight) return;
+  heightAnim?.cancel();
+  heightAnim = el.animate(
+    [{ height: `${fromHeight}px` }, { height: `${toHeight}px` }],
+    { duration: 450, easing: 'cubic-bezier(0.3, 0.7, 0.2, 1)', fill: 'none' },
+  );
+});
 </script>
 
 <template>
@@ -232,8 +252,12 @@ watch(inView, () => scheduleBreathing());
                 <stop offset="55%" stop-color="#ec4899"/>
                 <stop offset="100%" stop-color="#f472b6"/>
               </linearGradient>
-              <clipPath id="team-morph-clip">
-                <path class="morph-clip-path" :d="currentPath"/>
+              <!-- objectBoundingBox + scale(1/400) maps the 0-400 path coords
+                   into the photo's 0-1 box, so the clip tracks the <img>'s
+                   actual size at every breakpoint instead of sitting in a
+                   fixed userSpaceOnUse rectangle. -->
+              <clipPath id="team-morph-clip" clipPathUnits="objectBoundingBox">
+                <path class="morph-clip-path" :d="currentPath" transform="scale(0.0025)"/>
               </clipPath>
             </defs>
             <path class="morph-shape" :d="currentPath"/>
@@ -278,7 +302,7 @@ watch(inView, () => scheduleBreathing());
 
         <!-- Right: bio + selector -->
         <div class="stage-right">
-          <article class="bio-card" :class="{ 'is-swapping': isMorphing }">
+          <article ref="bioCardEl" class="bio-card" :class="{ 'is-swapping': isMorphing }">
             <div class="bio-content" :key="active.id">
               <div class="bio-role">{{ active.role }}</div>
               <h3 class="bio-name">{{ active.name }}</h3>
@@ -295,7 +319,6 @@ watch(inView, () => scheduleBreathing());
               :aria-pressed="i === activeIdx"
               type="button"
               @click="() => { pauseAutoplay(); go(i); }"
-              @mouseenter="() => { if (!autoplay) go(i); }"
             >
               <span class="ring-indicator" aria-hidden="true">
                 <IconCheck />
