@@ -33,7 +33,7 @@ export default defineConfig({
       }
     })
   ],
-  site: 'https://purpeon.com',
+  site: 'https://www.purpeon.com',
   i18n: {
     defaultLocale: 'no',
     locales: ['en', 'no'],

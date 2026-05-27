@@ -21,7 +21,7 @@ Astro 6 static website with Vue 3 islands for Purpeon Digital IT consulting. Bil
 bun dev                          # Dev server on http://localhost:4321
 bun run build                    # Static build to ./dist
 bun preview                      # Preview the built site
-bun test                         # Vitest watch mode
+bun run test                     # Vitest watch mode (bare `bun test` invokes Bun's built-in runner — don't use it)
 bun test:run                     # Single-pass run (CI)
 bun test:coverage                # With coverage
 bun test:run path/to/file.spec.ts         # Run one test file
