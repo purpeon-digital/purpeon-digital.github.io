@@ -1,11 +1,14 @@
 {
   "nav": {
     "services": "Our Services",
+    "team": "The Team",
     "about": "About Us",
     "contact": "Contact Us"
   },
   "hero": {
     "title": "Comprehensive Solutions and Local Expertise",
+    "titleStart": "Comprehensive Solutions and",
+    "titleEm": "Local Expertise.",
     "subtitle": "Solutions and consultancy for software development, infrastructure and electronics.",
     "tagline": "Scalable solutions tailored to your needs.",
     "cta": {
@@ -37,6 +40,9 @@
   },
   "services": {
     "title": "Our Services",
+    "eyebrow": "What we do · From analysis to ops",
+    "titleStart": "Our",
+    "titleEm": "services.",
     "intro": "We offer comprehensive IT and hardware consultancy services tailored to your business needs. Our expertise lies in holistic software solutions, project management, and electronics.",
     "description": "We have extensive experience with small and large software solutions, from dozens to millions of users. Additionally, we have experience with electronics solutions, from specification and certification to implementation and design.",
     "items": [
@@ -64,6 +70,9 @@
   },
   "about": {
     "title": "About Us",
+    "eyebrow": "Foxglove roots · Sogn og Fjordane",
+    "titleStart": "About",
+    "titleEm": "us.",
     "lead": "Purpeon Digital is an innovative consultancy firm, and our consultants have many years of experience helping businesses navigate the complexity of modern technology.",
     "description1": "Extensive experience from various industries, both public and private sector, gives us unique insight into the challenges businesses face today.",
     "description2": "With expertise spanning both IT and hardware, we are in a unique position to offer comprehensive technology solutions.",
@@ -91,8 +100,47 @@
       }
     ]
   },
+  "team": {
+    "eyebrow": "Meet the consultants · Førde",
+    "titleStart": "The people behind",
+    "titleEm": "Purpeon.",
+    "lede": "We're a small, seasoned team with long experience from both large enterprises and early-stage startups. Together we cover software, infrastructure, and electronics, and we take on both short engagements and longer collaborations.",
+    "members": [
+      {
+        "id": "dagfinn",
+        "name": "Dagfinn Olav Marsfjell Reiakvam",
+        "shortName": "Dagfinn",
+        "role": "Managing director & electronics engineer",
+        "bio": "Dagfinn is our managing director and has long experience as an electronics engineer, with deep expertise in embedded systems and IoT solutions. He has worked on everything from prototyping to mass production, and has a solid grasp of both hardware and software."
+      },
+      {
+        "id": "finn",
+        "name": "Finn Michael \"Fimmi\" Halvorsen",
+        "shortName": "Fimmi",
+        "role": "Software developer",
+        "bio": "Fimmi holds an MSc in communications technology and has long experience as a full-stack developer. He has worked on everything from small projects to large enterprise solutions, and has a solid grasp of modern technology."
+      },
+      {
+        "id": "kjell",
+        "name": "Kjell Inge Rotnes",
+        "shortName": "Kjell Inge",
+        "role": "Co-owner",
+        "bio": "Kjell Inge is a co-owner and has long experience as a software developer and architect, with deep expertise in scalable solutions and cloud infrastructure."
+      },
+      {
+        "id": "roger",
+        "name": "Roger Karlsen",
+        "shortName": "Roger",
+        "role": "Co-owner",
+        "bio": "Roger is a co-owner of Purpeon and has experience as a software developer in the banking and energy sectors. He was an early adopter of AI and already has several years of experience with AI development and autonomous agents."
+      }
+    ]
+  },
   "contact": {
     "title": "Contact Us",
+    "eyebrow": "Ready to chat · Tech, projects or advice",
+    "titleStart": "Contact",
+    "titleEm": "us.",
     "lead": "Ready to transform your business with technology? Get in touch with our team today.",
     "description": "We are here to answer your questions and provide expert guidance on your IT initiatives. Whether you need a consultation, have a specific project in mind, or simply want to learn more about our services, we would love to hear from you.",
     "email": "Email",

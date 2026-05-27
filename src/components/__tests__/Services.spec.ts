@@ -8,6 +8,9 @@ vi.mock('@/composables/useI18n', () => ({
     t: (key: string) => {
       const translations: Record<string, any> = {
         'services.title': 'Our Services',
+        'services.eyebrow': 'What we do',
+        'services.titleStart': 'Our',
+        'services.titleEm': 'services.',
         'services.intro': 'Services intro text',
         'services.description': 'Services description',
         'services.items': [
@@ -35,7 +38,7 @@ describe('Services', () => {
       const wrapper = mount(Services, {
         props: { locale: 'no' }
       });
-      expect(wrapper.find('h2').text()).toBe('Our Services');
+      expect(wrapper.find('h2').text().replace(/\s+/g, ' ').trim()).toBe('Our services.');
     });
 
     it('renders intro and description paragraphs', () => {

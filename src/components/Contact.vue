@@ -43,7 +43,14 @@ const toggleMap = () => {
           </div>
         </div>
         <div class="section-text">
-          <h2 class="contact-heading">{{ t('contact.title') }}</h2>
+          <span class="section-eyebrow contact-eyebrow">
+            <span class="section-eyebrow-dot" aria-hidden="true"></span>
+            {{ t('contact.eyebrow') }}
+          </span>
+          <h2 class="section-title contact-heading">
+            {{ t('contact.titleStart') }}
+            <em>{{ t('contact.titleEm') }}</em>
+          </h2>
           <p class="lead" style="color: var(--contact-text-color)">{{ t('contact.lead') }}</p>
           <p style="color: var(--contact-text-color)">{{ t('contact.description') }}</p>
 
@@ -67,6 +74,7 @@ const toggleMap = () => {
 }
 
 /* Contact heading color + custom underline gradient */
+.contact-eyebrow,
 .contact-heading {
   color: var(--contact-heading-color);
 }
@@ -75,7 +83,8 @@ const toggleMap = () => {
   background: linear-gradient(90deg, #ec4899 0%, #f472b6 100%);
 }
 
-:global([data-theme="light"]) .contact-heading {
+:global([data-theme="light"]) .contact-heading,
+:global([data-theme="light"]) .contact-eyebrow {
   color: var(--color-accent-primary);
 }
 

@@ -8,6 +8,8 @@ vi.mock('@/composables/useI18n', () => ({
     t: (key: string) => {
       const translations: Record<string, any> = {
         'hero.title': 'Test Title',
+        'hero.titleStart': 'Test',
+        'hero.titleEm': 'Title',
         'hero.subtitle': 'Test Subtitle',
         'hero.tagline': 'Test Tagline',
         'hero.cta.services': 'Services',
@@ -37,7 +39,7 @@ describe('Hero', () => {
         props: { locale: 'no' }
       });
       expect(wrapper.find('.hero-text').exists()).toBe(true);
-      expect(wrapper.find('h1').text()).toBe('Test Title');
+      expect(wrapper.find('h1').text().replace(/\s+/g, ' ').trim()).toBe('Test Title');
     });
 
     it('renders subtitle and tagline', () => {

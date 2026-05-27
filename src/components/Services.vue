@@ -39,7 +39,14 @@ const services = computed(() => {
         class="order-1"
       />
       <div class="section-text order-2">
-        <h2 class="text-[var(--services-heading-color)]">{{ t('services.title') }}</h2>
+        <span class="section-eyebrow services-eyebrow">
+          <span class="section-eyebrow-dot" aria-hidden="true"></span>
+          {{ t('services.eyebrow') }}
+        </span>
+        <h2 class="section-title services-title">
+          {{ t('services.titleStart') }}
+          <em>{{ t('services.titleEm') }}</em>
+        </h2>
         <p style="color: var(--services-text-color)">{{ t('services.intro') }}</p>
         <p style="color: var(--services-text-color)">{{ t('services.description') }}</p>
         <Features :features="services" :forceTwoLines="true" />
@@ -49,6 +56,11 @@ const services = computed(() => {
 </template>
 
 <style scoped>
+.services-eyebrow,
+.services-title {
+  color: var(--services-heading-color);
+}
+
 .services-content :deep(img) {
   max-height: min(750px, 60vh);
   width: auto;

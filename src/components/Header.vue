@@ -4,6 +4,7 @@ import { useI18n, type Locale } from '@/composables/useI18n';
 import LanguagePicker from './LanguagePicker.vue';
 import ThemeToggle from './ThemeToggle.vue';
 import IconBriefcase from '~icons/fa7-solid/briefcase';
+import IconUsers from '~icons/fa7-solid/users';
 import IconCircleInfo from '~icons/fa7-solid/circle-info';
 import IconPaperPlane from '~icons/fa7-solid/paper-plane';
 import IconChevronRight from '~icons/fa7-solid/chevron-right';
@@ -134,6 +135,13 @@ function scrollToSection(e: Event, href: string) {
             <a href="#services" @click="(e) => scrollToSection(e, '#services')">
               <span class="nav-link-icon"><IconBriefcase /></span>
               <span class="nav-link-label">{{ t('nav.services') }}</span>
+              <IconChevronRight class="nav-link-chevron" />
+            </a>
+          </li>
+          <li>
+            <a href="#team" @click="(e) => scrollToSection(e, '#team')">
+              <span class="nav-link-icon"><IconUsers /></span>
+              <span class="nav-link-label">{{ t('nav.team') }}</span>
               <IconChevronRight class="nav-link-chevron" />
             </a>
           </li>
@@ -492,6 +500,7 @@ function scrollToSection(e: Event, href: string) {
   .nav-right.mobile-open .nav-links li:nth-child(1) { transition-delay: 0.12s; }
   .nav-right.mobile-open .nav-links li:nth-child(2) { transition-delay: 0.18s; }
   .nav-right.mobile-open .nav-links li:nth-child(3) { transition-delay: 0.24s; }
+  .nav-right.mobile-open .nav-links li:nth-child(4) { transition-delay: 0.30s; }
 
   .nav-links a {
     display: flex;

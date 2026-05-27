@@ -8,6 +8,7 @@
 
 .streak-hero,
 .streak-services,
+.streak-team,
 .streak-about,
 .streak-contact {
   position: relative;
@@ -18,6 +19,7 @@
 /* Content sits above both streak layers */
 .streak-hero > *,
 .streak-services > *,
+.streak-team > *,
 .streak-about > *,
 .streak-contact > * {
   position: relative;
@@ -26,6 +28,7 @@
 
 .streak-hero::before, .streak-hero::after,
 .streak-services::before, .streak-services::after,
+.streak-team::before, .streak-team::after,
 .streak-about::before, .streak-about::after,
 .streak-contact::before, .streak-contact::after {
   content: '';
@@ -40,6 +43,7 @@
 
 .streak-hero::before,
 .streak-services::before,
+.streak-team::before,
 .streak-about::before,
 .streak-contact::before {
   animation-name: streak-front;
@@ -47,6 +51,7 @@
 
 .streak-hero::after,
 .streak-services::after,
+.streak-team::after,
 .streak-about::after,
 .streak-contact::after {
   animation-name: streak-back;
@@ -135,6 +140,34 @@
     transparent 0 140px,
     var(--services-streak-4) 140px, var(--services-streak-5) 143px,
     transparent 143px 280px
+  );
+}
+
+/* ------- Team — 115deg ------- */
+.streak-team {
+  view-timeline-name: --team-view;
+  background: linear-gradient(
+    160deg,
+    var(--team-grad-1) 0%, var(--team-grad-2) 35%,
+    var(--team-grad-3) 65%, var(--team-grad-4) 100%
+  );
+}
+.streak-team::before {
+  animation-timeline: --team-view;
+  background: repeating-linear-gradient(
+    115deg,
+    transparent 0 90px,
+    var(--team-streak-1) 90px, var(--team-streak-2) 94px,
+    var(--team-streak-3) 98px, transparent 98px 210px
+  );
+}
+.streak-team::after {
+  animation-timeline: --team-view;
+  background: repeating-linear-gradient(
+    115deg,
+    transparent 0 160px,
+    var(--team-streak-4) 160px, var(--team-streak-5) 163px,
+    transparent 163px 300px
   );
 }
 
@@ -245,6 +278,7 @@
 @media (prefers-reduced-motion: reduce) {
   .streak-hero::before, .streak-hero::after,
   .streak-services::before, .streak-services::after,
+  .streak-team::before, .streak-team::after,
   .streak-about::before, .streak-about::after,
   .streak-contact::before, .streak-contact::after {
     animation: none;

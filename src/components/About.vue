@@ -27,7 +27,14 @@ const values = computed(() => {
   <section id="about" class="about-section section-viewport streak-about text-[var(--about-text-color)] px-8 py-24">
     <div class="about-content section-grid max-md:grid-cols-1">
       <div class="section-text">
-        <h2 class="about-heading">{{ t('about.title') }}</h2>
+        <span class="section-eyebrow about-eyebrow">
+          <span class="section-eyebrow-dot" aria-hidden="true"></span>
+          {{ t('about.eyebrow') }}
+        </span>
+        <h2 class="section-title about-heading">
+          {{ t('about.titleStart') }}
+          <em>{{ t('about.titleEm') }}</em>
+        </h2>
         <p class="lead" style="color: var(--about-text-color)">{{ t('about.lead') }}</p>
         <p style="color: var(--about-text-color)">{{ t('about.description1') }}</p>
         <p style="color: var(--about-text-color)">{{ t('about.description2') }}</p>
@@ -58,6 +65,7 @@ const values = computed(() => {
 }
 
 /* About heading color + custom underline gradient */
+.about-eyebrow,
 .about-heading {
   color: var(--about-heading-color);
 }
@@ -66,7 +74,8 @@ const values = computed(() => {
   background: linear-gradient(90deg, #818cf8 0%, #a5b4fc 100%);
 }
 
-:global([data-theme="light"]) .about-heading {
+:global([data-theme="light"]) .about-heading,
+:global([data-theme="light"]) .about-eyebrow {
   color: var(--color-accent-primary);
 }
 

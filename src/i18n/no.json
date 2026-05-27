@@ -1,11 +1,14 @@
 {
   "nav": {
     "services": "Våre Tenester",
+    "team": "Teamet",
     "about": "Om oss",
     "contact": "Kontakt Oss"
   },
   "hero": {
     "title": "Heilskaplege løysingar med lokal forankring",
+    "titleStart": "Heilskaplege løysingar med",
+    "titleEm": "lokal forankring.",
     "subtitle": "Løysingar og rådgjeving for programvareutvikling, infrastruktur og elektronikk.",
     "tagline": "Løysingar som skalerer, tilpassa behova dine.",
     "cta": {
@@ -37,6 +40,9 @@
   },
   "services": {
     "title": "Våre tenester",
+    "eyebrow": "Kva vi gjer · Frå analyse til drift",
+    "titleStart": "Våre",
+    "titleEm": "tenester.",
     "intro": "Vi tilbyr omfattande IT- og HW-konsulenttenester tilpassa dine forretningsbehov. Vår ekspertise er heilskaplege programvareløysingar, prosjektleiing og elektronikk.",
     "description": "Vi har lang erfaring med små og store programvareløysingar, frå titals til millionar av brukarar. I tillegg har vi erfaring med elektronikkløysingar, frå spesifikasjon og sertifisering til implementering og design.",
     "items": [
@@ -64,6 +70,9 @@
   },
   "about": {
     "title": "Om oss",
+    "eyebrow": "Revebjelle-røter · Sogn og Fjordane",
+    "titleStart": "Om",
+    "titleEm": "oss.",
     "lead": "Purpeon Digital er eit nytenkande konsulentselskap, og våre konsulentar har mange års erfaring med å hjelpe bedrifter med å navigere i kompleksiteten i moderne teknologi.",
     "description1": "Lang erfaring frå ulike bransjar, både offentleg og privat sektor, gjev oss ei unik innsikt i utfordringane bedrifter står overfor i dag.",
     "description2": "Med ekspertise som spenner over både IT og hardware, står vi i ei unik stilling til å tilby heilskaplege teknologiløysingar.",
@@ -91,8 +100,47 @@
       }
     ]
   },
+  "team": {
+    "eyebrow": "Møt oss · Førde",
+    "titleStart": "Folka bak",
+    "titleEm": "Purpeon.",
+    "lede": "Vi er eit lite, erfare team med lang fartstid frå både store konsern og nyleg etablerte startups. Saman dekkjer vi programvare, infrastruktur og elektronikk, og vi tek på oss både korte oppdrag og lengre samarbeid.",
+    "members": [
+      {
+        "id": "dagfinn",
+        "name": "Dagfinn Olav Marsfjell Reiakvam",
+        "shortName": "Dagfinn",
+        "role": "Dagleg leiar og elektronikkingeniør",
+        "bio": "Dagfinn er dagleg leiar og har lang erfaring som elektronikkingeniør, med spisskompetanse innan embedded systems og IoT-løysingar. Han har jobba med alt frå prototyping til masseproduksjon, og har ein solid forståing av både maskinvare og programvare."
+      },
+      {
+        "id": "finn",
+        "name": "Finn Michael «Fimmi» Halvorsen",
+        "shortName": "Fimmi",
+        "role": "Systemutviklar",
+        "bio": "Fimmi er sivilingeniør innan kommunikasjonsteknologi og har lang erfaring som full-stack utviklar. Han har jobba med alt frå små prosjekt til store enterprise-løysingar, og har ein solid forståing av moderne teknologi."
+      },
+      {
+        "id": "kjell",
+        "name": "Kjell Inge Rotnes",
+        "shortName": "Kjell Inge",
+        "role": "Medeigar",
+        "bio": "Kjell Inge er medeigar og har lang efaring som systemutviklar og arktitekt, med spisskompetanse innan skalerbare løysingar og skyinfrastruktur."
+      },
+      {
+        "id": "roger",
+        "name": "Roger Karlsen",
+        "shortName": "Roger",
+        "role": "Medeigar",
+        "bio": "Roger er medeigar i Purpeon og har erfaring som systemutviklar i bank og energisektoren. Han var tidleg ute med å ta i bruk KI, og har allereie fleire års erfaring med KI-utvikling og sjølvstendige agentar."
+      }
+    ]
+  },
   "contact": {
     "title": "Kontakt oss",
+    "eyebrow": "Klar for prat · Teknologi, prosjekt eller rådgjeving",
+    "titleStart": "Kontakt",
+    "titleEm": "oss.",
     "lead": "Klar til å transformere bedrifta di med teknologi? Ta kontakt med teamet vårt i dag.",
     "description": "Vi er her for å svare på spørsmåla dine og gi ekspertveiledning om dine IT-initiativ. Anten du treng ein konsultasjon, har eit spesifikt prosjekt i tankane, eller berre vil lære meir om tenestene våre, vil vi gjerne høyre frå deg.",
     "email": "E-post",
