@@ -164,32 +164,32 @@ const props = defineProps<{
 }
 
 /* Light theme overrides — unify with shared --feature-* tokens (see src/styles/app.css) */
-:global([data-theme="light"]) .feature-card {
+:global([data-theme="light"] .feature-card) {
   background: var(--feature-bg);
   border-color: var(--feature-border);
 }
 
-:global([data-theme="light"]) .feature-card:hover {
+:global([data-theme="light"] .feature-card:hover) {
   background: var(--feature-hover-bg);
   border-color: var(--feature-border);
 }
 
-:global([data-theme="light"]) .feature-icon-wrapper {
+:global([data-theme="light"] .feature-icon-wrapper) {
   background: linear-gradient(135deg, rgba(107, 70, 193, 0.22), rgba(107, 70, 193, 0.12));
   border-color: rgba(107, 70, 193, 0.3);
 }
 
-:global([data-theme="light"]) .feature-card:hover .feature-icon-wrapper {
+:global([data-theme="light"] .feature-card:hover .feature-icon-wrapper) {
   background: linear-gradient(135deg, rgba(107, 70, 193, 0.32), rgba(107, 70, 193, 0.2));
   border-color: rgba(107, 70, 193, 0.45);
 }
 
-:global([data-theme="light"]) .feature-icon-wrapper svg {
+:global([data-theme="light"] .feature-icon-wrapper svg) {
   color: var(--color-accent-primary);
 }
 
-:global([data-theme="light"]) .feature-title,
-:global([data-theme="light"]) .feature-desc {
+:global([data-theme="light"] .feature-title),
+:global([data-theme="light"] .feature-desc) {
   color: var(--color-text-primary);
 }
 

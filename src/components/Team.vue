@@ -371,7 +371,7 @@ watch(activeIdx, async () => {
   text-wrap: pretty;
   margin: 0;
 }
-:global([data-theme="dark"]) .team-lede { color: rgba(255, 255, 255, 0.78); }
+:global([data-theme="dark"] .team-lede) { color: rgba(255, 255, 255, 0.78); }
 
 /* ---------- Stage ---------- */
 .stage {
@@ -434,7 +434,7 @@ watch(activeIdx, async () => {
   pointer-events: none;
   z-index: -1;
 }
-:global([data-theme="dark"]) .morph::before {
+:global([data-theme="dark"] .morph::before) {
   background: radial-gradient(closest-side, rgba(167, 139, 250, 0.4), transparent 70%);
 }
 
@@ -575,7 +575,7 @@ watch(activeIdx, async () => {
   margin-bottom: 1rem;
   opacity: 0.85;
 }
-:global([data-theme="dark"]) .bio-role { color: #d8c6ff; }
+:global([data-theme="dark"] .bio-role) { color: #d8c6ff; }
 
 .bio-text {
   font-size: 1.02rem;
@@ -584,7 +584,7 @@ watch(activeIdx, async () => {
   text-wrap: pretty;
   margin: 0;
 }
-:global([data-theme="dark"]) .bio-text { color: rgba(255, 255, 255, 0.86); }
+:global([data-theme="dark"] .bio-text) { color: rgba(255, 255, 255, 0.86); }
 
 .bio-card.is-swapping .bio-content {
   animation: team-bio-swap 0.6s ease;
@@ -699,7 +699,7 @@ watch(activeIdx, async () => {
   color: var(--color-text-secondary);
   margin-top: 2px;
 }
-:global([data-theme="dark"]) .pick-role { color: rgba(255, 255, 255, 0.55); }
+:global([data-theme="dark"] .pick-role) { color: rgba(255, 255, 255, 0.55); }
 
 .ring-indicator {
   position: absolute;

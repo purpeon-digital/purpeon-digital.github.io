@@ -83,8 +83,8 @@ const toggleMap = () => {
   background: linear-gradient(90deg, #ec4899 0%, #f472b6 100%);
 }
 
-:global([data-theme="light"]) .contact-heading,
-:global([data-theme="light"]) .contact-eyebrow {
+:global([data-theme="light"] .contact-heading),
+:global([data-theme="light"] .contact-eyebrow) {
   color: var(--color-accent-primary);
 }
 

@@ -101,17 +101,17 @@ const containerClasses = computed(() => [
 }
 
 /* Dark theme blend mode overrides */
-:global([data-theme="dark"]) .section-image--hero img {
+:global([data-theme="dark"] .section-image--hero img) {
   filter: brightness(0.9) contrast(1.1);
   mix-blend-mode: lighten;
 }
 
-:global([data-theme="dark"]) .section-image--about img {
+:global([data-theme="dark"] .section-image--about img) {
   filter: brightness(0.85) contrast(1.15) saturate(1.1);
   mix-blend-mode: lighten;
 }
 
-:global([data-theme="dark"]) .section-image--contact img {
+:global([data-theme="dark"] .section-image--contact img) {
   filter: brightness(0.9) contrast(1.1) hue-rotate(-10deg);
   mix-blend-mode: lighten;
 }

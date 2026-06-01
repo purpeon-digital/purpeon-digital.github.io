@@ -179,22 +179,22 @@ const handleClick = (method: ContactMethodDisplay, event: MouseEvent) => {
 }
 
 /* Light mode */
-:global([data-theme="light"]) .contact-card {
+:global([data-theme="light"] .contact-card) {
   background: rgba(107, 70, 193, 0.12);
   border: 1px solid rgba(107, 70, 193, 0.25);
 }
 
-:global([data-theme="light"]) .contact-card:not(.no-link):hover,
-:global([data-theme="light"]) .contact-card.clickable:hover {
+:global([data-theme="light"] .contact-card:not(.no-link):hover),
+:global([data-theme="light"] .contact-card.clickable:hover) {
   background: rgba(107, 70, 193, 0.2);
   border-color: rgba(107, 70, 193, 0.4);
 }
 
-:global([data-theme="light"]) .contact-card h3 {
+:global([data-theme="light"] .contact-card h3) {
   color: var(--color-accent-primary);
 }
 
-:global([data-theme="light"]) .contact-card p {
+:global([data-theme="light"] .contact-card p) {
   color: var(--color-text-primary);
 }
 </style>

@@ -90,7 +90,7 @@ const features = computed(() => {
   }
 }
 
-:global([data-theme="dark"]) .hero-mobile-logo {
+:global([data-theme="dark"] .hero-mobile-logo) {
   filter: brightness(0.9) contrast(1.1);
   mix-blend-mode: lighten;
 }

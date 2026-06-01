@@ -74,8 +74,8 @@ const values = computed(() => {
   background: linear-gradient(90deg, #818cf8 0%, #a5b4fc 100%);
 }
 
-:global([data-theme="light"]) .about-heading,
-:global([data-theme="light"]) .about-eyebrow {
+:global([data-theme="light"] .about-heading),
+:global([data-theme="light"] .about-eyebrow) {
   color: var(--color-accent-primary);
 }
 
