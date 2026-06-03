@@ -329,21 +329,26 @@ function scrollToSection(e: Event, href: string) {
   display: block;
 }
 
-.nav-links a::after {
+.nav-link-label {
+  position: relative;
+}
+
+.nav-link-label::after {
   content: '';
   position: absolute;
-  bottom: 4px;
-  left: 50%;
-  width: 0;
+  bottom: -3px;
+  left: 0;
+  width: 100%;
   height: 2px;
   background: rgba(255, 255, 255, 0.8);
-  transition: all 0.25s ease;
-  transform: translateX(-50%);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.25s ease;
   border-radius: 1px;
 }
 
-.nav-links a:hover::after {
-  width: 60%;
+.nav-links a:hover .nav-link-label::after {
+  transform: scaleX(1);
 }
 
 /* Nav Controls */
@@ -528,7 +533,7 @@ function scrollToSection(e: Event, href: string) {
       transform 0.15s ease;
   }
 
-  .nav-links a::after {
+  .nav-link-label::after {
     display: none;
   }
 
