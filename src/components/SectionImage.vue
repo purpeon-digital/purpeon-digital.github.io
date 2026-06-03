@@ -13,6 +13,10 @@ interface Props {
   animationDirection?: 'left' | 'right';
   filterPreset?: 'hero' | 'services' | 'about' | 'contact';
   fetchpriority?: 'high' | 'low' | 'auto';
+  /** Enable scroll-driven CSS parallax on the image (requires a cover-cropped frame). */
+  parallax?: boolean;
+  /** How far the image drifts, in % of its own height, across the scroll range. */
+  parallaxOffset?: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -22,7 +26,9 @@ const props = withDefaults(defineProps<Props>(), {
   animateOnScroll: false,
   animationDirection: 'left',
   filterPreset: 'services',
-  fetchpriority: 'auto'
+  fetchpriority: 'auto',
+  parallax: false,
+  parallaxOffset: 16
 });
 
 const containerRef = ref<HTMLElement | null>(null);
@@ -54,14 +60,33 @@ const containerClasses = computed(() => [
     'section-image--animate': props.animateOnScroll,
     'section-image--from-left': props.animationDirection === 'left',
     'section-image--from-right': props.animationDirection === 'right',
+    'section-image--parallax': props.parallax,
     'is-visible': isVisible.value
   }
 ]);
+
+const frameStyle = computed(() => ({
+  maxWidth: props.maxWidth,
+  borderRadius: props.borderRadius,
+  aspectRatio: props.width && props.height ? `${props.width} / ${props.height}` : undefined,
+  '--parallax-offset': props.parallaxOffset
+}));
 </script>
 
 <template>
   <div ref="containerRef" :class="containerClasses">
+    <div v-if="parallax" class="section-image__frame" :style="frameStyle">
+      <img
+        :src="src"
+        :alt="alt"
+        :width="width"
+        :height="height"
+        :fetchpriority="props.fetchpriority"
+        class="section-image__media"
+      />
+    </div>
     <img
+      v-else
       :src="src"
       :alt="alt"
       :width="width"
@@ -114,6 +139,66 @@ const containerClasses = computed(() => [
 :global([data-theme="dark"] .section-image--contact img) {
   filter: brightness(0.9) contrast(1.1) hue-rotate(-10deg);
   mix-blend-mode: lighten;
+}
+
+/* ── Scroll-driven parallax ──────────────────────────────────
+   The frame defines a cover-cropped viewport (overflow:hidden)
+   and exposes a view-timeline. The image is scaled up just past
+   the frame, then drifts vertically across the scroll range so
+   the overflow it gains from scaling is exactly consumed by the
+   translate — no edges ever peek through. Pure CSS, no JS. */
+.section-image__frame {
+  position: relative;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  border-radius: inherit;
+  view-timeline-name: --section-img-parallax;
+  view-timeline-axis: block;
+  /* isolate so overflow:hidden reliably clips the scaled/translated child */
+  transform: translateZ(0);
+  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.55);
+}
+
+.section-image__media {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* scale up by 2× the drift so there is overflow to spend on both ends */
+  scale: calc(1 + var(--parallax-offset, 16) * 2 / 100);
+  animation: section-img-parallax auto linear both;
+  animation-timeline: --section-img-parallax;
+  animation-range: cover;
+  will-change: translate;
+}
+
+@keyframes section-img-parallax {
+  from {
+    translate: 0 calc(var(--parallax-offset, 16) * -1%);
+  }
+  to {
+    translate: 0 calc(var(--parallax-offset, 16) * 1%);
+  }
+}
+
+/* Honour reduced-motion: hold the image still and un-crop it. */
+@media (prefers-reduced-motion: reduce) {
+  .section-image__media {
+    animation: none;
+    scale: 1;
+    translate: none;
+  }
+}
+
+/* Browsers without scroll-driven animations: no timeline fires, so
+   the image keeps its static scale and would sit off-centre. Reset
+   it to a clean cover crop in that case. */
+@supports not (animation-timeline: view()) {
+  .section-image__media {
+    scale: 1;
+    animation: none;
+  }
 }
 
 /* Scroll-reveal animation */

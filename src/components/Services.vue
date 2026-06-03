@@ -36,6 +36,7 @@ const services = computed(() => {
         animateOnScroll
         animationDirection="left"
         filterPreset="services"
+        parallax
         class="order-1"
       />
       <div class="section-text order-2">
@@ -61,10 +62,9 @@ const services = computed(() => {
   color: var(--services-heading-color);
 }
 
-.services-content :deep(img) {
-  max-height: min(750px, 60vh);
+.services-content :deep(.section-image__frame) {
+  height: min(750px, 60vh);
   width: auto;
-  object-fit: contain;
 }
 
 /* Short viewport height adjustments */

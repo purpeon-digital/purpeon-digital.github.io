@@ -52,16 +52,16 @@ const values = computed(() => {
         filterPreset="about"
         animateOnScroll
         animationDirection="right"
+        parallax
       />
     </div>
   </section>
 </template>
 
 <style scoped>
-.about-content :deep(img) {
-  max-height: min(640px, 60vh);
+.about-content :deep(.section-image__frame) {
+  height: min(640px, 60vh);
   width: auto;
-  object-fit: contain;
 }
 
 /* About heading color + custom underline gradient */
