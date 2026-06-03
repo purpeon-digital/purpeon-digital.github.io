@@ -594,33 +594,21 @@ watch(activeIdx, async () => {
   100% { opacity: 1; transform: translateY(0); }
 }
 
-/* Selector — 4-up grid on desktop, horizontal swipe strip on small screens. */
+/* Selector — 4-up grid that collapses to a full-width 2×2 on phones.
+   (Was a horizontal swipe strip, but the fixed-width cards cropped at the
+   viewport edges and could leave the active member half-off-screen.) */
 .selector {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0.85rem;
 }
-@media (max-width: 900px) {
+@media (max-width: 640px) {
   .selector {
-    display: flex;
-    grid-template-columns: none;
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scroll-snap-type: x mandatory;
-    padding: 0.25rem 0.25rem 0.75rem;
-    scrollbar-width: none;
-  }
-  .selector::-webkit-scrollbar { display: none; }
-
-  .pick {
-    flex: 0 0 auto;
-    width: 150px;
-    scroll-snap-align: center;
   }
 }
 @media (max-width: 480px) {
-  .pick { width: 140px; }
   .pick-avatar { margin-bottom: 0.5rem; }
 }
 

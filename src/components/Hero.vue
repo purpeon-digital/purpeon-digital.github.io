@@ -106,6 +106,19 @@ const features = computed(() => {
   }
 }
 
+/* Tablet: the hero stays two-column down to 768px, so its text column gets
+   narrow. Trim the CTA buttons' padding and gap a touch so they stay on one
+   row instead of wrapping to a stack. */
+@media (max-width: 860px) {
+  .hero-buttons {
+    gap: 0.75rem;
+  }
+  .hero-buttons :deep(.btn) {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
 /* Short viewport height adjustments */
 @media (max-height: 800px) {
   .hero {

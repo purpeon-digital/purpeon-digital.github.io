@@ -52,7 +52,9 @@ onMounted(() => {
     attributes: true,
     attributeFilter: ['data-theme'],
   });
-  mobileMq = window.matchMedia('(max-width: 768px)');
+  // Match Tailwind's `md` breakpoint exactly (mobile = width < 768px) so the
+  // header's mobile/desktop switch lines up with the content's `max-md:`/`md:`.
+  mobileMq = window.matchMedia('(width < 768px)');
   isMobile.value = mobileMq.matches;
   mobileMq.addEventListener('change', updateIsMobile);
 });
@@ -204,7 +206,7 @@ function scrollToSection(e: Event, href: string) {
   align-items: center;
 }
 
-@media (max-width: 768px) {
+@media (width < 768px) {
   .header-bar {
     height: 52px;
   }
@@ -219,7 +221,7 @@ function scrollToSection(e: Event, href: string) {
   color: white;
 }
 
-@media (max-width: 768px) {
+@media (width < 768px) {
   .logo {
     gap: 0.5rem;
   }
@@ -235,7 +237,7 @@ function scrollToSection(e: Event, href: string) {
   filter: drop-shadow(0 1px 6px rgba(0, 0, 0, 0.35));
 }
 
-@media (max-width: 768px) {
+@media (width < 768px) {
   .logo-icon {
     width: 32px;
     height: 32px;
@@ -246,9 +248,12 @@ function scrollToSection(e: Event, href: string) {
   font-size: 1.25rem;
   font-weight: 600;
   letter-spacing: -0.3px;
+  /* "Purpeon Digital" must never break across two lines when the bar gets
+     tight at tablet widths. */
+  white-space: nowrap;
 }
 
-@media (max-width: 768px) {
+@media (width < 768px) {
   .logo-text {
     font-size: 1.1rem;
   }
@@ -273,7 +278,10 @@ function scrollToSection(e: Event, href: string) {
   gap: 0.5rem;
   color: rgba(255, 255, 255, 0.9);
   text-decoration: none;
-  transition: all 0.2s ease;
+  /* Only animate the hover affordances — not `all`. With `all`, crossing the
+     mobile→desktop breakpoint animated the drawer's border / background / padding
+     being removed, flashing a border + size morph on each link. */
+  transition: color 0.2s ease, background-color 0.2s ease;
   padding: 0.5rem 1rem;
   border-radius: 8px;
   position: relative;
@@ -289,7 +297,7 @@ function scrollToSection(e: Event, href: string) {
 }
 
 /* Desktop: chevron is a mobile affordance, hide it */
-@media (min-width: 769px) {
+@media (width >= 768px) {
   .nav-link-chevron {
     display: none;
   }
@@ -331,6 +339,9 @@ function scrollToSection(e: Event, href: string) {
 
 .nav-link-label {
   position: relative;
+  /* Two-word labels ("Våre Tenester", "Kontakt Oss") must stay on one line —
+     otherwise they wrap and stagger the bar at tablet widths. */
+  white-space: nowrap;
 }
 
 .nav-link-label::after {
@@ -358,6 +369,43 @@ function scrollToSection(e: Event, href: string) {
   gap: 0.5rem;
   padding-left: 1rem;
   border-left: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Tablet (iPad portrait ~768–1024px): the full horizontal nav still shows here,
+   so tighten the link padding and gaps to keep all four items on one line with
+   breathing room instead of crowding the edges. */
+@media (width >= 768px) and (max-width: 1080px) {
+  .nav-right {
+    gap: 1rem;
+  }
+  .nav-links a {
+    padding-left: 0.55rem;
+    padding-right: 0.55rem;
+  }
+  .nav-controls {
+    padding-left: 0.75rem;
+  }
+}
+
+/* Narrow tablets (iPad portrait, ~769–860px): tightest band where all four
+   nav items + the non-wrapping logo + controls must share one line. Trim the
+   bar's outer padding, the link padding and the logo a touch more so nothing
+   wraps or crowds. */
+@media (width >= 768px) and (max-width: 860px) {
+  nav {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .nav-links a {
+    padding-left: 0.4rem;
+    padding-right: 0.4rem;
+  }
+  .logo {
+    gap: 0.5rem;
+  }
+  .logo-text {
+    font-size: 1.1rem;
+  }
 }
 
 /* Hamburger Menu */
@@ -414,7 +462,7 @@ function scrollToSection(e: Event, href: string) {
 }
 
 /* Mobile nav drawer */
-@media (max-width: 768px) {
+@media (width < 768px) {
   .nav-right {
     position: fixed;
     top: 52px;
@@ -752,7 +800,7 @@ function scrollToSection(e: Event, href: string) {
   -webkit-backdrop-filter: blur(0) saturate(100%);
 }
 
-@media (min-width: 769px) {
+@media (width >= 768px) {
   .mobile-backdrop {
     display: none;
   }
