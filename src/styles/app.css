@@ -293,7 +293,11 @@
 /* Fullscreen viewport section — used by Hero, Services, About, Contact */
 @utility section-viewport {
   position: relative;
-  overflow: hidden;
+  /* `clip` (not `hidden`) clips the decorative streaks the same way but does
+     NOT create a scroll container — `overflow: hidden` would, which traps every
+     descendant scroll-driven `view()` timeline (e.g. SectionImage's parallax)
+     against the section's own non-scrolling scrollport, freezing them at 50%. */
+  overflow: clip;
   width: 100%;
   max-width: none;
   min-height: 100vh;

@@ -33,6 +33,7 @@ const toggleMap = () => {
             filter-preset="contact"
             :animate-on-scroll="true"
             animation-direction="left"
+            parallax
           />
           <div v-if="showMap" class="map-container">
             <iframe
@@ -67,10 +68,9 @@ const toggleMap = () => {
 </template>
 
 <style scoped>
-.contact-content :deep(img) {
-  max-height: min(720px, 60vh);
+.contact-content :deep(.section-image__frame) {
+  height: min(720px, 60vh);
   width: auto;
-  object-fit: contain;
 }
 
 /* Contact heading color + custom underline gradient */
