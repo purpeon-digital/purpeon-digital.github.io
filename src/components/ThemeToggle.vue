@@ -26,17 +26,30 @@ function toggleTheme() {
     const currentTheme = html.getAttribute('data-theme') || 'light';
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
 
-    html.setAttribute('data-theme', newTheme);
+    const apply = () => {
+        html.setAttribute('data-theme', newTheme);
 
-    const themeColorMeta = document.querySelector('meta[data-theme-color]');
-    if (themeColorMeta) {
-        themeColorMeta.setAttribute('content', newTheme === 'dark' ? '#1a1a2e' : '#6b46c1');
+        const themeColorMeta = document.querySelector('meta[data-theme-color]');
+        if (themeColorMeta) {
+            themeColorMeta.setAttribute('content', newTheme === 'dark' ? '#1a1a2e' : '#6b46c1');
+        }
+
+        try {
+            localStorage.setItem('theme', newTheme);
+        } catch (e) { }
+        theme.value = newTheme;
+    };
+
+    const startViewTransition = (document as Document & {
+        startViewTransition?: (cb: () => void) => void;
+    }).startViewTransition?.bind(document);
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (startViewTransition && !prefersReducedMotion) {
+        startViewTransition(apply);
+    } else {
+        apply();
     }
-
-    try {
-        localStorage.setItem('theme', newTheme);
-    } catch (e) { }
-    theme.value = newTheme;
 }
 </script>
 
