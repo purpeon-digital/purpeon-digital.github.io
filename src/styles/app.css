@@ -385,6 +385,28 @@
   align-items: center;
 }
 
+/* Tablet-portrait and narrower: the split image|text sections (Services, About,
+   Contact) collapse to a single full-width column and drop the side image —
+   like the team section's single-column collapse. Below ~1024px the text
+   column is too narrow for the two-up feature cards, so the long Norwegian
+   titles overflow and get clipped. The image stays for ≥1025px (e.g. tablet
+   landscape) where the two columns have room.
+   NB: scoped to these three sections — NOT all `.section-grid`, since the Hero
+   also uses it and has its own collapse (its big logo would otherwise drop into
+   a full-width column here). */
+@media (max-width: 1024px) {
+  .services-content,
+  .about-content,
+  .contact-content {
+    grid-template-columns: 1fr;
+  }
+  .services-content .section-image,
+  .about-content .section-image,
+  .contact-content .contact-image {
+    display: none;
+  }
+}
+
 /* ============================================================
    BASE STYLES
    ============================================================ */
