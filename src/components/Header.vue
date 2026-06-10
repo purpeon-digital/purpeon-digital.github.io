@@ -6,6 +6,7 @@ import ThemeToggle from './ThemeToggle.vue';
 import IconBriefcase from '~icons/fa7-solid/briefcase';
 import IconUsers from '~icons/fa7-solid/users';
 import IconCircleInfo from '~icons/fa7-solid/circle-info';
+import IconHandshake from '~icons/fa7-solid/handshake';
 import IconPaperPlane from '~icons/fa7-solid/paper-plane';
 import IconChevronRight from '~icons/fa7-solid/chevron-right';
 
@@ -151,6 +152,13 @@ function scrollToSection(e: Event, href: string) {
             <a href="#about" @click="(e) => scrollToSection(e, '#about')">
               <span class="nav-link-icon"><IconCircleInfo /></span>
               <span class="nav-link-label">{{ t('nav.about') }}</span>
+              <IconChevronRight class="nav-link-chevron" />
+            </a>
+          </li>
+          <li>
+            <a href="#references" @click="(e) => scrollToSection(e, '#references')">
+              <span class="nav-link-icon"><IconHandshake /></span>
+              <span class="nav-link-label">{{ t('nav.references') }}</span>
               <IconChevronRight class="nav-link-chevron" />
             </a>
           </li>
@@ -387,7 +395,16 @@ function scrollToSection(e: Event, href: string) {
   }
 }
 
-/* Narrow tablets (iPad portrait, ~769–860px): tightest band where all four
+/* Narrow tablets (~768–920px): with five nav items the inline link icons no
+   longer fit alongside the non-wrapping logo + controls — drop them and keep
+   the labels, which carry the meaning. */
+@media (width >= 768px) and (max-width: 920px) {
+  .nav-link-icon {
+    display: none;
+  }
+}
+
+/* Narrow tablets (iPad portrait, ~769–860px): tightest band where all five
    nav items + the non-wrapping logo + controls must share one line. Trim the
    bar's outer padding, the link padding and the logo a touch more so nothing
    wraps or crowds. */
@@ -554,6 +571,7 @@ function scrollToSection(e: Event, href: string) {
   .nav-right.mobile-open .nav-links li:nth-child(2) { transition-delay: 0.18s; }
   .nav-right.mobile-open .nav-links li:nth-child(3) { transition-delay: 0.24s; }
   .nav-right.mobile-open .nav-links li:nth-child(4) { transition-delay: 0.30s; }
+  .nav-right.mobile-open .nav-links li:nth-child(5) { transition-delay: 0.36s; }
 
   .nav-links a {
     display: flex;
@@ -661,7 +679,7 @@ function scrollToSection(e: Event, href: string) {
   .nav-right.mobile-open .nav-controls {
     opacity: 1;
     transform: translateY(0);
-    transition-delay: 0.3s;
+    transition-delay: 0.36s;
   }
 
   .nav-control {
