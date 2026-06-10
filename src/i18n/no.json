@@ -151,7 +151,7 @@
         "location": "Rotselaar, Belgia",
         "url": "https://www.vision3f.com/",
         "urlLabel": "vision3f.com",
-        "description": "Vision3F endrar lakseoppdrett med V-Tag — KI-driven sanntidsovervaking av fiskehelse som tek oppdrett frå reaktiv til prediktiv drift. Purpeon støttar teamet med programvareutvikling og skyinfrastruktur, frå datapipelines til produksjonsklare tenester.",
+        "description": "Vision3F utviklar V-Tag, eit system som overvakar fiskehelse i lakseoppdrett i sanntid. Purpeon bidreg med programvareutvikling og skyinfrastruktur i prosjektet.",
         "tags": ["Skyløysingar", "KI", "Programvareutvikling"]
       },
       {
@@ -161,7 +161,7 @@
         "location": "Måløy, Noreg",
         "url": "https://www.saetren.no/",
         "urlLabel": "saetren.no",
-        "description": "Sætren leverer smarte, trygge og framtidsretta elektro- og automasjonstenester — frå installasjonar i bygg til industriautomasjon. Purpeon bidreg med IoT hardware-design, integrasjon og skyløysingar til eit av deira innovasjonsprosjekt.",
+        "description": "Sætren leverer elektro- og automasjonstenester, frå installasjonar i bygg til industriautomasjon. Purpeon bidreg med IoT hardware-design, integrasjon og skyløysingar til eit av deira innovasjonsprosjekt.",
         "tags": ["IoT", "Hardware-design", "Integrasjon", "Skyløysingar"]
       }
     ]

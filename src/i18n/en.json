@@ -151,7 +151,7 @@
         "location": "Rotselaar, Belgium",
         "url": "https://www.vision3f.com/",
         "urlLabel": "vision3f.com",
-        "description": "Vision3F is transforming Atlantic salmon farming with V-Tag — AI-driven, real-time health monitoring that takes fish farming from reactive to predictive. Purpeon supports the team with software development and cloud infrastructure, from data pipelines to production-ready services.",
+        "description": "Vision3F develops V-Tag, a system that monitors fish health in salmon farming in real time. Purpeon contributes software development and cloud infrastructure to the project.",
         "tags": ["Cloud", "AI", "Software development"]
       },
       {
@@ -161,7 +161,7 @@
         "location": "Måløy, Norway",
         "url": "https://www.saetren.no/",
         "urlLabel": "saetren.no",
-        "description": "Sætren delivers smart, safe and future-oriented electrical and automation services — from installations in buildings to industrial automation. Purpeon contributes IoT hardware design, integration and cloud solutions to one of their innovation projects.",
+        "description": "Sætren delivers electrical and automation services, from installations in buildings to industrial automation. Purpeon contributes IoT hardware design, integration and cloud solutions to one of their innovation projects.",
         "tags": ["IoT", "Hardware design", "Integration", "Cloud"]
       }
     ]
