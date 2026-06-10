@@ -215,12 +215,17 @@ onBeforeUnmount(() => {
   overflow: hidden;
   text-decoration: none;
   color: inherit;
-  opacity: 0;
   transition:
     transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
     box-shadow 0.45s ease,
     border-color 0.45s ease,
     background 0.45s ease;
+}
+/* The pre-reveal hidden state only applies where scripting runs — the reveal
+   class is added by JS, so without it (no-JS, hydration failure, unsupported
+   browser) the cards must simply render visible like every other section. */
+@media (scripting: enabled) {
+  .ref-card { opacity: 0; }
 }
 .refs-section.is-revealed .ref-card {
   opacity: 1;
@@ -328,11 +333,13 @@ onBeforeUnmount(() => {
 .ref-logo.is-vision3f img { height: 34px; }
 .ref-logo.is-saetren img { height: 52px; }
 
-/* Theme-specific recolors: light shows dark-text logos, dark shows light-text */
+/* Theme-specific recolors: light shows dark-text logos, dark shows light-text.
+   The dark overrides include `html` so they out-specify the scoped base rules
+   structurally instead of relying on source order between equal selectors. */
 .ref-logo .ref-logo-light { display: block; }
 .ref-logo .ref-logo-dark { display: none; }
-:global([data-theme="dark"] .ref-logo .ref-logo-light) { display: none; }
-:global([data-theme="dark"] .ref-logo .ref-logo-dark) { display: block; }
+:global(html[data-theme="dark"] .ref-logo .ref-logo-light) { display: none; }
+:global(html[data-theme="dark"] .ref-logo .ref-logo-dark) { display: block; }
 
 .ref-sector {
   font-size: 0.78rem;
