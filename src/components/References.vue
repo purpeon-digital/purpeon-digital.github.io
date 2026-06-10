@@ -98,7 +98,7 @@ onBeforeUnmount(() => {
             '--ref-a': ACCENTS[c.id]?.a,
             '--ref-b': ACCENTS[c.id]?.b,
             '--stagger': `${i * 140}ms`,
-            '--glint-delay': `${0.4 + i * 0.75}s`,
+            '--glint-delay': `${0.4 + i * 0.30}s`,
           }"
         >
           <header class="ref-head">
@@ -335,7 +335,9 @@ onBeforeUnmount(() => {
   user-select: none;
 }
 .ref-logo.is-vision3f img { height: 34px; }
-.ref-logo.is-saetren img { height: 52px; }
+/* The Sætren art is cropped to its content (no padding), so 36px here renders
+   the same visual size the old padded 52px file did. */
+.ref-logo.is-saetren img { height: 36px; }
 
 /* Theme-specific recolors: light shows dark-text logos, dark shows light-text.
    The dark overrides include `html` so they out-specify the scoped base rules
