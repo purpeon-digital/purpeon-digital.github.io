@@ -136,6 +136,35 @@
       }
     ]
   },
+  "references": {
+    "eyebrow": "References · Partners we're proud of",
+    "titleStart": "Companies that build with",
+    "titleEm": "us.",
+    "lede": "From AI-driven aquaculture in Belgium to electrical and automation on the Norwegian west coast — a few of the clients we are proud to build the future with.",
+    "visit": "Visit website",
+    "clients": [
+      {
+        "id": "vision3f",
+        "name": "Vision3F",
+        "sector": "Aquaculture technology · AI",
+        "location": "Rotselaar, Belgium",
+        "url": "https://www.vision3f.com/",
+        "urlLabel": "vision3f.com",
+        "description": "Vision3F is transforming Atlantic salmon farming with V-Tag — AI-driven, real-time health monitoring that takes fish farming from reactive to predictive. Purpeon supports the team with software development and cloud infrastructure, from data pipelines to production-ready services.",
+        "tags": ["Cloud", "AI", "Software development"]
+      },
+      {
+        "id": "saetren",
+        "name": "Sætren",
+        "sector": "Electrical & automation",
+        "location": "Måløy, Norway",
+        "url": "https://www.saetren.no/",
+        "urlLabel": "saetren.no",
+        "description": "Sætren delivers smart, safe and future-oriented electrical and automation services — from installations in buildings to industrial automation. Purpeon contributes consultancy and software expertise to their digital initiatives.",
+        "tags": ["Consultancy", "Software", "Automation"]
+      }
+    ]
+  },
   "contact": {
     "title": "Contact Us",
     "eyebrow": "Ready to chat · Tech, projects or advice",

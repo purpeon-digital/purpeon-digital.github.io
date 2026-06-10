@@ -145,6 +145,22 @@
   --team-card-border: rgba(107, 70, 193, 0.22);
   --team-card-hover: rgba(107, 70, 193, 0.14);
 
+  /* References */
+  --refs-grad-1: #fdf4ff;
+  --refs-grad-2: #f3e8ff;
+  --refs-grad-3: #ede9fe;
+  --refs-grad-4: #faf5ff;
+  --refs-streak-1: rgba(167, 139, 250, 0.16);
+  --refs-streak-2: rgba(192, 132, 252, 0.18);
+  --refs-streak-3: rgba(216, 180, 254, 0.16);
+  --refs-streak-4: rgba(196, 181, 253, 0.14);
+  --refs-streak-5: rgba(233, 213, 255, 0.2);
+  --refs-text-color: #2d2d2d;
+  --refs-heading-color: #4a1d96;
+  --refs-card-bg: rgba(255, 255, 255, 0.62);
+  --refs-card-border: rgba(107, 70, 193, 0.16);
+  --refs-card-hover: rgba(255, 255, 255, 0.82);
+
   /* Contact */
   --contact-grad-1: #581c87;
   --contact-grad-2: #7c3aed;
@@ -265,6 +281,22 @@
   --team-card-bg: rgba(157, 111, 255, 0.08);
   --team-card-border: rgba(157, 111, 255, 0.22);
   --team-card-hover: rgba(157, 111, 255, 0.14);
+
+  /* References dark */
+  --refs-grad-1: #120626;
+  --refs-grad-2: #1d0b38;
+  --refs-grad-3: #170a2e;
+  --refs-grad-4: #0e051f;
+  --refs-streak-1: rgba(157, 111, 255, 0.16);
+  --refs-streak-2: rgba(183, 148, 246, 0.18);
+  --refs-streak-3: rgba(192, 132, 252, 0.14);
+  --refs-streak-4: rgba(167, 139, 250, 0.12);
+  --refs-streak-5: rgba(195, 176, 255, 0.16);
+  --refs-text-color: #ececf5;
+  --refs-heading-color: #C3B0FF;
+  --refs-card-bg: rgba(157, 111, 255, 0.07);
+  --refs-card-border: rgba(157, 111, 255, 0.2);
+  --refs-card-hover: rgba(157, 111, 255, 0.12);
 
   /* Contact dark */
   --contact-grad-1: #1a0a20;

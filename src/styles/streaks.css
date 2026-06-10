@@ -10,6 +10,7 @@
 .streak-services,
 .streak-team,
 .streak-about,
+.streak-references,
 .streak-contact {
   position: relative;
   isolation: isolate;
@@ -21,6 +22,7 @@
 .streak-services > *,
 .streak-team > *,
 .streak-about > *,
+.streak-references > *,
 .streak-contact > * {
   position: relative;
   z-index: 1;
@@ -30,6 +32,7 @@
 .streak-services::before, .streak-services::after,
 .streak-team::before, .streak-team::after,
 .streak-about::before, .streak-about::after,
+.streak-references::before, .streak-references::after,
 .streak-contact::before, .streak-contact::after {
   content: '';
   position: absolute;
@@ -45,6 +48,7 @@
 .streak-services::before,
 .streak-team::before,
 .streak-about::before,
+.streak-references::before,
 .streak-contact::before {
   animation-name: streak-front;
 }
@@ -53,6 +57,7 @@
 .streak-services::after,
 .streak-team::after,
 .streak-about::after,
+.streak-references::after,
 .streak-contact::after {
   animation-name: streak-back;
 }
@@ -223,6 +228,34 @@
   );
 }
 
+/* ------- References — 75deg ------- */
+.streak-references {
+  view-timeline-name: --refs-view;
+  background: linear-gradient(
+    145deg,
+    var(--refs-grad-1) 0%, var(--refs-grad-2) 35%,
+    var(--refs-grad-3) 65%, var(--refs-grad-4) 100%
+  );
+}
+.streak-references::before {
+  animation-timeline: --refs-view;
+  background: repeating-linear-gradient(
+    75deg,
+    transparent 0 95px,
+    var(--refs-streak-1) 95px, var(--refs-streak-2) 99px,
+    var(--refs-streak-3) 103px, transparent 103px 230px
+  );
+}
+.streak-references::after {
+  animation-timeline: --refs-view;
+  background: repeating-linear-gradient(
+    75deg,
+    transparent 0 170px,
+    var(--refs-streak-4) 170px, var(--refs-streak-5) 173px,
+    transparent 173px 320px
+  );
+}
+
 /* ------- Contact — 150deg ------- */
 .streak-contact {
   view-timeline-name: --contact-view;
@@ -280,6 +313,7 @@
   .streak-services::before, .streak-services::after,
   .streak-team::before, .streak-team::after,
   .streak-about::before, .streak-about::after,
+  .streak-references::before, .streak-references::after,
   .streak-contact::before, .streak-contact::after {
     animation: none;
   }

@@ -136,6 +136,35 @@
       }
     ]
   },
+  "references": {
+    "eyebrow": "Referansar · Samarbeid vi er stolte av",
+    "titleStart": "Selskap som byggjer med",
+    "titleEm": "oss.",
+    "lede": "Frå KI-drive havbruk i Belgia til elektro og automasjon på Vestlandet — her er nokre av kundane vi er stolte av å byggje framtida saman med.",
+    "visit": "Besøk nettsida",
+    "clients": [
+      {
+        "id": "vision3f",
+        "name": "Vision3F",
+        "sector": "Havbruksteknologi · KI",
+        "location": "Rotselaar, Belgia",
+        "url": "https://www.vision3f.com/",
+        "urlLabel": "vision3f.com",
+        "description": "Vision3F endrar lakseoppdrett med V-Tag — KI-driven sanntidsovervaking av fiskehelse som tek oppdrett frå reaktiv til prediktiv drift. Purpeon støttar teamet med programvareutvikling og skyinfrastruktur, frå datapipelines til produksjonsklare tenester.",
+        "tags": ["Skyløysingar", "KI", "Programvareutvikling"]
+      },
+      {
+        "id": "saetren",
+        "name": "Sætren",
+        "sector": "Elektro og automasjon",
+        "location": "Måløy, Noreg",
+        "url": "https://www.saetren.no/",
+        "urlLabel": "saetren.no",
+        "description": "Sætren leverer smarte, trygge og framtidsretta elektro- og automasjonstenester — frå installasjonar i bygg til industriautomasjon. Purpeon bidreg med rådgjeving og programvarekompetanse i dei digitale satsingane deira.",
+        "tags": ["Rådgjeving", "Programvare", "Automasjon"]
+      }
+    ]
+  },
   "contact": {
     "title": "Kontakt oss",
     "eyebrow": "Klar for prat · Teknologi, prosjekt eller rådgjeving",
