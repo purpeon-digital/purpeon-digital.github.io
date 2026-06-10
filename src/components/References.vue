@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount, ref, type Component } from 'vue';
+import { computed, onMounted, onBeforeUnmount, ref } from 'vue';
 import { useI18n, type Locale } from '@/composables/useI18n';
-import IconFish from '~icons/fa7-solid/fish';
-import IconBolt from '~icons/fa7-solid/bolt';
 import IconLocationDot from '~icons/fa7-solid/location-dot';
 import IconExternal from '~icons/fa7-solid/arrow-up-right-from-square';
 
@@ -24,14 +22,9 @@ const props = defineProps<{
 const { t, locale } = useI18n(props.locale);
 
 // Per-client visual identity. The header shows the client's real logo
-// (theme-specific recolors generated into /public/references/); the emblem
-// icon only paints the decorative watermark. The accent gradient — sampled
-// from each brand's own palette — drives the hairline, tags, glow and
-// watermark. Accents are decorative only; body text stays on theme colors.
-const MARKS: Record<string, Component> = {
-  vision3f: IconFish,
-  saetren: IconBolt,
-};
+// (theme-specific recolors generated into /public/references/). The accent
+// gradient, sampled from each brand's own palette, drives the hairline, tags
+// and glow. Accents are decorative only; body text stays on theme colors.
 const ACCENTS: Record<string, { a: string; b: string }> = {
   vision3f: { a: '#5ac6b1', b: '#38bdf8' },
   saetren: { a: '#2587c8', b: '#7cc3ef' },
@@ -107,10 +100,6 @@ onBeforeUnmount(() => {
             '--stagger': `${i * 140}ms`,
           }"
         >
-          <span class="ref-watermark" aria-hidden="true">
-            <component :is="MARKS[c.id]" />
-          </span>
-
           <header class="ref-head">
             <h3 class="sr-only">{{ c.name }}</h3>
             <span class="ref-logo" :class="`is-${c.id}`" aria-hidden="true">
@@ -288,28 +277,6 @@ onBeforeUnmount(() => {
   outline-offset: 4px;
 }
 
-/* Giant emblem watermark behind the content */
-.ref-watermark {
-  position: absolute;
-  right: -1.5rem;
-  bottom: -2rem;
-  z-index: -1;
-  color: var(--ref-a);
-  opacity: 0.07;
-  transform: rotate(-12deg);
-  transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.45s ease;
-  pointer-events: none;
-}
-.ref-watermark :deep(svg) {
-  width: 13rem;
-  height: 13rem;
-  display: block;
-}
-.ref-card:hover .ref-watermark {
-  transform: rotate(-6deg) scale(1.06) translateX(-8px);
-  opacity: 0.12;
-}
-
 /* ---------- Card header ---------- */
 .ref-head {
   display: flex;
@@ -443,7 +410,6 @@ onBeforeUnmount(() => {
   .refs-section.is-revealed .ref-card { animation: none; }
   .ref-card:hover { transform: none; }
   .ref-card::after { transition: none; }
-  .ref-watermark,
   .ref-link :deep(svg),
   .ref-link::after {
     transition: none;
