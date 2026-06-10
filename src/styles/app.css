@@ -157,9 +157,9 @@
   --refs-streak-5: rgba(233, 213, 255, 0.2);
   --refs-text-color: #2d2d2d;
   --refs-heading-color: #4a1d96;
-  --refs-card-bg: rgba(255, 255, 255, 0.62);
-  --refs-card-border: rgba(107, 70, 193, 0.16);
-  --refs-card-hover: rgba(255, 255, 255, 0.82);
+  --refs-card-bg: rgba(107, 70, 193, 0.07);
+  --refs-card-border: rgba(107, 70, 193, 0.2);
+  --refs-card-hover: rgba(107, 70, 193, 0.12);
 
   /* Contact */
   --contact-grad-1: #581c87;
