@@ -162,7 +162,7 @@
         "url": "https://www.saetren.no/",
         "urlLabel": "saetren.no",
         "description": "Sætren leverer smarte, trygge og framtidsretta elektro- og automasjonstenester — frå installasjonar i bygg til industriautomasjon. Purpeon bidreg med IoT hardware-design, integrasjon og skyløysingar til eit av deira innovasjonsprosjekt.",
-        "tags": ["Rådgjeving", "Programvare", "Automasjon"]
+        "tags": ["IoT", "Hardware-design", "Integrasjon", "Skyløysingar"]
       }
     ]
   },
