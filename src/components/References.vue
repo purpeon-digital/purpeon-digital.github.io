@@ -98,6 +98,7 @@ onBeforeUnmount(() => {
             '--ref-a': ACCENTS[c.id]?.a,
             '--ref-b': ACCENTS[c.id]?.b,
             '--stagger': `${i * 140}ms`,
+            '--glint-delay': `${0.4 + i * 0.75}s`,
           }"
         >
           <header class="ref-head">
@@ -233,12 +234,14 @@ onBeforeUnmount(() => {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* One glint passes over each card as it lands at the end of its entrance.
-   `backwards` holds the band off-screen during the stagger delay; with no
+/* One glint ripples through the cards serially after the reveal: each card's
+   delay (--glint-delay) is offset so the band starts crossing the next card
+   roughly as it exits the previous one — one beam of light passing along the
+   row. `backwards` holds the band off-screen during the delay; with no
    forward fill the base transform resumes afterwards, so hover sweeps work. */
 .refs-section.is-revealed .ref-card::after {
   animation: ref-glint 1.1s cubic-bezier(0.33, 0.07, 0.25, 1) backwards;
-  animation-delay: calc(var(--stagger) + 0.4s);
+  animation-delay: var(--glint-delay);
 }
 @keyframes ref-glint {
   from { transform: translateX(-130%) skewX(-18deg); }
