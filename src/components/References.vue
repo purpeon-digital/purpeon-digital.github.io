@@ -191,6 +191,9 @@ onBeforeUnmount(() => {
 
 /* ---------- Card ---------- */
 .ref-card {
+  /* Peak alpha of the glass glint. Light glass needs a stronger band to read
+     against the near-white card; on dark purple the same band glares. */
+  --ref-sheen: 0.2;
   position: relative;
   isolation: isolate;
   display: flex;
@@ -201,6 +204,8 @@ onBeforeUnmount(() => {
   background: var(--refs-card-bg);
   border: 1px solid var(--refs-card-border);
   backdrop-filter: blur(12px);
+  /* Hairline top highlight — the lit edge of the glass pane */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
   overflow: hidden;
   text-decoration: none;
   color: inherit;
@@ -228,6 +233,18 @@ onBeforeUnmount(() => {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* One glint passes over each card as it lands at the end of its entrance.
+   `backwards` holds the band off-screen during the stagger delay; with no
+   forward fill the base transform resumes afterwards, so hover sweeps work. */
+.refs-section.is-revealed .ref-card::after {
+  animation: ref-glint 1.1s cubic-bezier(0.33, 0.07, 0.25, 1) backwards;
+  animation-delay: calc(var(--stagger) + 0.4s);
+}
+@keyframes ref-glint {
+  from { transform: translateX(-130%) skewX(-18deg); }
+  to   { transform: translateX(230%) skewX(-18deg); }
+}
+
 /* Accent hairline along the top edge */
 .ref-card::before {
   content: '';
@@ -241,19 +258,33 @@ onBeforeUnmount(() => {
   transition: opacity 0.45s ease;
 }
 
-/* Shine sweep across the glass on hover */
+:global([data-theme="dark"] .ref-card) {
+  --ref-sheen: 0.12;
+}
+
+/* Glass glint: one skewed band of light — bright leading edge with a faint
+   trailing echo — that crosses the card exactly once. It animates `transform`
+   (compositor-only) instead of `background-position`, and the band is a
+   single finite element: the previous repeating background tile let a second
+   copy of the band wrap back in at the left edge after the sweep ended. */
 .ref-card::after {
   content: '';
   position: absolute;
-  inset: 0;
+  top: -20%;
+  bottom: -20%;
+  left: 0;
+  width: 55%;
   background: linear-gradient(
-    105deg,
-    transparent 45%,
-    rgba(255, 255, 255, 0.06) 50%,
-    transparent 55%
+    90deg,
+    transparent,
+    rgba(255, 255, 255, calc(var(--ref-sheen) * 0.35)) 26%,
+    transparent 44%,
+    rgba(255, 255, 255, calc(var(--ref-sheen) * 0.5)) 64%,
+    rgba(255, 255, 255, var(--ref-sheen)) 76%,
+    rgba(255, 255, 255, calc(var(--ref-sheen) * 0.5)) 88%,
+    transparent 98%
   );
-  background-size: 250% 100%;
-  background-position: 180% 0;
+  transform: translateX(-130%) skewX(-18deg);
   pointer-events: none;
 }
 
@@ -262,15 +293,18 @@ onBeforeUnmount(() => {
   transform: translateY(-6px);
   background: var(--refs-card-hover);
   border-color: color-mix(in srgb, var(--ref-a) 45%, var(--refs-card-border));
-  box-shadow: 0 24px 60px -18px color-mix(in srgb, var(--ref-a) 35%, rgba(76, 29, 149, 0.35));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 24px 60px -18px color-mix(in srgb, var(--ref-a) 35%, rgba(76, 29, 149, 0.35));
 }
 .ref-card:hover::before { opacity: 1; }
-/* Transition lives on the hover state only: the shine sweeps in on entry but
-   snaps back on exit, so moving between the two cards never shows two
-   simultaneous sweeps. */
-.ref-card:hover::after {
-  background-position: -80% 0;
-  transition: background-position 1.2s ease;
+/* The sweep transition lives on the hover state only: it plays on entry and
+   snaps back instantly on exit, so moving between the two cards never shows
+   a reverse sweep. The 75ms delay lets the lift lead and the light follow. */
+.ref-card:hover::after,
+.ref-card:focus-visible::after {
+  transform: translateX(230%) skewX(-18deg);
+  transition: transform 0.9s cubic-bezier(0.33, 0.07, 0.25, 1) 75ms;
 }
 .ref-card:focus-visible {
   outline: 2px solid color-mix(in srgb, var(--ref-a) 70%, transparent);
@@ -409,7 +443,10 @@ onBeforeUnmount(() => {
   }
   .refs-section.is-revealed .ref-card { animation: none; }
   .ref-card:hover { transform: none; }
-  .ref-card::after { transition: none; }
+  .ref-card::after {
+    transition: none;
+    animation: none !important;
+  }
   .ref-link :deep(svg),
   .ref-link::after {
     transition: none;
