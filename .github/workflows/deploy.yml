@@ -25,7 +25,10 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          # Must use the baseline version of Bun to ensure compatibility with GitHub Actions' self-hosted runners. (I think it's brcause the CPU on the server is a bit old (or VM doesn't support newer instruction sets?))
+          # The self-hosted runner is an older Xeon without AVX2, which the
+          # default Bun build requires. The baseline variant targets CPUs
+          # without it. `latest` still resolves to the newest release, so this
+          # pins the build variant, not the version.
           bun-download-url: "https://github.com/oven-sh/bun/releases/latest/download/bun-linux-x64-baseline.zip"
 
       - name: Install dependencies
