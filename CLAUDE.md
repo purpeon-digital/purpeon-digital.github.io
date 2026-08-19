@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Astro 6 static website with Vue 3 islands for Purpeon Digital IT consulting. Bilingual (Norwegian default, English). Single-page: all sections render on one dynamic route.
+Astro 7 static website with Vue 3 islands for Purpeon Digital IT consulting. Bilingual (Norwegian default, English). Single-page: all sections render on one dynamic route.
 
 ## Tech Stack
 
-- **Framework**: Astro 6 (`output: 'static'`)
+- **Framework**: Astro 7 (`output: 'static'`)
 - **UI**: Vue 3 with `<script setup lang="ts">`, hydrated as islands
 - **Package manager**: Bun — always use `bun` (not npm/yarn/pnpm)
 - **Styling**: Tailwind CSS 4 via `@tailwindcss/vite`; custom CSS for gradients/SVG animations only
