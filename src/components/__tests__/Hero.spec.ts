@@ -58,11 +58,15 @@ describe('Hero', () => {
       expect(buttons.length).toBe(2);
     });
 
-    it('renders SectionImage component', () => {
+    it('inlines the animated mark rather than loading it through an img', () => {
       const wrapper = mount(Hero, {
         props: { locale: 'no' }
       });
-      expect(wrapper.find('.section-image').exists()).toBe(true);
+      const mark = wrapper.find('.hero-mark');
+      expect(mark.exists()).toBe(true);
+      // inlined so the keyframes are page CSS and replay on every load
+      expect(mark.find('svg.pd-lockup').exists()).toBe(true);
+      expect(mark.find('img').exists()).toBe(false);
     });
 
     it('renders Features component', () => {
