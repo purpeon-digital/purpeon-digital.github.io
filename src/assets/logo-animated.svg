@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 38 38" width="38" height="38"
+     class="pd-lockup" role="img" aria-label="Purpeon Digital">
+  <style>
+    /* Everything is scoped under .pd-lockup and the keyframes are prefixed, so this
+       file is safe both on its own and inlined into a page next to other stylesheets. */
+    .pd-lockup {
+      --ring-dur:   975ms;
+      --fox-start: calc(var(--ring-dur) * .742);  /* see the note on the comet easing */
+      --draw1:     1575ms;   /* the pen's whole run around the silhouette */
+      --fill:       495ms;   /* outline gives way to solid */
+      /* Every separate piece is drawn at the moment the pen goes past it. Each fraction
+         is a position along the silhouette's LENGTH, converted through the ease-in-out
+         curve into a fraction of TIME, which is what a delay wants. The durations are
+         each piece's own length over the pen's LOCAL speed there, written as fractions
+         of --draw1 so a change of speed rescales them for free.
+             eye 19.9% along   ear 26.3%   inner ear 34.2%   neck 46.4%            */
+      --t-eye:   calc(var(--fox-start) + var(--draw1) * 0.3091);
+      --t-ear:   calc(var(--fox-start) + var(--draw1) * 0.3552);
+      --t-inner: calc(var(--fox-start) + var(--draw1) * 0.4063);
+      --t-back:  calc(var(--fox-start) + var(--draw1) * 0.4794);
+      --dur-eye:   calc(var(--draw1) * 0.0501);
+      --dur-ear:   calc(var(--draw1) * 0.0799);
+      --dur-inner: calc(var(--draw1) * 0.0798);
+      --dur-back:  calc(var(--draw1) * 0.1012);
+      --t2: calc(var(--fox-start) + var(--draw1));   /* outline complete, ink comes up */
+    }
+
+    .pd-lockup .ring {
+      fill: none; stroke: #bb33bb; stroke-width: 0.45; stroke-linecap: round;
+      /* pathLength=100 renormalises the circumference, so 5 means 5% of the ring.
+         The gap must exceed the path length: a dash pattern repeats in BOTH directions,
+         and a gap of 100 would park a stub on the start point at each end of the run.
+         Inkscape's renderer ignores pathLength; browsers honour it. */
+      stroke-dasharray: 5 200;
+      stroke-dashoffset: -102;
+      animation: pd-comet var(--ring-dur) cubic-bezier(.45,.05,.35,1) both;
+    }
+    /* -102 -> 7 runs backwards along the path, i.e. anticlockwise. The leading edge
+       reaches the junction when the offset hits 0: that is 93.6% of the OFFSET RANGE
+       but only 74.2% of the DURATION, because the easing is not linear. --fox-start is
+       a fraction of duration, so it is pinned to the latter. Re-solve it if you change
+       the timing function, or set the ring to linear and the two become the same. */
+    @keyframes pd-comet { from { stroke-dashoffset: -102; } to { stroke-dashoffset: 7; } }
+
+    /* Outline layer. The head silhouette is re-cut to start at the bottom of the chest,
+       the lowest-right ink in the mark, and reversed so the pen climbs the jaw to the
+       snout and on up the profile. */
+    .pd-lockup .line path {
+      fill: none; stroke: #bb33bb; stroke-width: 0.45;
+      stroke-linejoin: round; stroke-linecap: round;
+      opacity: 0;                       /* if animations never run, only the solid shows */
+    }
+    .pd-lockup .ln-sil   { stroke-dasharray: 146; stroke-dashoffset: 146;
+                animation: pd-drawIn var(--draw1) ease-in-out var(--fox-start) both,
+                           pd-lineOut var(--fill) linear      var(--t2)        both; }
+    .pd-lockup .ln-eye   { stroke-dasharray: 10;   stroke-dashoffset: 10;
+                animation: pd-drawIn var(--dur-eye)   linear var(--t-eye)   both,
+                           pd-lineOut var(--fill)     linear var(--t2)      both; }
+    .pd-lockup .ln-ear   { stroke-dasharray: 18;   stroke-dashoffset: 18;
+                animation: pd-drawIn var(--dur-ear)   linear var(--t-ear)   both,
+                           pd-lineOut var(--fill)     linear var(--t2)      both; }
+    .pd-lockup .ln-inner { stroke-dasharray: 19;  stroke-dashoffset: 19;
+                animation: pd-drawIn var(--dur-inner) linear var(--t-inner) both,
+                           pd-lineOut var(--fill)     linear var(--t2)      both; }
+    .pd-lockup .ln-back  { stroke-dasharray: 26;  stroke-dashoffset: 26;
+                animation: pd-drawIn var(--dur-back)  linear var(--t-back)  both,
+                           pd-lineOut var(--fill)     linear var(--t2)      both; }
+    @keyframes pd-drawIn  { to { stroke-dashoffset: 0; } }
+    @keyframes pd-lineOut { from { opacity: 1; } to { opacity: 0; } }
+
+    /* Solid layer. The outline finishes in one pass, so every part inks together.
+       NB: .ink-head keeps the FORWARD winding. Reversing a subpath flips its winding,
+       and under fill-rule: nonzero that turns the eye and inner ear from holes into
+       solid shapes. Only the stroked twin may be reversed. */
+    .pd-lockup .ink path { opacity: 1; animation: pd-inkIn var(--fill) ease-out var(--t2) both; }
+    @keyframes pd-inkIn { from { opacity: 0; } to { opacity: 1; } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .pd-lockup .ring, .pd-lockup .line { display: none; }
+      .pd-lockup .ink path { animation: none; opacity: 1; }
+    }
+  </style>
+
+  <!-- r and rotate are solved, not chosen: this is the exact point where the fox's
+       pen touches down, so the comet finishes where the drawing begins -->
+  <circle class="ring" cx="19.0" cy="19.0" r="14.8222" pathLength="100"
+          transform="rotate(74.823 19.0 19.0)"/>
+
+  <g class="lockup" transform="translate(3.3945,3.5250)">
+   <g transform="translate(-63.805999,-44.420964)">
+    <g class="ink" fill="#bb33bb">
+      <path class="ink-back" d="m 65.676886,68.450794 c 0.704978,-2.326819 2.35973,-3.282608 3.508387,-5.770105 -0.118978,2.067203 0.01609,6.209292 2.078794,10.661263 -2.677865,-1.420999 -4.404292,-3.248265 -5.587181,-4.891158 z"/>
+      <path class="ink-head" d="M 83.292,74.201 C 79.638,75.47 76.233,75.191 73.08,74.137 C 74.924,64.875 80.54,65.49 87.647,66.042 C 89.352,66.107 90.488,65.46 91.036,65.023 C 91.153,64.93 91.217,64.747 90.836,64.32 C 90.756,64.153 89.588,64.611 87.803,64.388 C 84.826,64.18 83.596,62.553 79.609,62.325 C 77.894,62.187 75.968,62.633 74.64,63.765 C 74.757,63.78 75.912,63.219 77.829,63.519 C 73.081,66.097 72.553,72.018 72.344,73.848 C 70.149,69.391 69.529,64.47 70.22,57.349 C 70.951,51.21 70.974,48.053 75.339,44.748 L 75.339,44.748 C 76.878,46.985 77.573,49.174 77.959,51.985 C 78.45,52.021 79.469,52.167 79.999,52.314 C 81.492,52.722 83.053,53.558 84.183,54.63 C 86.263,56.62 85.475,58.647 88.304,60.664 C 89.446,61.467 89.95,61.655 91.248,62.317 C 91.619,62.493 93.284,63.066 93.137,63.547 C 92.023,67.269 87.708,67.555 84.657,67.163 C 82.87,67.064 81.381,67.538 81.222,69.378 C 81.093,71.727 81.429,71.066 83.292,74.201 M 82.885,58.256 C 82.024,57.879 80.112,58.231 80.173,58.369 C 80.647,58.672 80.686,58.629 81.282,59.071 C 81.95,59.566 82.477,59.619 82.904,59.642 C 83.929,59.837 83.572,59.743 84.249,59.969 C 84.13,59.389 83.381,58.48 82.885,58.256 L 82.885,58.256 M 74.972,46.802 C 73.016,48.81 72.138,52.726 73.079,55.134 C 77.746,52.705 75.728,48.643 74.972,46.802 L 74.972,46.802"/>
+      <path class="ink-ear"  d="m 81.752447,52.094714 c -0.413266,-0.197862 -1.879483,-0.645397 -3.060127,-0.820004 -0.253344,-0.909757 -0.289245,-1.274883 -0.369206,-1.707731 1.187754,-1.875519 3.246986,-3.447637 4.086152,-3.834031 0.181135,0.877119 0.11219,4.225675 -0.656819,6.361766"/>
+    </g>
+    <g class="line">
+      <path class="ln-sil"   d="M 83.292,74.201 C 81.429,71.066 81.093,71.727 81.222,69.378 C 81.381,67.538 82.87,67.064 84.657,67.163 C 87.708,67.555 92.023,67.269 93.137,63.547 C 93.284,63.066 91.619,62.493 91.248,62.317 C 89.95,61.655 89.446,61.467 88.304,60.664 C 85.475,58.647 86.263,56.62 84.183,54.63 C 83.053,53.558 81.492,52.722 79.999,52.314 C 79.469,52.167 78.45,52.021 77.959,51.985 C 77.573,49.174 76.878,46.985 75.339,44.748 L 75.339,44.748 C 70.974,48.053 70.951,51.21 70.22,57.349 C 69.529,64.47 70.149,69.391 72.344,73.848 C 72.553,72.018 73.081,66.097 77.829,63.519 C 75.912,63.219 74.757,63.78 74.64,63.765 C 75.968,62.633 77.894,62.187 79.609,62.325 C 83.596,62.553 84.826,64.18 87.803,64.388 C 89.588,64.611 90.756,64.153 90.836,64.32 C 91.217,64.747 91.153,64.93 91.036,65.023 C 90.488,65.46 89.352,66.107 87.647,66.042 C 80.54,65.49 74.924,64.875 73.08,74.137 C 76.233,75.191 79.638,75.47 83.292,74.201"/>
+      <path class="ln-eye"   d="M 82.885,58.256 C 82.024,57.879 80.112,58.231 80.173,58.369 C 80.647,58.672 80.686,58.629 81.282,59.071 C 81.95,59.566 82.477,59.619 82.904,59.642 C 83.929,59.837 83.572,59.743 84.249,59.969 C 84.13,59.389 83.381,58.48 82.885,58.256 L 82.885,58.256"/>
+      <path class="ln-ear"   d="m 81.752447,52.094714 c -0.413266,-0.197862 -1.879483,-0.645397 -3.060127,-0.820004 -0.253344,-0.909757 -0.289245,-1.274883 -0.369206,-1.707731 1.187754,-1.875519 3.246986,-3.447637 4.086152,-3.834031 0.181135,0.877119 0.11219,4.225675 -0.656819,6.361766"/>
+      <path class="ln-inner" d="M 74.972,46.802 C 73.016,48.81 72.138,52.726 73.079,55.134 C 77.746,52.705 75.728,48.643 74.972,46.802 L 74.972,46.802"/>
+      <path class="ln-back"  d="m 65.676886,68.450794 c 0.704978,-2.326819 2.35973,-3.282608 3.508387,-5.770105 -0.118978,2.067203 0.01609,6.209292 2.078794,10.661263 -2.677865,-1.420999 -4.404292,-3.248265 -5.587181,-4.891158 z"/>
+    </g>
+   </g>
+  </g>
+</svg>

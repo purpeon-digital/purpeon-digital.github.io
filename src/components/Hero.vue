@@ -3,7 +3,10 @@ import { computed } from 'vue';
 import { useI18n, type Locale } from '@/composables/useI18n';
 import Features from '@/components/Features.vue';
 import SectionButton from '@/components/SectionButton.vue';
-import SectionImage from '@/components/SectionImage.vue';
+// Inlined rather than loaded through <img>: an SVG in an <img> only runs its animation
+// when the image is decoded, so a cached 304 shows the finished mark. Inline, the
+// keyframes are ordinary page CSS and restart on every page load.
+import logoAnimated from '@/assets/logo-animated.svg?raw';
 
 interface Feature {
   icon: string;
@@ -54,18 +57,7 @@ const features = computed(() => {
         </div>
       </div>
       <div class="hero-image flex items-center max-md:hidden" style="max-height: min(600px, 50vh)">
-        <SectionImage
-          src="/logo.svg"
-          alt="Purpeon Digital logo – IT consulting, software and cloud solutions"
-          width="400"
-          height="600"
-          maxWidth="400px"
-          alignment="center"
-          filterPreset="hero"
-          :animate-on-scroll="true"
-          animation-direction="right"
-          fetchpriority="high"
-        />
+        <div class="hero-mark" v-html="logoAnimated"></div>
       </div>
     </div>
 
@@ -74,6 +66,25 @@ const features = computed(() => {
 </template>
 
 <style scoped>
+/* Desktop hero mark. Size and filter match what SectionImage's hero preset gave the
+   old <img>. The entrance is now the drawing sequence itself, so SectionImage's 1.2s
+   opacity fade is gone: it only washed out the first second of the ring. */
+.hero-mark {
+  width: 100%;
+  max-width: 400px;
+  margin-inline: auto;
+  filter: brightness(1) contrast(1.15);
+}
+.hero-mark :deep(svg) {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+:global([data-theme="dark"]) .hero-mark {
+  filter: brightness(0.9) contrast(1.1);
+  mix-blend-mode: lighten;
+}
+
 /* Mobile logo next to heading */
 .hero-mobile-logo {
   width: 100px;
