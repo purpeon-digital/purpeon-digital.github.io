@@ -99,4 +99,25 @@ const values = computed(() => {
     gap: 1.5rem;
   }
 }
+
+/* Short viewport height adjustments */
+@media (max-height: 800px) {
+  .about-section {
+    padding: 4rem 2rem;
+  }
+
+  .about-content {
+    gap: 2rem;
+  }
+}
+
+@media (max-height: 650px) {
+  .about-section {
+    padding: 3rem 2rem;
+  }
+
+  .about-content {
+    gap: 1.5rem;
+  }
+}
 </style>

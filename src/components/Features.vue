@@ -13,6 +13,7 @@ import IconChartBar from '~icons/fa7-solid/chart-bar';
 // About icons
 import IconHandshakeAlt from '~icons/fa7-solid/handshake-alt';
 import IconFaceGrinStars from '~icons/fa7-solid/face-grin-stars';
+import IconAward from '~icons/fa7-solid/award';
 import IconLightbulb from '~icons/fa7-solid/lightbulb';
 import IconBookOpenReader from '~icons/fa7-solid/book-open-reader';
 
@@ -29,6 +30,7 @@ const ICONS: Record<string, Component> = {
   'fa7-solid:chart-bar': IconChartBar,
   'fa7-solid:handshake-alt': IconHandshakeAlt,
   'fa7-solid:face-grin-stars': IconFaceGrinStars,
+  'fa7-solid:award': IconAward,
   'fa7-solid:lightbulb': IconLightbulb,
   'fa7-solid:book-open-reader': IconBookOpenReader,
 };
