@@ -52,7 +52,7 @@ const methodConfigs: ContactMethodConfig[] = [
     type: 'phone',
     icon: IconPhone,
     labelKey: 'contact.phone',
-    value: '+47 91 11 11 81',
+    value: '+47 959 92 555',
     action: 'link',
     getHref: (value) => `tel:${value.replace(/\s/g, '')}`
   },
