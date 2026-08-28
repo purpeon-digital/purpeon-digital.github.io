@@ -5,24 +5,37 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
-    runs-on: self-hosted
+    uses: ./.github/workflows/build-site.yml
+
+  deploy-staging:
+    needs: build
+    # Gated on the account var so the pipeline degrades gracefully before
+    # Cloudflare is configured; a missing token then fails loudly at wrangler.
+    if: vars.CLOUDFLARE_ACCOUNT_ID != ''
+    # Throwaway runner: holds the Cloudflare token, runs NO project code —
+    # deploy config comes from the TRUSTED main ref, only dist/ from the PR.
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - name: Checkout deploy config from main
+        uses: actions/checkout@v7
         with:
-          # Must use the baseline version of Bun to ensure compatibility with GitHub Actions' self-hosted runners. (I think it's brcause the CPU on the server is a bit old (or VM doesn't support newer instruction sets?))
-          bun-download-url: "https://github.com/oven-sh/bun/releases/latest/download/bun-linux-x64-baseline.zip"
+          ref: main
+          sparse-checkout: wrangler.jsonc
+          sparse-checkout-cone-mode: false
 
-      - name: Install dependencies
-        run: bun install
+      - name: Download site artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: dist
 
-      - name: Run tests
-        run: bun run test:run
-
-      - name: Build site
-        run: bun run build
+      - name: Deploy staging preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler@4.126.0 versions upload --preview-alias "pr-${{ github.event.number || 'manual' }}"
