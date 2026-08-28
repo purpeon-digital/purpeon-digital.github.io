@@ -3,6 +3,7 @@
 {
   "name": "purpeon-com",
   "compatibility_date": "2026-08-01",
+  "routes": [{ "pattern": "www.purpeon.com", "custom_domain": true }],
   "assets": {
     "directory": "./dist",
     "html_handling": "auto-trailing-slash"
