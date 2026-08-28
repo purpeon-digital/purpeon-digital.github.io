@@ -1,0 +1,10 @@
+// Cloudflare Workers static assets — staging previews now, production after
+// the Phase 4 cutover. Deployed from GitHub Actions; see .github/workflows.
+{
+  "name": "purpeon-com",
+  "compatibility_date": "2026-08-01",
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "auto-trailing-slash"
+  }
+}
