@@ -54,52 +54,54 @@ function getNestedValue(obj: any, path: string): any {
 }
 
 export function useI18n(initialLocale?: Locale) {
-  // If initialLocale is provided (from component prop), use it immediately
   if (initialLocale && currentLocale.value !== initialLocale) {
     currentLocale.value = initialLocale;
   }
-  
-  // Sync locale on every component mount to ensure it matches SSR
-  onMounted(() => {
-    const ssrLocale = getCurrentLocale();
-    if (currentLocale.value !== ssrLocale) {
-      currentLocale.value = ssrLocale;
-    }
+
+  // Active locale is deterministic: if initialLocale prop was provided,
+  // it takes precedence for SSR and client hydration matching.
+  const activeLocale = computed<Locale>(() => {
+    return initialLocale || currentLocale.value || 'no';
   });
-  
-  const setLocale = (locale: Locale) => {
-    currentLocale.value = locale;
+
+  const setLocale = (newLocale: Locale) => {
+    currentLocale.value = newLocale;
     if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('locale', locale);
+      localStorage.setItem('locale', newLocale);
     }
-    document.documentElement.setAttribute('lang', locale);
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('lang', newLocale);
+    }
     
     // Update __INITIAL_LOCALE__ for the new page
     if (typeof window !== 'undefined') {
-      (window as any).__INITIAL_LOCALE__ = locale;
+      (window as any).__INITIAL_LOCALE__ = newLocale;
     }
     
     // Redirect to the correct language path
-    const currentPath = window.location.pathname;
-    const newPath = locale === 'no' ? '/' : '/en/';
-    
-    if (locale === 'en' && !currentPath.startsWith('/en')) {
-      window.location.href = newPath;
-    } else if (locale === 'no' && currentPath.startsWith('/en')) {
-      window.location.href = newPath;
+    if (typeof window !== 'undefined') {
+      const currentPath = window.location.pathname;
+      const newPath = newLocale === 'no' ? '/' : '/en/';
+      
+      if (newLocale === 'en' && !currentPath.startsWith('/en')) {
+        window.location.href = newPath;
+      } else if (newLocale === 'no' && currentPath.startsWith('/en')) {
+        window.location.href = newPath;
+      }
     }
   };
 
   // Reactive translation function - returns computed for reactivity
   const t = <K extends string>(key: K): PathValue<TranslationSchema, K> => {
-    // Access currentLocale.value to create reactive dependency
-    return getNestedValue(translations[currentLocale.value], key);
+    const loc = activeLocale.value;
+    const dict = translations[loc] || translations.no;
+    return getNestedValue(dict, key);
   };
 
-  const locale = computed(() => currentLocale.value);
+  const locale = computed(() => activeLocale.value);
 
   // Expose a reactive getter for current translations
-  const messages = computed(() => translations[currentLocale.value]);
+  const messages = computed(() => translations[activeLocale.value] || translations.no);
 
   return {
     locale,

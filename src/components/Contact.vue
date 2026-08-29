@@ -8,7 +8,7 @@ const props = defineProps<{
   locale: Locale;
 }>();
 
-const { t } = useI18n(props.locale);
+const { t, locale } = useI18n(props.locale);
 const currentYear = new Date().getFullYear();
 const showMap = ref(false);
 
@@ -55,7 +55,7 @@ const toggleMap = () => {
           <p class="lead" style="color: var(--contact-text-color)">{{ t('contact.lead') }}</p>
           <p style="color: var(--contact-text-color)">{{ t('contact.description') }}</p>
 
-          <ContactMethods :locale="locale" @show-map="toggleMap" />
+          <ContactMethods :locale="props.locale" @show-map="toggleMap" />
         </div>
       </div>
 
