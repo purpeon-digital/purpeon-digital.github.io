@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useI18n, type Locale } from '@/composables/useI18n';
+import { registerFoxClick } from '@/composables/useFoxEasterEgg';
 import Features from '@/components/Features.vue';
 import SectionButton from '@/components/SectionButton.vue';
 // Inlined rather than loaded through <img>: an SVG in an <img> only runs its animation
@@ -19,6 +20,10 @@ const props = defineProps<{
 }>();
 
 const { t, locale } = useI18n(props.locale);
+
+function handleFoxClick(e: MouseEvent) {
+  registerFoxClick(e.currentTarget as HTMLElement);
+}
 
 const features = computed(() => {
   // Track locale for reactivity
@@ -42,7 +47,8 @@ const features = computed(() => {
             src="/logo.svg"
             alt="Purpeon Digital – IT-konsulentselskap i Førde, Norge"
             fetchpriority="high"
-            class="hero-mobile-logo md:hidden shrink-0"
+            class="hero-mobile-logo md:hidden shrink-0 cursor-pointer"
+            @click="handleFoxClick"
           />
         </div>
         <p class="text-[clamp(1rem,2vw,1.2rem)] leading-relaxed mb-4 text-[var(--hero-text-color)]" :style="{ opacity: 'var(--hero-text-opacity)' }">{{ t('hero.subtitle') }}</p>
@@ -57,7 +63,7 @@ const features = computed(() => {
         </div>
       </div>
       <div class="hero-image flex items-center max-md:hidden" style="max-height: min(600px, 50vh)">
-        <div class="hero-mark" v-html="logoAnimated"></div>
+        <div class="hero-mark cursor-pointer select-none" v-html="logoAnimated" @click="handleFoxClick"></div>
       </div>
     </div>
 
