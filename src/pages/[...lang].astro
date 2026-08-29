@@ -8,6 +8,7 @@ import About from '@/components/About.vue';
 import References from '@/components/References.vue';
 import Contact from '@/components/Contact.vue';
 import NoCookiesToast from '@/components/NoCookiesToast.vue';
+import FoxMiniGame from '@/components/FoxMiniGame.vue';
 
 // Generate static paths for both language routes
 export function getStaticPaths() {
@@ -33,4 +34,5 @@ const locale = lang || 'no';
     <Contact client:visible locale={locale} />
   </main>
   <NoCookiesToast client:idle locale={locale} />
+  <FoxMiniGame client:load locale={locale} />
 </Layout>

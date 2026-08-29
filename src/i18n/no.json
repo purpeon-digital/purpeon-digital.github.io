@@ -189,5 +189,23 @@
     "after": " cookies. Ingenting å godkjenne.",
     "dismiss": "Flott",
     "ariaLabel": "Melding om ingen informasjonskapsler"
+  },
+  "game": {
+    "title": "Reven Raske",
+    "subtitle": "Hjelp reven med å hoppe over hindringar og samle revebjeller!",
+    "instructions": "Trykk, klikk eller bruk Mellomrom for å hoppe. Trykk to gonger for dobbelthopp!",
+    "start": "Start spelet",
+    "restart": "Spel igjen",
+    "score": "Poeng",
+    "highScore": "Beste",
+    "distance": "Distanse",
+    "flowers": "Revebjeller",
+    "gameOver": "Spelet er over!",
+    "newRecord": "Ny rekord! 🎉",
+    "close": "Lukk",
+    "jump": "Hopp",
+    "soundOn": "Lyd på",
+    "soundOff": "Lyd av",
+    "secretUnlocked": "Du fann det hemmelege revespelet! 🦊"
   }
 }

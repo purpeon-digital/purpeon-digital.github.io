@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useI18n, type Locale } from '@/composables/useI18n';
+import { registerFoxClick } from '@/composables/useFoxEasterEgg';
 import LanguagePicker from './LanguagePicker.vue';
 import ThemeToggle from './ThemeToggle.vue';
 import IconBriefcase from '~icons/fa7-solid/briefcase';
@@ -96,12 +97,16 @@ function scrollToSection(e: Event, href: string) {
     });
   }
 }
+function onLogoClick(e: MouseEvent) {
+  registerFoxClick(e.currentTarget as HTMLElement);
+  scrollToSection(e, '#');
+}
 </script>
 
 <template>
   <header class="header-bar">
     <nav class="max-w-[1400px] mx-auto px-8 flex justify-between items-center w-full h-full max-md:px-4 max-md:h-auto max-md:min-h-[52px]">
-      <a href="#" class="logo" @click.prevent="scrollToSection($event, '#')">
+      <a href="#" class="logo" @click.prevent="onLogoClick($event)">
         <span class="logo-icon" aria-hidden="true">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 31 31" fill="#bb33bb" class="h-full w-full">
             <g transform="translate(-63.805999,-44.420964)">
@@ -190,7 +195,7 @@ function scrollToSection(e: Event, href: string) {
 </template>
 
 <style scoped>
-/* Header bar */
+/* Header bar - Glassmorphism */
 .header-bar {
   background: var(--header-bg);
   color: white;
@@ -202,10 +207,11 @@ function scrollToSection(e: Event, href: string) {
   width: 100%;
   height: 56px;
   z-index: 100;
-  box-shadow: 0 2px 20px var(--color-shadow);
-  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.22), inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(20px) saturate(190%);
+  -webkit-backdrop-filter: blur(20px) saturate(190%);
   transition: all 0.3s ease;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--header-border, rgba(255, 255, 255, 0.18));
   display: flex;
   align-items: center;
 }
@@ -223,6 +229,11 @@ function scrollToSection(e: Event, href: string) {
   gap: 0.75rem;
   text-decoration: none;
   color: white;
+  transition: transform 0.2s ease;
+}
+
+.logo:hover {
+  transform: scale(1.02);
 }
 
 @media (width < 768px) {
@@ -238,7 +249,7 @@ function scrollToSection(e: Event, href: string) {
   width: 38px;
   height: 38px;
   transition: all 0.3s ease;
-  filter: drop-shadow(0 1px 6px rgba(0, 0, 0, 0.35));
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
 }
 
 @media (width < 768px) {
@@ -251,7 +262,7 @@ function scrollToSection(e: Event, href: string) {
 .logo-text {
   font-size: 1.25rem;
   font-weight: 600;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.02em;
   /* "Purpeon Digital" must never break across two lines when the bar gets
      tight at tablet widths. */
   white-space: nowrap;
@@ -267,37 +278,46 @@ function scrollToSection(e: Event, href: string) {
 .nav-right {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 .nav-links {
   display: flex;
   list-style: none;
-  gap: 0.25rem;
+  gap: 0.35rem;
 }
 
 .nav-links a {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   color: rgba(255, 255, 255, 0.9);
   text-decoration: none;
-  /* Only animate the hover affordances — not `all`. With `all`, crossing the
-     mobile→desktop breakpoint animated the drawer's border / background / padding
-     being removed, flashing a border + size morph on each link. */
-  transition: color 0.2s ease, background-color 0.2s ease;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  padding: 0.45rem 0.85rem;
+  border-radius: 12px;
   position: relative;
-  font-size: 0.925rem;
+  font-size: 0.9rem;
   font-weight: 500;
   letter-spacing: 0.01em;
   line-height: 1;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(8px);
 }
 
 .nav-links a:hover {
-  color: white;
-  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.35), 0 4px 16px rgba(0, 0, 0, 0.15), 0 0 12px rgba(147, 197, 253, 0.2);
+  transform: translateY(-1px);
+}
+
+.nav-links a:active {
+  transform: translateY(0);
+  background: rgba(255, 255, 255, 0.24);
 }
 
 /* Desktop: chevron is a mobile affordance, hide it */
@@ -313,7 +333,14 @@ function scrollToSection(e: Event, href: string) {
   align-items: center;
   justify-content: center;
   line-height: 1;
-  font-size: 0.95em;
+  font-size: 0.9em;
+  color: #93c5fd;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.nav-links a:hover .nav-link-icon {
+  color: #ffffff;
+  transform: scale(1.08);
 }
 
 .nav-link-icon svg {
@@ -327,6 +354,13 @@ function scrollToSection(e: Event, href: string) {
   display: inline-flex;
   align-items: center;
   line-height: 1;
+  padding: 0.3rem 0.45rem;
+  border-radius: 8px;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.nav-controls :deep(button:hover) {
+  background-color: rgba(255, 255, 255, 0.16);
 }
 
 /* Sized via parent button > span > svg to avoid matching ThemeToggle's
@@ -348,31 +382,17 @@ function scrollToSection(e: Event, href: string) {
   white-space: nowrap;
 }
 
-.nav-link-label::after {
-  content: '';
-  position: absolute;
-  bottom: -3px;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.8);
-  transform: scaleX(0);
-  transform-origin: center;
-  transition: transform 0.25s ease;
-  border-radius: 1px;
-}
-
-.nav-links a:hover .nav-link-label::after {
-  transform: scaleX(1);
-}
-
-/* Nav Controls */
+/* Nav Controls capsule container on desktop - Glassmorphic */
 .nav-controls {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding-left: 1rem;
-  border-left: 1px solid rgba(255, 255, 255, 0.15);
+  gap: 0.35rem;
+  padding: 0.25rem 0.45rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.22), 0 4px 12px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(12px);
 }
 
 /* Tablet (iPad portrait ~768–1024px): the full horizontal nav still shows here,
@@ -380,14 +400,15 @@ function scrollToSection(e: Event, href: string) {
    breathing room instead of crowding the edges. */
 @media (width >= 768px) and (max-width: 1080px) {
   .nav-right {
-    gap: 1rem;
+    gap: 0.85rem;
   }
   .nav-links a {
     padding-left: 0.55rem;
     padding-right: 0.55rem;
   }
   .nav-controls {
-    padding-left: 0.75rem;
+    padding-left: 0.35rem;
+    padding-right: 0.35rem;
   }
 }
 
@@ -421,18 +442,20 @@ function scrollToSection(e: Event, href: string) {
   }
 }
 
-/* Hamburger Menu */
+/* Hamburger Menu - Glassmorphic */
 .hamburger {
   flex-direction: column;
-  gap: 4px;
-  background: none;
-  border: none;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.25), 0 2px 8px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
   cursor: pointer;
-  padding: 8px;
+  padding: 8px 10px;
   z-index: 1001;
-  border-radius: 8px;
+  border-radius: 12px;
   outline: none;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .hamburger:focus {
@@ -440,17 +463,20 @@ function scrollToSection(e: Event, href: string) {
 }
 
 .hamburger:focus-visible {
-  outline: 2px solid rgba(167, 139, 250, 0.7);
+  outline: 2px solid rgba(96, 165, 250, 0.7);
   outline-offset: 2px;
 }
 
+.hamburger:hover,
 .hamburger:active {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.35), 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .hamburger span {
   display: block;
-  width: 24px;
+  width: 22px;
   height: 2px;
   background: white;
   border-radius: 2px;
@@ -474,7 +500,7 @@ function scrollToSection(e: Event, href: string) {
   display: none;
 }
 
-/* Mobile nav drawer */
+/* Mobile nav drawer - Glassmorphic */
 @media (width < 768px) {
   .nav-right {
     position: fixed;
@@ -484,9 +510,11 @@ function scrollToSection(e: Event, href: string) {
     width: 100%;
     max-height: 0;
     background:
-      radial-gradient(140% 60% at 50% 0%, rgba(236, 72, 153, 0.18), transparent 60%),
-      radial-gradient(120% 80% at 100% 100%, rgba(124, 58, 237, 0.22), transparent 65%),
-      var(--header-bg);
+      radial-gradient(130% 70% at 50% 0%, rgba(59, 130, 246, 0.3), transparent 65%),
+      radial-gradient(120% 80% at 100% 100%, rgba(37, 99, 235, 0.25), transparent 70%),
+      var(--header-bg-solid, rgba(10, 20, 42, 0.9));
+    backdrop-filter: blur(28px) saturate(200%);
+    -webkit-backdrop-filter: blur(28px) saturate(200%);
     flex-direction: column;
     padding: 0 1.25rem;
     gap: 1.75rem;
@@ -496,8 +524,8 @@ function scrollToSection(e: Event, href: string) {
     transition:
       max-height 0.45s cubic-bezier(0.32, 0.72, 0, 1),
       padding 0.45s cubic-bezier(0.32, 0.72, 0, 1);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
     z-index: 2;
   }
 
@@ -520,9 +548,9 @@ function scrollToSection(e: Event, href: string) {
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(236, 72, 153, 0.5) 30%,
-      rgba(167, 139, 250, 0.7) 50%,
-      rgba(236, 72, 153, 0.5) 70%,
+      rgba(96, 165, 250, 0.5) 30%,
+      rgba(147, 197, 253, 0.8) 50%,
+      rgba(96, 165, 250, 0.5) 70%,
       transparent 100%
     );
     opacity: 0;
@@ -580,33 +608,30 @@ function scrollToSection(e: Event, href: string) {
     letter-spacing: 0.005em;
     text-align: left;
     border-radius: 14px;
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.06) 0%,
-      rgba(255, 255, 255, 0.02) 100%
-    );
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(12px);
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.06),
-      0 1px 2px rgba(0, 0, 0, 0.15);
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 4px 14px rgba(0, 0, 0, 0.15);
     transition:
       background 0.25s ease,
       border-color 0.25s ease,
+      box-shadow 0.25s ease,
       transform 0.15s ease;
-  }
-
-  .nav-link-label::after {
-    display: none;
   }
 
   .nav-links a:hover,
   .nav-links a:active {
     background: linear-gradient(
       135deg,
-      rgba(167, 139, 250, 0.22) 0%,
-      rgba(124, 58, 237, 0.12) 100%
+      rgba(59, 130, 246, 0.32) 0%,
+      rgba(37, 99, 235, 0.22) 100%
     );
-    border-color: rgba(167, 139, 250, 0.35);
+    border-color: rgba(147, 197, 253, 0.45);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.25),
+      0 6px 20px rgba(37, 99, 235, 0.3);
     transform: translateX(2px);
   }
 
@@ -624,13 +649,13 @@ function scrollToSection(e: Event, href: string) {
     border-radius: 11px;
     background: linear-gradient(
       135deg,
-      rgba(167, 139, 250, 0.35) 0%,
-      rgba(236, 72, 153, 0.25) 100%
+      rgba(59, 130, 246, 0.45) 0%,
+      rgba(37, 99, 235, 0.35) 100%
     );
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.15),
-      0 2px 8px rgba(124, 58, 237, 0.25);
+      inset 0 1px 0 rgba(255, 255, 255, 0.25),
+      0 2px 10px rgba(37, 99, 235, 0.35);
     color: #fff;
     font-size: 1rem;
   }
@@ -660,6 +685,9 @@ function scrollToSection(e: Event, href: string) {
     border-left: none;
     border: none;
     background: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    border-radius: 0;
     gap: 0.625rem;
     width: 100%;
     margin-top: 0.75rem;
@@ -686,15 +714,12 @@ function scrollToSection(e: Event, href: string) {
     min-height: 54px;
     padding: 0;
     border-radius: 14px;
-    background: linear-gradient(
-      135deg,
-      rgba(167, 139, 250, 0.14) 0%,
-      rgba(124, 58, 237, 0.06) 100%
-    );
-    border: 1px solid rgba(167, 139, 250, 0.22);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(12px);
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.08),
-      0 4px 14px rgba(124, 58, 237, 0.18);
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 4px 14px rgba(0, 0, 0, 0.18);
     cursor: pointer;
     position: relative;
     overflow: hidden;
@@ -713,8 +738,8 @@ function scrollToSection(e: Event, href: string) {
     padding: 1px;
     background: linear-gradient(
       135deg,
-      rgba(236, 72, 153, 0.35) 0%,
-      rgba(167, 139, 250, 0.3) 50%,
+      rgba(96, 165, 250, 0.4) 0%,
+      rgba(59, 130, 246, 0.3) 50%,
       transparent 100%
     );
     -webkit-mask:
@@ -732,13 +757,13 @@ function scrollToSection(e: Event, href: string) {
   .nav-control:has(button:active) {
     background: linear-gradient(
       135deg,
-      rgba(236, 72, 153, 0.22) 0%,
-      rgba(124, 58, 237, 0.14) 100%
+      rgba(59, 130, 246, 0.32) 0%,
+      rgba(37, 99, 235, 0.2) 100%
     );
-    border-color: rgba(236, 72, 153, 0.35);
+    border-color: rgba(147, 197, 253, 0.5);
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.12),
-      0 6px 20px rgba(236, 72, 153, 0.25);
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      0 6px 20px rgba(59, 130, 246, 0.3);
   }
 
   .nav-control:has(button:hover)::before,

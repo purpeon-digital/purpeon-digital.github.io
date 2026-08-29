@@ -189,5 +189,23 @@
     "after": " cookies. Nothing to accept.",
     "dismiss": "Nice",
     "ariaLabel": "No cookie notice"
+  },
+  "game": {
+    "title": "The Swift Fox",
+    "subtitle": "Help the fox leap over obstacles and collect foxgloves!",
+    "instructions": "Tap, click or press Space to jump. Press twice for double jump!",
+    "start": "Start Game",
+    "restart": "Play Again",
+    "score": "Score",
+    "highScore": "Best",
+    "distance": "Distance",
+    "flowers": "Foxgloves",
+    "gameOver": "Game Over!",
+    "newRecord": "New Record! 🎉",
+    "close": "Close",
+    "jump": "Jump",
+    "soundOn": "Sound on",
+    "soundOff": "Sound off",
+    "secretUnlocked": "You found the secret fox game! 🦊"
   }
 }
