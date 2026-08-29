@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useI18n, type Locale } from '@/composables/useI18n';
 import { registerFoxClick } from '@/composables/useFoxEasterEgg';
 import LanguagePicker from './LanguagePicker.vue';
@@ -18,6 +18,16 @@ const props = defineProps<{
 const { t } = useI18n(props.locale);
 const mobileMenuOpen = ref(false);
 const isMobile = ref(false);
+const mobileNavRef = ref<HTMLElement | null>(null);
+
+watch([isMobile, mobileMenuOpen], () => {
+  if (!mobileNavRef.value) return;
+  if (isMobile.value && !mobileMenuOpen.value) {
+    mobileNavRef.value.setAttribute('inert', '');
+  } else {
+    mobileNavRef.value.removeAttribute('inert');
+  }
+});
 
 function openMobileMenu() {
   mobileMenuOpen.value = true;
@@ -132,7 +142,7 @@ function onLogoClick(e: MouseEvent) {
         <span></span>
       </button>
 
-      <div id="mobile-nav" class="nav-right" :class="{ 'mobile-open': mobileMenuOpen }" :inert="(isMobile && !mobileMenuOpen) || null">
+      <div id="mobile-nav" ref="mobileNavRef" class="nav-right" :class="{ 'mobile-open': mobileMenuOpen }">
         <span class="nav-accent" aria-hidden="true"></span>
         <ul class="nav-links">
           <li>

@@ -6,7 +6,7 @@ const props = defineProps<{
   locale: Locale;
 }>();
 
-const { setLocale } = useI18n();
+const { setLocale } = useI18n(props.locale);
 
 function toggleLanguage() {
   const newLocale: Locale = props.locale === 'en' ? 'no' : 'en';
