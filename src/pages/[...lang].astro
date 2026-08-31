@@ -34,5 +34,6 @@ const locale = lang || 'no';
     <Contact client:visible locale={locale} />
   </main>
   <NoCookiesToast client:idle locale={locale} />
-  <FoxMiniGame client:load locale={locale} />
+  {/* client:only — the modal teleports to <body>, which Astro can't SSR (hydration mismatch) */}
+  <FoxMiniGame client:only="vue" locale={locale} />
 </Layout>
