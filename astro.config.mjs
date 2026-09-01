@@ -19,7 +19,12 @@ export default defineConfig({
       // never hits api.iconify.design. Per-icon tree-shaking via virtual
       // imports like `import IconCloud from '~icons/fa7-solid/cloud'`.
       Icons({ compiler: 'vue3' })
-    ]
+    ],
+    // Dev/preview-server only (no effect on `astro build` output): let the
+    // Pagebuilder's preview tunnel hostnames through Vite's host check.
+    // `.purpeon.dev` matches any subdomain (preview./built.purpeon.dev).
+    server: { allowedHosts: ['.purpeon.dev'] },
+    preview: { allowedHosts: ['.purpeon.dev'] }
   },
   integrations: [
     vue(),
