@@ -25,6 +25,11 @@ const isMuted = ref(false);
 const isNewRecord = ref(false);
 
 const score = ref(0);
+// Everything earned while the fox is lit counts twice. Rather than scaling the
+// running totals, the second copy is banked here and added to the score, so the
+// 🌸 counter keeps meaning "foxgloves picked" and nothing double-counts on a
+// recompute.
+const bonusScore = ref(0);
 const flowersCollected = ref(0);
 const distanceMeters = ref(0);
 const highScore = ref(0);
@@ -277,8 +282,16 @@ function activatePower() {
   addFloatingText(fox.x + fox.w / 2, fox.y - 26, t('game.powerUp'), '#f0abfc');
 }
 
+// A top-up, not a new power-up: a short chirp and a small burst, so keeping the
+// fox lit feels different from earning it.
+function refreshPower(x: number, y: number) {
+  playSound('crystal');
+  createSparkleBurst(x, y, '#f0abfc', 14);
+}
+
 function resetGame() {
   score.value = 0;
+  bonusScore.value = 0;
   flowersCollected.value = 0;
   distanceMeters.value = 0;
   isGameOver.value = false;
@@ -445,8 +458,10 @@ function updateGame(delta: number) {
   }
 
   // Update distance and score
-  distanceMeters.value += (gameSpeed * 0.15) * delta;
-  score.value = Math.floor(distanceMeters.value) + flowersCollected.value * 25;
+  const gained = (gameSpeed * 0.15) * delta;
+  distanceMeters.value += gained;
+  if (power.isActive.value) bonusScore.value += gained;
+  score.value = Math.floor(distanceMeters.value + bonusScore.value) + flowersCollected.value * 25;
 
   // Gradually increase speed smoothly
   if (gameSpeed < 10.5) {
@@ -633,22 +648,38 @@ function updateGame(delta: number) {
 
       if (dist < fox.w / 2 + col.size) {
         col.collected = true;
+        // `x2` has to be read before collectFlower(), or a foxglove that
+        // lights the fox would already be counting double when it is the
+        // pickup that earned the mode in the first place.
+        const x2 = power.isActive.value;
+        const worth = (base: number) => {
+          if (x2) bonusScore.value += base * 25;
+          return `+${base * 25 * (x2 ? 2 : 1)}`;
+        };
+
         if (col.type === 'flower') {
           flowersCollected.value++;
-          playSound('flower');
-          createSparkleBurst(col.x, col.y, '#e879f9', 10);
-          addFloatingText(col.x, col.y - 10, '+25 🌸', '#f472b6');
-          if (power.collectFlower()) activatePower();
+          const label = worth(1);
+          const outcome = power.collectFlower();
+          if (outcome === 'lit') activatePower();
+          else if (outcome === 'refreshed') refreshPower(col.x, col.y);
+          else {
+            playSound('flower');
+            createSparkleBurst(col.x, col.y, '#e879f9', 10);
+          }
+          addFloatingText(col.x, col.y - 10, `${label} 🌸`, x2 ? '#f0abfc' : '#f472b6');
         } else if (col.type === 'crystal') {
           flowersCollected.value += 2;
+          const label = worth(2);
           playSound('crystal');
           createSparkleBurst(col.x, col.y, '#a78bfa', 14);
-          addFloatingText(col.x, col.y - 10, '+50 💎', '#c084fc');
+          addFloatingText(col.x, col.y - 10, `${label} 💎`, '#c084fc');
         } else if (col.type === 'star') {
           flowersCollected.value += 4;
+          const label = worth(4);
           playSound('star');
           createSparkleBurst(col.x, col.y, '#fbbf24', 18);
-          addFloatingText(col.x, col.y - 10, '+100 ⭐', '#fbbf24');
+          addFloatingText(col.x, col.y - 10, `${label} ⭐`, '#fbbf24');
         }
       }
     }
@@ -1216,6 +1247,7 @@ onBeforeUnmount(() => {
               >
                 <span>🛡️ {{ t('game.powerShield') }}</span>
                 <span class="font-mono font-bold text-base tabular-nums">{{ power.secondsLeft.value }}s</span>
+                <span class="font-mono font-bold text-amber-300">2×</span>
               </div>
 
               <div class="bg-slate-950/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/15 text-amber-200 text-xs flex items-center gap-1.5 shadow-lg">

@@ -9,7 +9,7 @@ import {
 /** Pick n foxgloves, returning how many of them lit the power-up. */
 function pick(power: ReturnType<typeof useFoxPower>, n: number): number {
   let lit = 0;
-  for (let i = 0; i < n; i++) if (power.collectFlower()) lit++;
+  for (let i = 0; i < n; i++) if (power.collectFlower() === 'lit') lit++;
   return lit;
 }
 
@@ -49,6 +49,56 @@ describe('useFoxPower', () => {
       expect(power.isActive.value).toBe(false);
       expect(pick(power, POWER_STREAK)).toBe(1);
       expect(power.shieldReady.value).toBe(true);
+    });
+  });
+
+  describe('keeping it lit', () => {
+    it('pushes the clock back to full on every further foxglove', () => {
+      const power = useFoxPower();
+      pick(power, POWER_STREAK);
+      power.tick(7000);
+      expect(power.timeLeft.value).toBe(POWER_MS - 7000);
+
+      expect(power.collectFlower()).toBe('refreshed');
+      expect(power.timeLeft.value).toBe(POWER_MS);
+      expect(power.shieldReady.value).toBe(true);
+    });
+
+    it('does not spend the streak while already lit', () => {
+      const power = useFoxPower();
+      pick(power, POWER_STREAK);
+      power.collectFlower();
+      power.collectFlower();
+      expect(power.streak.value).toBe(0);
+      // Once it lapses, a fresh five is still what it takes.
+      power.tick(POWER_MS);
+      expect(pick(power, POWER_STREAK - 1)).toBe(0);
+      expect(pick(power, 1)).toBe(1);
+    });
+
+    it('lets a miss cost the top-up without cutting the window short', () => {
+      const power = useFoxPower();
+      pick(power, POWER_STREAK);
+      power.tick(6000);
+      const left = power.timeLeft.value;
+
+      power.missFlower();
+      expect(power.timeLeft.value).toBe(left);
+      expect(power.isActive.value).toBe(true);
+      expect(power.shieldReady.value).toBe(true);
+
+      // And it still runs out on schedule rather than being extended.
+      power.tick(left);
+      expect(power.isActive.value).toBe(false);
+    });
+
+    it('cannot be refreshed once the window has closed', () => {
+      const power = useFoxPower();
+      pick(power, POWER_STREAK);
+      power.tick(POWER_MS);
+      expect(power.collectFlower()).toBe('none');
+      expect(power.timeLeft.value).toBe(0);
+      expect(power.streak.value).toBe(1);
     });
   });
 

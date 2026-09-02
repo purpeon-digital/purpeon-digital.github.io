@@ -16,6 +16,10 @@ export const POWER_WARN_MS = 2_500;
  *
  * A streak counts consecutive foxgloves. Crystals and stars are a different
  * pickup and leave it alone; only letting a foxglove go past resets it.
+ *
+ * Once lit, every further foxglove pushes the ten seconds back to full, so a
+ * good run keeps the fox lit. Missing one costs the refresh but never cuts the
+ * window short: the clock keeps running down from wherever it was.
  */
 export function useFoxPower() {
   const streak = ref(0);
@@ -26,16 +30,28 @@ export function useFoxPower() {
   const isExpiring = computed(() => isActive.value && timeLeft.value <= POWER_WARN_MS);
   const secondsLeft = computed(() => Math.ceil(timeLeft.value / 1000));
 
-  /** Returns true on the pickup that earns the extra life. */
-  function collectFlower(): boolean {
+/**
+   * `lit` on the pickup that earns the extra life, `refreshed` when one tops
+   * the clock back up, `none` otherwise. The caller wants to sound very
+   * different for the first two.
+   */
+  function collectFlower(): 'lit' | 'refreshed' | 'none' {
+    if (isActive.value) {
+      timeLeft.value = POWER_MS;
+      return 'refreshed';
+    }
     streak.value += 1;
-    if (streak.value < POWER_STREAK) return false;
+    if (streak.value < POWER_STREAK) return 'none';
     streak.value = 0;
     timeLeft.value = POWER_MS;
     shieldReady.value = true;
-    return true;
+    return 'lit';
   }
 
+  /**
+   * Only the streak is lost. An active power-up keeps counting down from where
+   * it was: a miss forfeits the top-up, it does not end the mode early.
+   */
   function missFlower() {
     streak.value = 0;
   }
