@@ -340,19 +340,40 @@ const NOTE: Record<string, number> = {
   C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.0
 };
 
-// 32 sixteenths, C major, one bar per four beats. `null` is a rest, and a note
-// simply holds until the next entry.
+// Eight bars of C major, sixteen sixteenths to the bar, written a bar at a
+// time so the tune stays readable. `null` is a rest; a note holds until the
+// next entry. At 132 BPM the loop runs 14.5 seconds before it comes round,
+// which is long enough not to nag.
+const bar = (...steps: (string | null)[]) => steps;
+const _ = null;
+
 const MELODY: (string | null)[] = [
-  'E5', null, 'G5', null, 'A5', null, 'G5', 'E5',
-  'D5', null, 'E5', null, null, null, 'C5', null,
-  'C5', null, 'E5', null, 'G5', null, 'E5', 'D5',
-  'C5', null, 'D5', null, 'E5', null, null, null
+  // C                                    G
+  ...bar('E5', _, 'E5', _, 'G5', _, _, _, 'A5', _, _, _, 'G5', _, _, _),
+  ...bar('E5', _, _, _, 'D5', _, _, _, 'D5', _, _, _, _, _, _, _),
+  // Am                                   Em
+  ...bar('C5', _, 'C5', _, 'E5', _, _, _, 'G5', _, _, _, 'E5', _, _, _),
+  ...bar('D5', _, _, _, 'C5', _, _, _, 'B4', _, _, _, _, _, _, _),
+  // F                                    C
+  ...bar('A5', _, _, _, 'A5', _, _, _, 'G5', _, _, _, 'F5', _, _, _),
+  ...bar('E5', _, _, _, 'F5', _, _, _, 'G5', _, _, _, _, _, _, _),
+  // F                                    G
+  ...bar('F5', _, _, _, 'E5', _, _, _, 'D5', _, _, _, 'E5', _, _, _),
+  ...bar('D5', _, _, _, 'G4', _, _, _, 'C5', _, _, _, _, _, _, _)
 ];
+
+// Root and fifth, one pair per bar, so the harmony moves once a bar instead of
+// once a beat. The old loop changed chord every quarter note, which is part of
+// why it felt like it was hurrying.
 const BASS: (string | null)[] = [
-  'C3', null, null, null, 'G3', null, null, null,
-  'A3', null, null, null, 'E3', null, null, null,
-  'F3', null, null, null, 'C3', null, null, null,
-  'G3', null, null, null, 'G3', null, null, null
+  ...bar('C3', _, _, _, _, _, _, _, 'G3', _, _, _, _, _, _, _),
+  ...bar('G3', _, _, _, _, _, _, _, 'B3', _, _, _, _, _, _, _),
+  ...bar('A3', _, _, _, _, _, _, _, 'E3', _, _, _, _, _, _, _),
+  ...bar('E3', _, _, _, _, _, _, _, 'B3', _, _, _, _, _, _, _),
+  ...bar('F3', _, _, _, _, _, _, _, 'C4', _, _, _, _, _, _, _),
+  ...bar('C3', _, _, _, _, _, _, _, 'G3', _, _, _, _, _, _, _),
+  ...bar('F3', _, _, _, _, _, _, _, 'C4', _, _, _, _, _, _, _),
+  ...bar('G3', _, _, _, _, _, _, _, 'B3', _, _, _, _, _, _, _)
 ];
 
 const MUSIC_BPM = 132;
