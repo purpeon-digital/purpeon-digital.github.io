@@ -41,31 +41,45 @@
   },
   "services": {
     "title": "Our Services",
-    "eyebrow": "What we do · From analysis to ops",
+    "eyebrow": "What we deliver · From Ninja to Yoda",
     "titleStart": "Our",
     "titleEm": "services.",
-    "intro": "We offer comprehensive IT and hardware consultancy services tailored to your business needs. Our expertise lies in holistic software solutions, project management, and electronics.",
-    "description": "We have extensive experience with small and large software solutions, from dozens to millions of users. Additionally, we have experience with electronics solutions, from specification and certification to implementation and design.",
+    "prev": "Previous package",
+    "next": "Next package",
+    "slide": "Package {n} of {m}",
+    "carouselRole": "carousel",
     "items": [
       {
-        "icon": "fa7-solid:cloud",
-        "title": "Cloud Solutions",
-        "description": "Scalable infrastructure and migration expertise"
+        "id": "ninja",
+        "icon": "fa7-solid:user-ninja",
+        "title": "Automation Ninja",
+        "tagline": "Get yourself a ninja",
+        "description": "We find out where your time disappears, and automate away the biggest time sink. With AI we can now build simple internal software, connect data sources and automate processes far faster than before, it is only a matter of finding where to apply it. We map your workflow, produce a prioritised list of time sinks, and put the first automation into production quickly.",
+        "tags": ["AI", "Automation", "Workflow mapping"]
       },
       {
-        "icon": "fa7-solid:robot",
-        "title": "AI",
-        "description": "Extensive experience with artificial intelligence"
+        "id": "lag",
+        "icon": "fa7-solid:people-group",
+        "title": "Innovation Crew",
+        "tagline": "Bring in a crew",
+        "description": "Have an idea but no technical team to build it? We take on the entire technical delivery, from electronics and hardware to backend, frontend and operations, and hand you a finished product. We have done this before, from field sensors to cloud solutions handling real-time data, with a small crew carrying the whole technical responsibility itself.",
+        "tags": ["Electronics", "Firmware", "Cloud", "App"]
       },
       {
-        "icon": "fa7-solid:cog",
-        "title": "Comprehensive Solutions",
-        "description": "Expertise in software, infrastructure, electronics and consultancy"
+        "id": "forsterkingar",
+        "icon": "fa7-solid:user-plus",
+        "title": "Reinforcements",
+        "tagline": "Call in reinforcements",
+        "description": "Sometimes you need an expert in something you have no use for full time, other times simply more hands: one developer for three weeks, or several people over six months. We lend you specialists in development, cloud, electronics and project management, hourly and with no commitment beyond what you actually need. Billed by the hour, with regular progress updates.",
+        "tags": ["Development", "Cloud", "Electronics", "Project management"]
       },
       {
-        "icon": "fa7-solid:chart-bar",
-        "title": "Consultancy",
-        "description": "Software, hardware and IT architecture design"
+        "id": "raadgjeving",
+        "icon": "fa7-solid:compass",
+        "title": "Advisory",
+        "tagline": "Ask a master",
+        "description": "Are you adopting AI in your operations, assessing the tech stack of a company before you invest, or getting a product through CE certification? Those are three of the questions we have been asked. Advisory is what you buy when you need no code, no schematics and no project management from us, only the judgement. We tell you what we would have done ourselves, because we have been through it before.",
+        "tags": ["AI", "Due diligence", "Certification", "Architecture"]
       }
     ]
   },

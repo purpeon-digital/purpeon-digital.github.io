@@ -41,31 +41,45 @@
   },
   "services": {
     "title": "Våre tenester",
-    "eyebrow": "Kva vi gjer · Frå analyse til drift",
+    "eyebrow": "Kva vi leverer · Frå Ninja til Yoda",
     "titleStart": "Våre",
     "titleEm": "tenester.",
-    "intro": "Vi tilbyr omfattande IT- og HW-konsulenttenester tilpassa dine forretningsbehov. Vår ekspertise er heilskaplege programvareløysingar, prosjektleiing og elektronikk.",
-    "description": "Vi har lang erfaring med små og store programvareløysingar, frå titals til millionar av brukarar. I tillegg har vi erfaring med elektronikkløysingar, frå spesifikasjon og sertifisering til implementering og design.",
+    "prev": "Førre pakke",
+    "next": "Neste pakke",
+    "slide": "Pakke {n} av {m}",
+    "carouselRole": "karusell",
     "items": [
       {
-        "icon": "fa7-solid:cloud",
-        "title": "Skyløysingar",
-        "description": "Skalerbar infrastruktur og migreringsekspertise"
+        "id": "ninja",
+        "icon": "fa7-solid:user-ninja",
+        "title": "Automasjonsninja",
+        "tagline": "Skaff deg ein ninja",
+        "description": "Vi finn ut kvar tida forsvinn hjå dykk, og automatiserer bort den største tidstjuven. Med KI kan vi i dag byggje enkel intern programvare, kople saman datakjelder og automatisere prosessar mykje raskare enn før, det handlar berre om å finne kor ein skal setje inn støtet. Vi kartlegg arbeidsflyten dykkar, lagar ei prioritert liste over tidstjuvar, og set raskt den første automasjonen i drift.",
+        "tags": ["KI", "Automasjon", "Kartlegging"]
       },
       {
-        "icon": "fa7-solid:robot",
-        "title": "KI",
-        "description": "Vi var tidleg ute med å ta i bruk kunstig intelligens, og veit å bruke det rett"
+        "id": "lag",
+        "icon": "fa7-solid:people-group",
+        "title": "Innovasjonslag",
+        "tagline": "Få med deg eit lag",
+        "description": "Har de ein idé, men ikkje eit teknisk team til å byggje han? Vi tek heile den tekniske leveransen, frå elektronikk og maskinvare til backend, frontend og drift, og leverer eit ferdig produkt. Vi har gjort dette før, frå sensorikk i felt til skyløysingar som handterer sanntidsdata, med eit lite lag som tek heile det tekniske ansvaret sjølv.",
+        "tags": ["Elektronikk", "Firmware", "Sky", "App"]
       },
       {
-        "icon": "fa7-solid:cog",
-        "title": "Heilskaplege løysingar",
-        "description": "Ekspertise innan både programvare, infrastruktur, elektronikk og rådgjeving"
+        "id": "forsterkingar",
+        "icon": "fa7-solid:user-plus",
+        "title": "Forsterkingar",
+        "tagline": "Ring inn forsterkingar",
+        "description": "Nokre gonger treng de ein ekspert på noko de ikkje har bruk for på fulltid, andre gonger berre meir hender: ein utviklar i tre veker, eller fleire personar over eit halvt år. Vi lånar dykk fagfolk innan utvikling, sky, elektronikk og prosjektleiing, timebasert og utan bindingar utover det de faktisk treng. Fakturert på timen, med jamlege oppdateringar på framdrift.",
+        "tags": ["Utvikling", "Sky", "Elektronikk", "Prosjektleiing"]
       },
       {
-        "icon": "fa7-solid:chart-bar",
+        "id": "raadgjeving",
+        "icon": "fa7-solid:compass",
         "title": "Rådgjeving",
-        "description": "Programvare, hardware og IT-arkitekturdesign"
+        "tagline": "Spør ein meister",
+        "description": "Skal de ta i bruk KI i drifta, vurdere tech-stacken i eit selskap før de investerer, eller få eit produkt gjennom CE-godkjenning? Det er tre av spørsmåla vi har fått. Rådgjeving er det de kjøper når de ikkje treng kode, skjema eller prosjektleiing frå oss, berre vurderinga. Vi seier kva vi ville gjort sjølve, fordi vi har erfart det før.",
+        "tags": ["KI", "Due diligence", "Sertifisering", "Arkitektur"]
       }
     ]
   },
