@@ -136,7 +136,7 @@ function getAudioContext(): AudioContext | null {
   return audioCtx;
 }
 
-function playSound(type: 'jump' | 'doubleJump' | 'flower' | 'crystal' | 'star' | 'hit' | 'record' | 'power' | 'save') {
+function playSound(type: 'jump' | 'doubleJump' | 'flower' | 'crystal' | 'star' | 'hit' | 'record' | 'power' | 'save' | 'fail') {
   if (isMuted.value) return;
   const ctx = getAudioContext();
   if (!ctx) return;
@@ -215,6 +215,19 @@ function playSound(type: 'jump' | 'doubleJump' | 'flower' | 'crystal' | 'star' |
         osc.start(now + i * 0.05);
         osc.stop(now + i * 0.05 + 0.18);
       });
+    } else if (type === 'fail') {
+      // Two notes down, dull and low: the streak just went.
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(196, now);
+      osc.frequency.setValueAtTime(146.83, now + 0.11);
+      gain.gain.setValueAtTime(0.16, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.32);
     } else if (type === 'power') {
       // Rising arpeggio, the star fanfare. Four notes up the Purpeon chord.
       [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
@@ -282,11 +295,127 @@ function activatePower() {
   addFloatingText(fox.x + fox.w / 2, fox.y - 26, t('game.powerUp'), '#f0abfc');
 }
 
-// A top-up, not a new power-up: a short chirp and a small burst, so keeping the
-// fox lit feels different from earning it.
+/**
+ * The pickup, pitched up a semitone per top-up so a chain of foxgloves climbs.
+ * Caps after an octave, otherwise a long run turns into a dog whistle.
+ */
+function playPitchedPickup(step: number) {
+  if (isMuted.value) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+  const ratio = Math.pow(2, Math.min(step, 12) / 12);
+  try {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(659.25 * ratio, now);
+    osc.frequency.setValueAtTime(880 * ratio, now + 0.06);
+    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.18);
+  } catch (e) {}
+}
+
+// A top-up, not a new power-up: the pickup climbing in pitch, and a small
+// burst, so keeping the fox lit sounds different from earning it.
 function refreshPower(x: number, y: number) {
-  playSound('crystal');
+  playPitchedPickup(power.refreshes.value);
   createSparkleBurst(x, y, '#f0abfc', 14);
+}
+
+// ----------------------------------------------------
+// MUSIC
+// A synthesised chiptune loop, same approach as the sound effects: no audio
+// assets, nothing to download. Notes are queued against the AudioContext clock
+// by a look-ahead scheduler rather than fired from a timer, because setInterval
+// drifts and the game already owns the animation frame.
+// ----------------------------------------------------
+const NOTE: Record<string, number> = {
+  C3: 130.81, E3: 164.81, F3: 174.61, G3: 196.0, A3: 220.0, B3: 246.94,
+  C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.0, A4: 440.0, B4: 493.88,
+  C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.0
+};
+
+// 32 sixteenths, C major, one bar per four beats. `null` is a rest, and a note
+// simply holds until the next entry.
+const MELODY: (string | null)[] = [
+  'E5', null, 'G5', null, 'A5', null, 'G5', 'E5',
+  'D5', null, 'E5', null, null, null, 'C5', null,
+  'C5', null, 'E5', null, 'G5', null, 'E5', 'D5',
+  'C5', null, 'D5', null, 'E5', null, null, null
+];
+const BASS: (string | null)[] = [
+  'C3', null, null, null, 'G3', null, null, null,
+  'A3', null, null, null, 'E3', null, null, null,
+  'F3', null, null, null, 'C3', null, null, null,
+  'G3', null, null, null, 'G3', null, null, null
+];
+
+const MUSIC_BPM = 132;
+let musicTimer: number | null = null;
+let musicStep = 0;
+let nextNoteTime = 0;
+
+function playTone(freq: number, at: number, dur: number, type: OscillatorType, level: number) {
+  const ctx = audioCtx;
+  if (!ctx) return;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, at);
+  gain.gain.setValueAtTime(0.0001, at);
+  gain.gain.exponentialRampToValueAtTime(level, at + 0.012);
+  gain.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(at);
+  osc.stop(at + dur + 0.02);
+}
+
+function scheduleMusic() {
+  const ctx = audioCtx;
+  if (!ctx || isMuted.value) return;
+  // A suspended context has a frozen clock, so scheduling against it would
+  // queue a pile of notes that all fire at once the moment it resumes.
+  if (ctx.state !== 'running') return;
+  // While the fox is lit the loop runs half again as fast and an octave up:
+  // the same tune, wound up.
+  const lit = power.isActive.value;
+  const stepDur = 60 / (MUSIC_BPM * (lit ? 1.5 : 1)) / 4;
+
+  while (nextNoteTime < ctx.currentTime + 0.15) {
+    const i = musicStep % MELODY.length;
+    const mel = MELODY[i];
+    if (mel) {
+      playTone(NOTE[mel] * (lit ? 2 : 1), nextNoteTime, stepDur * 1.8,
+               lit ? 'square' : 'triangle', lit ? 0.05 : 0.055);
+    }
+    const bass = BASS[i];
+    if (bass) playTone(NOTE[bass], nextNoteTime, stepDur * 3.2, 'triangle', 0.05);
+
+    nextNoteTime += stepDur;
+    musicStep += 1;
+  }
+}
+
+function startMusic() {
+  const ctx = getAudioContext();
+  if (!ctx || isMuted.value || musicTimer !== null) return;
+  musicStep = 0;
+  nextNoteTime = ctx.currentTime + 0.08;
+  scheduleMusic();
+  musicTimer = window.setInterval(scheduleMusic, 25);
+}
+
+function stopMusic() {
+  if (musicTimer !== null) {
+    window.clearInterval(musicTimer);
+    musicTimer = null;
+  }
 }
 
 function resetGame() {
@@ -322,6 +451,7 @@ function startGame() {
   resetGame();
   isPlaying.value = true;
   getAudioContext();
+  startMusic();
   lastFrameTime = performance.now();
   if (!animationFrameId) {
     gameLoop(performance.now());
@@ -412,6 +542,7 @@ function addFloatingText(x: number, y: number, text: string, color: string) {
 function triggerGameOver() {
   isPlaying.value = false;
   isGameOver.value = true;
+  stopMusic();
   playSound('hit');
 
   // Death particles
@@ -687,7 +818,7 @@ function updateGame(delta: number) {
     if (col.x < -50 || col.collected) {
       // A foxglove that went past uncollected breaks the run of five.
       // Crystals and stars are a different pickup and leave the streak alone.
-      if (!col.collected && col.type === 'flower') power.missFlower();
+      if (!col.collected && col.type === 'flower' && power.missFlower()) playSound('fail');
       collectibles.splice(i, 1);
     }
   }
@@ -1127,6 +1258,7 @@ function openGame() {
 function closeGame() {
   isOpen.value = false;
   isPlaying.value = false;
+  stopMusic();
   document.body.style.overflow = '';
   if (animationFrameId) {
     cancelAnimationFrame(animationFrameId);
@@ -1136,6 +1268,9 @@ function closeGame() {
 
 function toggleMute() {
   isMuted.value = !isMuted.value;
+  // The mute button has to reach the music too, not just the effects.
+  if (isMuted.value) stopMusic();
+  else if (isPlaying.value) startMusic();
   try {
     localStorage.setItem('foxGame_muted', String(isMuted.value));
   } catch (e) {}
@@ -1147,6 +1282,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  stopMusic();
   window.removeEventListener('keydown', handleKeydown);
   window.removeEventListener('open-fox-game', openGame);
   if (animationFrameId) {
