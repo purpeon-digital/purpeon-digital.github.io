@@ -281,6 +281,87 @@ describe('Services', () => {
     });
   });
 
+  describe('autoplay', () => {
+    // The IntersectionObserver mock in test/setup.ts reports the section as
+    // intersecting the moment it is observed, so `inView` is true on mount.
+    const AUTOPLAY_MS = 7000;
+
+    beforeEach(() => vi.useFakeTimers());
+    afterEach(() => vi.useRealTimers());
+
+    it('advances on its own once the section is in view', async () => {
+      const wrapper = await mountCarousel();
+      expect(activeDot(wrapper)).toBe(0);
+      vi.advanceTimersByTime(AUTOPLAY_MS);
+      await wrapper.vm.$nextTick();
+      expect(activeDot(wrapper)).toBe(1);
+    });
+
+    it('keeps going, wrapping past the last package', async () => {
+      const wrapper = await mountCarousel();
+      // The whole sequence, not just the endpoint: landing back on 0 after N
+      // steps is also what a carousel that never moved at all would report.
+      const seen = [activeDot(wrapper)];
+      for (let i = 0; i < N; i++) {
+        vi.advanceTimersByTime(AUTOPLAY_MS);
+        await wrapper.vm.$nextTick();
+        await settle(wrapper);
+        seen.push(activeDot(wrapper));
+      }
+      expect(seen).toEqual([0, 1, 2, 0]);
+      expect(posOf(wrapper)).toBe(N);
+    });
+
+    it('stops for good once an arrow is clicked', async () => {
+      const wrapper = await mountCarousel();
+      await wrapper.find('.pkg-nav--next').trigger('click');
+      expect(activeDot(wrapper)).toBe(1);
+      vi.advanceTimersByTime(AUTOPLAY_MS * 2);
+      await wrapper.vm.$nextTick();
+      expect(activeDot(wrapper)).toBe(1);
+    });
+
+    it('stops for good once a dot is clicked', async () => {
+      const wrapper = await mountCarousel();
+      await wrapper.findAll('.pkg-dot')[1]!.trigger('click');
+      vi.advanceTimersByTime(AUTOPLAY_MS * 2);
+      await wrapper.vm.$nextTick();
+      expect(activeDot(wrapper)).toBe(1);
+    });
+
+    it('stops for good once the carousel is dragged', async () => {
+      const wrapper = await mountCarousel();
+      await pointer(wrapper, 'pointerdown', 500);
+      await pointer(wrapper, 'pointermove', 200);
+      await pointer(wrapper, 'pointerup', 200);
+      expect(activeDot(wrapper)).toBe(1);
+      vi.advanceTimersByTime(AUTOPLAY_MS * 2);
+      await wrapper.vm.$nextTick();
+      expect(activeDot(wrapper)).toBe(1);
+    });
+
+    it('stops for good on an arrow key', async () => {
+      const wrapper = await mountCarousel();
+      await wrapper.find('.pkg-viewport').trigger('keydown', { key: 'ArrowRight' });
+      vi.advanceTimersByTime(AUTOPLAY_MS * 2);
+      await wrapper.vm.$nextTick();
+      expect(activeDot(wrapper)).toBe(1);
+    });
+
+    it('holds while the pointer rests on the carousel, and resumes after', async () => {
+      const wrapper = await mountCarousel();
+      await wrapper.find('.pkg-carousel').trigger('mouseenter');
+      vi.advanceTimersByTime(AUTOPLAY_MS * 2);
+      await wrapper.vm.$nextTick();
+      expect(activeDot(wrapper)).toBe(0);
+
+      await wrapper.find('.pkg-carousel').trigger('mouseleave');
+      vi.advanceTimersByTime(AUTOPLAY_MS);
+      await wrapper.vm.$nextTick();
+      expect(activeDot(wrapper)).toBe(1);
+    });
+  });
+
   describe('layout', () => {
     it('reveals the carousel once the section intersects', async () => {
       const wrapper = await mountCarousel();

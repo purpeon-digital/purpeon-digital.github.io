@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onBeforeUnmount, ref } from 'vue';
+import { computed, nextTick, onMounted, onBeforeUnmount, ref, watch } from 'vue';
 import type { Component } from 'vue';
 import { useI18n, type Locale } from '@/composables/useI18n';
 import IconNinja from '~icons/fa7-solid/user-ninja';
@@ -74,6 +74,17 @@ const viewportWidth = ref(0);
 const drag = ref(0);
 const animating = ref(true);
 
+// Autoplay, same contract as the team section: it runs on its own until the
+// visitor touches the carousel, and then it is off for good. `inView` is
+// flipped by an IntersectionObserver so the timer never ticks against a
+// section nobody is looking at, and `hovered` pauses it while someone is
+// reading a slide rather than stealing the paragraph out from under them.
+const AUTOPLAY_MS = 7000;
+const autoplay = ref(true);
+const inView = ref(false);
+const hovered = ref(false);
+let autoplayTimer: number | null = null;
+
 // Three copies, so there is always a slide to step onto in either direction.
 const COPIES = 3;
 const slides = computed(() =>
@@ -97,6 +108,19 @@ const slideLabel = (i: number) =>
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' &&
   (window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false);
+
+function stopAutoplay() {
+  autoplay.value = false;
+}
+
+function scheduleAutoplay() {
+  if (autoplayTimer) window.clearInterval(autoplayTimer);
+  if (!autoplay.value || !inView.value || hovered.value) return;
+  // Content that moves on its own is exactly what this preference asks us not
+  // to do, so under it the carousel only ever moves when asked.
+  if (prefersReducedMotion()) return;
+  autoplayTimer = window.setInterval(() => go(1), AUTOPLAY_MS);
+}
 
 function measure() {
   const viewport = viewportEl.value;
@@ -136,6 +160,19 @@ function go(delta: number) {
   if (prefersReducedMotion()) void nextTick().then(normalize);
 }
 
+// Every entry point a visitor can reach goes through these two, so autoplay
+// has exactly one place to be switched off. `go` itself stays clean, because
+// autoplay calls it too.
+function userGo(delta: number) {
+  stopAutoplay();
+  go(delta);
+}
+
+function userGoTo(i: number) {
+  stopAutoplay();
+  goTo(i);
+}
+
 // Take the shorter way round to the requested package.
 function goTo(i: number) {
   const n = count.value;
@@ -153,10 +190,10 @@ function onTransitionEnd(e: TransitionEvent) {
 function onKeydown(e: KeyboardEvent) {
   if (e.key === 'ArrowRight') {
     e.preventDefault();
-    go(1);
+    userGo(1);
   } else if (e.key === 'ArrowLeft') {
     e.preventDefault();
-    go(-1);
+    userGo(-1);
   }
 }
 
@@ -166,6 +203,7 @@ let dragging = false;
 
 function onPointerDown(e: PointerEvent) {
   if (e.pointerType === 'mouse' && e.button !== 0) return;
+  stopAutoplay();
   dragging = true;
   dragStartX = e.clientX;
   drag.value = 0;
@@ -194,6 +232,7 @@ function onPointerUp(e: PointerEvent) {
 const sectionEl = ref<HTMLElement | null>(null);
 const revealed = ref(false);
 let io: IntersectionObserver | null = null;
+let viewIo: IntersectionObserver | null = null;
 let ro: ResizeObserver | null = null;
 
 onMounted(() => {
@@ -221,11 +260,36 @@ onMounted(() => {
   } else {
     revealed.value = true;
   }
+
+  // Separate from the reveal observer above, which fires once at 15% and then
+  // disconnects. This one has to keep reporting both ways for as long as the
+  // page lives. Half the section, and no rootMargin: the team section leads by
+  // a margin, but this one must not, or the carousel spends the hero silently
+  // advancing and the visitor arrives on slide three instead of the entry
+  // package.
+  if (sectionEl.value && 'IntersectionObserver' in window) {
+    viewIo = new IntersectionObserver(
+      (entries) => {
+        inView.value = entries[0]?.isIntersecting ?? false;
+      },
+      { threshold: 0.5 },
+    );
+    viewIo.observe(sectionEl.value);
+  } else {
+    inView.value = true;
+  }
 });
+
+// `activeIndex`, not `pos`: normalize() shifts `pos` by a whole copy after
+// every transition without anything moving on screen, and watching that would
+// restart the interval a beat late each time.
+watch([autoplay, inView, hovered, activeIndex], () => scheduleAutoplay());
 
 onBeforeUnmount(() => {
   io?.disconnect();
+  viewIo?.disconnect();
   ro?.disconnect();
+  if (autoplayTimer) window.clearInterval(autoplayTimer);
   window.removeEventListener('resize', measure);
 });
 </script>
@@ -249,12 +313,18 @@ onBeforeUnmount(() => {
         </h2>
       </header>
 
-      <div class="pkg-carousel">
+      <div
+        class="pkg-carousel"
+        @mouseenter="hovered = true"
+        @mouseleave="hovered = false"
+        @focusin="hovered = true"
+        @focusout="hovered = false"
+      >
         <button
           type="button"
           class="pkg-nav pkg-nav--prev"
           :aria-label="t('services.prev')"
-          @click="go(-1)"
+          @click="userGo(-1)"
         >
           <IconChevronLeft aria-hidden="true" />
         </button>
@@ -309,7 +379,7 @@ onBeforeUnmount(() => {
           type="button"
           class="pkg-nav pkg-nav--next"
           :aria-label="t('services.next')"
-          @click="go(1)"
+          @click="userGo(1)"
         >
           <IconChevronRight aria-hidden="true" />
         </button>
@@ -324,7 +394,7 @@ onBeforeUnmount(() => {
             :style="{ '--pkg-hue': HUES[p.id] ?? 292 }"
             :aria-label="slideLabel(i)"
             :aria-current="i === activeIndex ? 'true' : undefined"
-            @click="goTo(i)"
+            @click="userGoTo(i)"
           />
         </div>
       </div>
