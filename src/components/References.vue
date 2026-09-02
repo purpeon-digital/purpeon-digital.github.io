@@ -204,6 +204,7 @@ onBeforeUnmount(() => {
   border-radius: 24px;
   background: var(--refs-card-bg);
   border: 1px solid var(--refs-card-border);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   /* Hairline top highlight — the lit edge of the glass pane */
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);

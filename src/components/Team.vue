@@ -543,6 +543,7 @@ watch(activeIdx, async () => {
 
 .bio-card {
   background: var(--team-card-bg);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 1px solid var(--team-card-border);
   border-radius: 20px;
@@ -615,8 +616,9 @@ watch(activeIdx, async () => {
 .pick {
   position: relative;
   z-index: 2;
-  /* Opaque-enough translucent bg; avoids expensive backdrop-filter per card. */
   background: var(--team-card-bg);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border: 1px solid var(--team-card-border);
   border-radius: 16px;
   padding: 0.85rem;
