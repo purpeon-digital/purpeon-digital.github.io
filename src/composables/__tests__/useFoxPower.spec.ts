@@ -102,6 +102,51 @@ describe('useFoxPower', () => {
     });
   });
 
+  describe('signals for the sound design', () => {
+    it('counts the top-ups so the pickup can climb in pitch', () => {
+      const power = useFoxPower();
+      pick(power, POWER_STREAK);
+      expect(power.refreshes.value).toBe(0);
+      power.collectFlower();
+      power.collectFlower();
+      expect(power.refreshes.value).toBe(2);
+    });
+
+    it('starts the climb over when the mode lapses', () => {
+      const power = useFoxPower();
+      pick(power, POWER_STREAK);
+      power.collectFlower();
+      power.tick(POWER_MS);
+      expect(power.refreshes.value).toBe(0);
+      pick(power, POWER_STREAK);
+      expect(power.refreshes.value).toBe(0);
+    });
+
+    it('starts the climb over when the extra life is spent', () => {
+      const power = useFoxPower();
+      pick(power, POWER_STREAK);
+      power.collectFlower();
+      power.consumeShield();
+      expect(power.refreshes.value).toBe(0);
+    });
+
+    it('reports a broken streak, so only a real loss sounds a fail', () => {
+      const power = useFoxPower();
+      // Nothing going: a missed foxglove is not a loss.
+      expect(power.missFlower()).toBe(false);
+      pick(power, 2);
+      expect(power.missFlower()).toBe(true);
+      // And the next miss, with the count already at zero, is not either.
+      expect(power.missFlower()).toBe(false);
+    });
+
+    it('does not call a miss during the mode a broken streak', () => {
+      const power = useFoxPower();
+      pick(power, POWER_STREAK);
+      expect(power.missFlower()).toBe(false);
+    });
+  });
+
   describe('the ten seconds', () => {
     it('counts down and drops the extra life when the window closes', () => {
       const power = useFoxPower();

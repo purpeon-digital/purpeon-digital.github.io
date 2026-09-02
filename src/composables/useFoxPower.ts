@@ -25,6 +25,8 @@ export function useFoxPower() {
   const streak = ref(0);
   const timeLeft = ref(0);
   const shieldReady = ref(false);
+  /** Top-ups since the fox lit, so the pickup can climb in pitch as it goes. */
+  const refreshes = ref(0);
 
   const isActive = computed(() => timeLeft.value > 0);
   const isExpiring = computed(() => isActive.value && timeLeft.value <= POWER_WARN_MS);
@@ -38,6 +40,7 @@ export function useFoxPower() {
   function collectFlower(): 'lit' | 'refreshed' | 'none' {
     if (isActive.value) {
       timeLeft.value = POWER_MS;
+      refreshes.value += 1;
       return 'refreshed';
     }
     streak.value += 1;
@@ -45,21 +48,31 @@ export function useFoxPower() {
     streak.value = 0;
     timeLeft.value = POWER_MS;
     shieldReady.value = true;
+    refreshes.value = 0;
     return 'lit';
   }
 
   /**
    * Only the streak is lost. An active power-up keeps counting down from where
    * it was: a miss forfeits the top-up, it does not end the mode early.
+   *
+   * Returns true only when a run was actually going, so the caller can sound a
+   * fail for a broken streak without beeping at every foxglove left behind in
+   * ordinary play.
    */
-  function missFlower() {
+  function missFlower(): boolean {
+    const broke = streak.value > 0;
     streak.value = 0;
+    return broke;
   }
 
   function tick(deltaMs: number) {
     if (timeLeft.value <= 0) return;
     timeLeft.value = Math.max(0, timeLeft.value - deltaMs);
-    if (timeLeft.value === 0) shieldReady.value = false;
+    if (timeLeft.value === 0) {
+      shieldReady.value = false;
+      refreshes.value = 0;
+    }
   }
 
   /**
@@ -71,6 +84,7 @@ export function useFoxPower() {
     if (!shieldReady.value) return false;
     shieldReady.value = false;
     timeLeft.value = 0;
+    refreshes.value = 0;
     return true;
   }
 
@@ -78,12 +92,14 @@ export function useFoxPower() {
     streak.value = 0;
     timeLeft.value = 0;
     shieldReady.value = false;
+    refreshes.value = 0;
   }
 
   return {
     streak,
     timeLeft,
     shieldReady,
+    refreshes,
     isActive,
     isExpiring,
     secondsLeft,
