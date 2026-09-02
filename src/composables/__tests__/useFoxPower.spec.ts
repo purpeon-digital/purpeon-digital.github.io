@@ -1,0 +1,138 @@
+import { describe, it, expect } from 'vitest';
+import {
+  useFoxPower,
+  POWER_STREAK,
+  POWER_MS,
+  POWER_WARN_MS,
+} from '@/composables/useFoxPower';
+
+/** Pick n foxgloves, returning how many of them lit the power-up. */
+function pick(power: ReturnType<typeof useFoxPower>, n: number): number {
+  let lit = 0;
+  for (let i = 0; i < n; i++) if (power.collectFlower()) lit++;
+  return lit;
+}
+
+describe('useFoxPower', () => {
+  describe('earning it', () => {
+    it('stays dark for the first four foxgloves', () => {
+      const power = useFoxPower();
+      expect(pick(power, POWER_STREAK - 1)).toBe(0);
+      expect(power.isActive.value).toBe(false);
+      expect(power.shieldReady.value).toBe(false);
+      expect(power.streak.value).toBe(POWER_STREAK - 1);
+    });
+
+    it('lights up on the fifth in a row', () => {
+      const power = useFoxPower();
+      expect(pick(power, POWER_STREAK)).toBe(1);
+      expect(power.isActive.value).toBe(true);
+      expect(power.shieldReady.value).toBe(true);
+      expect(power.timeLeft.value).toBe(POWER_MS);
+      // The streak starts over, so the next five earn it again.
+      expect(power.streak.value).toBe(0);
+    });
+
+    it('starts the count over when a foxglove is missed', () => {
+      const power = useFoxPower();
+      pick(power, POWER_STREAK - 1);
+      power.missFlower();
+      expect(power.streak.value).toBe(0);
+      expect(pick(power, POWER_STREAK - 1)).toBe(0);
+      expect(power.isActive.value).toBe(false);
+    });
+
+    it('can be earned again later in the same run', () => {
+      const power = useFoxPower();
+      pick(power, POWER_STREAK);
+      power.tick(POWER_MS);
+      expect(power.isActive.value).toBe(false);
+      expect(pick(power, POWER_STREAK)).toBe(1);
+      expect(power.shieldReady.value).toBe(true);
+    });
+  });
+
+  describe('the ten seconds', () => {
+    it('counts down and drops the extra life when the window closes', () => {
+      const power = useFoxPower();
+      pick(power, POWER_STREAK);
+
+      power.tick(4000);
+      expect(power.timeLeft.value).toBe(POWER_MS - 4000);
+      expect(power.shieldReady.value).toBe(true);
+
+      power.tick(POWER_MS);
+      expect(power.timeLeft.value).toBe(0);
+      expect(power.isActive.value).toBe(false);
+      expect(power.shieldReady.value).toBe(false);
+    });
+
+    it('reports seconds left for the HUD, rounded up', () => {
+      const power = useFoxPower();
+      pick(power, POWER_STREAK);
+      expect(power.secondsLeft.value).toBe(10);
+      power.tick(1200);
+      expect(power.secondsLeft.value).toBe(9);
+      power.tick(POWER_MS);
+      expect(power.secondsLeft.value).toBe(0);
+    });
+
+    it('flags the last stretch so the fox can blink a warning', () => {
+      const power = useFoxPower();
+      pick(power, POWER_STREAK);
+      expect(power.isExpiring.value).toBe(false);
+      power.tick(POWER_MS - POWER_WARN_MS);
+      expect(power.isExpiring.value).toBe(true);
+      power.tick(POWER_WARN_MS);
+      expect(power.isExpiring.value).toBe(false);
+    });
+
+    it('does nothing on tick while dark', () => {
+      const power = useFoxPower();
+      power.tick(5000);
+      expect(power.timeLeft.value).toBe(0);
+      expect(power.isActive.value).toBe(false);
+    });
+  });
+
+  describe('spending it', () => {
+    it('absorbs one hit', () => {
+      const power = useFoxPower();
+      pick(power, POWER_STREAK);
+      expect(power.consumeShield()).toBe(true);
+    });
+
+    it('is gone after that one hit, and so is the power-up', () => {
+      const power = useFoxPower();
+      pick(power, POWER_STREAK);
+      power.consumeShield();
+      expect(power.consumeShield()).toBe(false);
+      expect(power.isActive.value).toBe(false);
+      expect(power.timeLeft.value).toBe(0);
+    });
+
+    it('absorbs nothing when it was never earned', () => {
+      const power = useFoxPower();
+      pick(power, POWER_STREAK - 1);
+      expect(power.consumeShield()).toBe(false);
+    });
+
+    it('absorbs nothing once the window has closed', () => {
+      const power = useFoxPower();
+      pick(power, POWER_STREAK);
+      power.tick(POWER_MS);
+      expect(power.consumeShield()).toBe(false);
+    });
+  });
+
+  it('clears everything on reset, so a new run starts dark', () => {
+    const power = useFoxPower();
+    pick(power, POWER_STREAK);
+    power.collectFlower();
+    power.reset();
+    expect(power.streak.value).toBe(0);
+    expect(power.timeLeft.value).toBe(0);
+    expect(power.shieldReady.value).toBe(false);
+    expect(power.isActive.value).toBe(false);
+  });
+});

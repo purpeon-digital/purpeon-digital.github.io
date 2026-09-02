@@ -220,6 +220,9 @@
     "jump": "Jump",
     "soundOn": "Sound on",
     "soundOff": "Sound off",
+    "powerUp": "EXTRA LIFE!",
+    "powerUsed": "SAVED!",
+    "powerShield": "Extra life",
     "secretUnlocked": "You found the secret fox game! 🦊"
   }
 }

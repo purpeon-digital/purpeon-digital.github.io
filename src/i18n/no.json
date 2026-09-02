@@ -220,6 +220,9 @@
     "jump": "Hopp",
     "soundOn": "Lyd på",
     "soundOff": "Lyd av",
+    "powerUp": "EKSTRA LIV!",
+    "powerUsed": "REDDA!",
+    "powerShield": "Ekstra liv",
     "secretUnlocked": "Du fann det hemmelege revespelet! 🦊"
   }
 }
