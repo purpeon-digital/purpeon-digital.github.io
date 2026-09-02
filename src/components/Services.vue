@@ -525,6 +525,15 @@ onBeforeUnmount(() => {
   --pkg-a: oklch(0.72 0.16 var(--pkg-hue));
   --pkg-b: oklch(0.85 0.11 var(--pkg-hue));
 }
+/* The active slide's scale-up has to be suppressed during normalize() for the
+   same reason the track's transform is: `is-active` moves between two
+   different elements there, and the one taking over is a peek slide sitting at
+   0.94. Without this it springs back up to 1 after the wrap has already
+   finished, which reads as a bump on an otherwise settled card. */
+.pkg-track:not(.is-animating) .pkg-slide {
+  transition: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pkg-slide { transition: none; }
 }
