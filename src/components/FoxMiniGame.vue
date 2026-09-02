@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { useI18n, type Locale } from '@/composables/useI18n';
+import { useFoxPower, POWER_MS } from '@/composables/useFoxPower';
 import IconVolumeHigh from '~icons/fa7-solid/volume-high';
 import IconVolumeXmark from '~icons/fa7-solid/volume-xmark';
 import IconXmark from '~icons/fa7-solid/xmark';
@@ -11,6 +12,11 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n(props.locale);
+
+// Five foxgloves in a row light the fox up in Purpeon colours and buy one
+// extra life for ten seconds. Rules live in the composable so they can be
+// tested; everything here is what they look and sound like.
+const power = useFoxPower();
 
 const isOpen = ref(false);
 const isPlaying = ref(false);
@@ -67,6 +73,11 @@ interface Collectible {
   pulseOffset: number;
 }
 
+// Purpeon violets and magentas, cycled per frame so the lit fox shimmers
+// rather than sitting on one flat colour.
+const POWER_COAT = ['#7c3aed', '#a855f7', '#c026d3', '#ec4899'];
+const POWER_COAT_DARK = ['#5b21b6', '#7e22ce', '#86198f', '#be185d'];
+
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 400;
 const GROUND_Y = 320;
@@ -95,6 +106,9 @@ let particles: Particle[] = [];
 let floatingTexts: FloatingText[] = [];
 
 let gameSpeed = 5.2;
+// Frames of grace after the extra life absorbs a hit, so the fox is not struck
+// again by the same rock on the very next frame while it is still overlapping.
+let hitCooldown = 0;
 let spawnTimer = 0;
 let collectibleTimer = 0;
 let cloudOffset = 0;
@@ -117,7 +131,7 @@ function getAudioContext(): AudioContext | null {
   return audioCtx;
 }
 
-function playSound(type: 'jump' | 'doubleJump' | 'flower' | 'crystal' | 'star' | 'hit' | 'record') {
+function playSound(type: 'jump' | 'doubleJump' | 'flower' | 'crystal' | 'star' | 'hit' | 'record' | 'power' | 'save') {
   if (isMuted.value) return;
   const ctx = getAudioContext();
   if (!ctx) return;
@@ -196,6 +210,34 @@ function playSound(type: 'jump' | 'doubleJump' | 'flower' | 'crystal' | 'star' |
         osc.start(now + i * 0.05);
         osc.stop(now + i * 0.05 + 0.18);
       });
+    } else if (type === 'power') {
+      // Rising arpeggio, the star fanfare. Four notes up the Purpeon chord.
+      [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now + i * 0.07);
+        gain.gain.setValueAtTime(0.001, now + i * 0.07);
+        gain.gain.exponentialRampToValueAtTime(0.2, now + i * 0.07 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.22);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + i * 0.07);
+        osc.stop(now + i * 0.07 + 0.24);
+      });
+    } else if (type === 'save') {
+      // Thud plus a recovery chirp: something was spent, but the run goes on.
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(180, now);
+      osc.frequency.exponentialRampToValueAtTime(660, now + 0.18);
+      gain.gain.setValueAtTime(0.16, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.24);
     } else if (type === 'hit') {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -228,6 +270,13 @@ function playSound(type: 'jump' | 'doubleJump' | 'flower' | 'crystal' | 'star' |
   }
 }
 
+function activatePower() {
+  playSound('power');
+  createSparkleBurst(fox.x + fox.w / 2, fox.y + fox.h / 2, '#e879f9', 30);
+  createSparkleBurst(fox.x + fox.w / 2, fox.y + fox.h / 2, '#a855f7', 22);
+  addFloatingText(fox.x + fox.w / 2, fox.y - 26, t('game.powerUp'), '#f0abfc');
+}
+
 function resetGame() {
   score.value = 0;
   flowersCollected.value = 0;
@@ -252,6 +301,8 @@ function resetGame() {
   collectibles = [];
   particles = [];
   floatingTexts = [];
+  power.reset();
+  hitCooldown = 0;
 }
 
 function startGame() {
@@ -465,6 +516,26 @@ function updateGame(delta: number) {
     });
   }
 
+  // Power-up countdown. `delta` is in frames, so scale it back to real time.
+  power.tick(delta * 16.666);
+  if (hitCooldown > 0) hitCooldown -= delta;
+
+  // Comet trail while the fox is lit
+  if (power.isActive.value) {
+    particles.push({
+      x: fox.x + 4 + Math.random() * fox.w * 0.6,
+      y: fox.y + Math.random() * fox.h,
+      vx: -gameSpeed * 0.6,
+      vy: (Math.random() - 0.5) * 1.2,
+      size: 2 + Math.random() * 3.5,
+      color: POWER_COAT[Math.floor(Math.random() * POWER_COAT.length)],
+      alpha: 0.85,
+      life: 0,
+      maxLife: 16 + Math.random() * 12,
+      shape: 'sparkle'
+    });
+  }
+
   // Spawn obstacles
   spawnTimer -= delta;
   if (spawnTimer <= 0) {
@@ -524,11 +595,22 @@ function updateGame(delta: number) {
     const paddingX = 8;
     const paddingY = 6;
     if (
+      hitCooldown <= 0 &&
       fox.x + paddingX < obs.x + obs.w - paddingX &&
       fox.x + fox.w - paddingX > obs.x + paddingX &&
       fox.y + paddingY < obs.y + obs.h &&
       fox.y + fox.h > obs.y + paddingY
     ) {
+      if (power.consumeShield()) {
+        // The obstacle is removed rather than jumped over: the fox smashed
+        // through it, and leaving it in place would just hit again next frame.
+        obstacles.splice(i, 1);
+        hitCooldown = 30;
+        playSound('save');
+        createSparkleBurst(obs.x + obs.w / 2, obs.y + obs.h / 2, '#c026d3', 24);
+        addFloatingText(fox.x + fox.w / 2, fox.y - 22, t('game.powerUsed'), '#f0abfc');
+        continue;
+      }
       triggerGameOver();
       return;
     }
@@ -556,6 +638,7 @@ function updateGame(delta: number) {
           playSound('flower');
           createSparkleBurst(col.x, col.y, '#e879f9', 10);
           addFloatingText(col.x, col.y - 10, '+25 🌸', '#f472b6');
+          if (power.collectFlower()) activatePower();
         } else if (col.type === 'crystal') {
           flowersCollected.value += 2;
           playSound('crystal');
@@ -571,6 +654,9 @@ function updateGame(delta: number) {
     }
 
     if (col.x < -50 || col.collected) {
+      // A foxglove that went past uncollected breaks the run of five.
+      // Crystals and stars are a different pickup and leave the streak alone.
+      if (!col.collected && col.type === 'flower') power.missFlower();
       collectibles.splice(i, 1);
     }
   }
@@ -837,8 +923,38 @@ function drawStar(ctx: CanvasRenderingContext2D, cx: number, cy: number, spikes:
 }
 
 function renderFox(ctx: CanvasRenderingContext2D) {
+  // While the power-up is up the coat runs through the Purpeon palette. In the
+  // last stretch it flickers back to orange every other beat, so the window
+  // closing is visible without a number having to be read.
+  const shimmer = Math.floor(fox.runTick * 3);
+  const blinkOff = power.isExpiring.value && shimmer % 2 === 0;
+  const lit = power.isActive.value && !blinkOff;
+  const coat = lit ? POWER_COAT[shimmer % POWER_COAT.length] : '#ea580c';
+  const coatDark = lit ? POWER_COAT_DARK[shimmer % POWER_COAT_DARK.length] : '#c2410c';
+
   ctx.save();
   ctx.translate(fox.x + fox.w / 2, fox.y + fox.h / 2);
+
+  // Aura, drawn before the rotation so it stays a steady halo through a spin.
+  if (power.isActive.value) {
+    const pulse = 1 + Math.sin(fox.runTick * 5) * 0.12;
+    const glow = ctx.createRadialGradient(0, 0, 6, 0, 0, 44 * pulse);
+    glow.addColorStop(0, 'rgba(232, 121, 249, 0.42)');
+    glow.addColorStop(0.55, 'rgba(168, 85, 247, 0.20)');
+    glow.addColorStop(1, 'rgba(124, 58, 237, 0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(0, 0, 44 * pulse, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Two slow-turning sparks, the bit that reads as a Mario star.
+    for (const dir of [1, -1]) {
+      const a = fox.runTick * 1.6 * dir;
+      ctx.fillStyle = dir > 0 ? '#f0abfc' : '#fde68a';
+      drawStar(ctx, Math.cos(a) * 34, Math.sin(a) * 22, 5, 5.5, 2.4);
+    }
+  }
+
   if (fox.rotation !== 0) {
     ctx.rotate(fox.rotation);
   }
@@ -851,7 +967,7 @@ function renderFox(ctx: CanvasRenderingContext2D) {
   ctx.save();
   ctx.translate(-16, -2);
   ctx.rotate(-0.35 + tailSway);
-  ctx.fillStyle = '#ea580c';
+  ctx.fillStyle = coat;
   ctx.beginPath();
   ctx.ellipse(-14, 0, 16, 8, 0, 0, Math.PI * 2);
   ctx.fill();
@@ -863,7 +979,7 @@ function renderFox(ctx: CanvasRenderingContext2D) {
   ctx.restore();
 
   // Back legs
-  ctx.strokeStyle = '#c2410c';
+  ctx.strokeStyle = coatDark;
   ctx.lineWidth = 3.5;
   ctx.lineCap = 'round';
   ctx.beginPath();
@@ -871,8 +987,8 @@ function renderFox(ctx: CanvasRenderingContext2D) {
   ctx.lineTo(-14 + legCycle * 8, 18);
   ctx.stroke();
 
-  // Body (Auburn Orange)
-  ctx.fillStyle = '#ea580c';
+  // Body
+  ctx.fillStyle = coat;
   ctx.beginPath();
   ctx.ellipse(0, 0, 20, 12, 0, 0, Math.PI * 2);
   ctx.fill();
@@ -884,7 +1000,7 @@ function renderFox(ctx: CanvasRenderingContext2D) {
   ctx.fill();
 
   // Front legs
-  ctx.strokeStyle = '#ea580c';
+  ctx.strokeStyle = coat;
   ctx.beginPath();
   ctx.moveTo(10, 6);
   ctx.lineTo(14 - legCycle * 8, 18);
@@ -895,7 +1011,7 @@ function renderFox(ctx: CanvasRenderingContext2D) {
   ctx.translate(14, -6);
 
   // Ears
-  ctx.fillStyle = '#ea580c';
+  ctx.fillStyle = coat;
   ctx.beginPath();
   ctx.moveTo(-4, -6);
   ctx.lineTo(0, -18);
@@ -911,7 +1027,7 @@ function renderFox(ctx: CanvasRenderingContext2D) {
   ctx.fill();
 
   // Face
-  ctx.fillStyle = '#ea580c';
+  ctx.fillStyle = coat;
   ctx.beginPath();
   ctx.moveTo(-6, -6);
   ctx.lineTo(16, 0); // Snout
@@ -1093,6 +1209,15 @@ onBeforeUnmount(() => {
                 </span>
               </div>
 
+              <div
+                v-if="power.isActive.value"
+                class="fox-power-pill bg-fuchsia-500/25 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-fuchsia-300/60 text-fuchsia-100 text-xs flex items-center gap-1.5 shadow-lg"
+                :class="{ 'is-expiring': power.isExpiring.value }"
+              >
+                <span>🛡️ {{ t('game.powerShield') }}</span>
+                <span class="font-mono font-bold text-base tabular-nums">{{ power.secondsLeft.value }}s</span>
+              </div>
+
               <div class="bg-slate-950/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/15 text-amber-200 text-xs flex items-center gap-1.5 shadow-lg">
                 <span>🏆 {{ t('game.highScore') }}:</span>
                 <span class="font-mono font-bold text-amber-300">{{ highScore }}</span>
@@ -1203,5 +1328,21 @@ onBeforeUnmount(() => {
     0 25px 50px -12px rgba(0, 0, 0, 0.7),
     0 0 0 1px rgba(255, 255, 255, 0.15) inset,
     0 0 30px rgba(168, 85, 247, 0.2);
+}
+
+/* The shield pill breathes while it is up, and blinks faster once the window
+   is closing — the same warning the fox itself gives by flickering orange. */
+.fox-power-pill {
+  animation: fox-power-pulse 1.1s ease-in-out infinite;
+}
+.fox-power-pill.is-expiring {
+  animation-duration: 0.35s;
+}
+@keyframes fox-power-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(232, 121, 249, 0.45); }
+  50%      { transform: scale(1.05); box-shadow: 0 0 18px 4px rgba(232, 121, 249, 0.35); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fox-power-pill { animation: none; }
 }
 </style>
