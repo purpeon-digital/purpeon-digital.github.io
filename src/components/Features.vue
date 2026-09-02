@@ -70,6 +70,7 @@ const props = defineProps<{
 <style scoped>
 .feature-card {
   background: var(--feature-bg);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 1px solid var(--feature-border);
   padding: 1.35rem 1.4rem;

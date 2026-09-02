@@ -142,6 +142,8 @@ const handleClick = (method: ContactMethodDisplay, event: MouseEvent) => {
   gap: 1rem;
   align-items: center;
   background: var(--contact-card-bg);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   padding: 1.25rem 1.5rem;
   border-radius: 12px;
   border: 1px solid var(--contact-card-border);
