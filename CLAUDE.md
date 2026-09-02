@@ -62,6 +62,8 @@ Icons are bundled at build time via `unplugin-icons` (configured in **both** `as
 
 Static output to `./dist`. GitHub Actions workflow at `.github/workflows/deploy.yml`. Custom domain via `CNAME` file. `@astrojs/sitemap` generates per-locale sitemaps matching the Astro i18n config.
 
+**Every PR gets a live preview URL**: `https://pr-<number>-purpeon-com.purpeon.workers.dev/`. `ci.yml` builds the PR and runs `wrangler versions upload --preview-alias "pr-<number>"`; the alias plus the worker name (`purpeon-com` in `wrangler.jsonc`) plus the account's `workers.dev` subdomain give that hostname. It takes a few minutes after a push before the alias resolves, so a 404 or a stale page right after pushing means the run hasn't finished, not that something is broken. Share this link for review rather than asking anyone to build the branch.
+
 ## Path Aliases
 
 `@/*` → `src/*`, configured in both `tsconfig.json` and `vitest.config.ts`. Keep them in sync.
