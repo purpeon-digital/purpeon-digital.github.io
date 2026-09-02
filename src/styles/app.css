@@ -107,8 +107,9 @@
   --services-streak-5: rgba(159, 122, 234, 0.3);
   --services-text-color: #2d2d2d;
   --services-heading-color: #4a1d96;
-  --services-item-bg: rgba(107, 70, 193, 0.05);
-  --services-item-border: rgba(107, 70, 193, 0.15);
+  --services-card-bg: rgba(107, 70, 193, 0.07);
+  --services-card-border: rgba(107, 70, 193, 0.2);
+  --services-card-hover: rgba(107, 70, 193, 0.12);
   --services-badge-bg: rgba(255, 255, 255, 0.9);
   --services-badge-border: rgba(107, 70, 193, 0.2);
 
@@ -246,8 +247,9 @@
   --services-streak-5: rgba(177, 156, 217, 0.25);
   --services-text-color: #e5e5e5;
   --services-heading-color: #B794F6;
-  --services-item-bg: rgba(157, 111, 255, 0.08);
-  --services-item-border: rgba(157, 111, 255, 0.2);
+  --services-card-bg: rgba(157, 111, 255, 0.07);
+  --services-card-border: rgba(157, 111, 255, 0.2);
+  --services-card-hover: rgba(157, 111, 255, 0.12);
   --services-badge-bg: rgba(26, 15, 46, 0.9);
   --services-badge-border: rgba(157, 111, 255, 0.3);
 
@@ -421,22 +423,21 @@
   align-items: center;
 }
 
-/* Tablet-portrait and narrower: the split image|text sections (Services, About,
-   Contact) collapse to a single full-width column and drop the side image —
-   like the team section's single-column collapse. Below ~1024px the text
-   column is too narrow for the two-up feature cards, so the long Norwegian
-   titles overflow and get clipped. The image stays for ≥1025px (e.g. tablet
-   landscape) where the two columns have room.
-   NB: scoped to these three sections — NOT all `.section-grid`, since the Hero
+/* Tablet-portrait and narrower: the split image|text sections (About, Contact)
+   collapse to a single full-width column and drop the side image — like the
+   team section's single-column collapse. Below ~1024px the text column is too
+   narrow for the two-up feature cards, so the long Norwegian titles overflow
+   and get clipped. The image stays for ≥1025px (e.g. tablet landscape) where
+   the two columns have room.
+   NB: scoped to these two sections — NOT all `.section-grid`, since the Hero
    also uses it and has its own collapse (its big logo would otherwise drop into
-   a full-width column here). */
+   a full-width column here). Services has no side image; its own two-up card
+   grid collapses at 900px in Services.vue. */
 @media (max-width: 1024px) {
-  .services-content,
   .about-content,
   .contact-content {
     grid-template-columns: 1fr;
   }
-  .services-content .section-image,
   .about-content .section-image,
   .contact-content .contact-image {
     display: none;
