@@ -61,7 +61,7 @@ const toggleMap = () => {
 
       <footer class="contact-footer">
         <div class="footer-divider"></div>
-        <p class="footer-text">&copy; {{ currentYear }} Purpeon Digital.</p>
+        <p class="footer-text">&copy; {{ currentYear }} Purpeon Digital</p>
       </footer>
     </div>
   </section>
