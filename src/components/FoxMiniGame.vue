@@ -76,7 +76,10 @@ interface Obstacle {
   y: number;
   w: number;
   h: number;
-  type: 'rock' | 'stump' | 'bush' | 'cairn' | 'pillar';
+  type: 'rock' | 'stump' | 'bush' | 'cairn' | 'pillar' | 'balloon';
+  /** Only the balloon has one: it floats, so it bobs around this height. */
+  baseY?: number;
+  bobOffset?: number;
 }
 
 interface Collectible {
@@ -132,6 +135,22 @@ const DRIFT_CENTRE: Partial<Record<Collectible['type'], number>> = {
   crystal: 232,
   star: 190
 };
+
+/**
+ * The balloon is the obstacle you run under, so its box is pinned by two
+ * numbers rather than chosen by eye. Collision is `obs.bottom > foxTop + 6`
+ * and `foxBottom > obs.top + 6`.
+ *
+ * Bottom must stay at or above 288, or it clips a fox that is just running
+ * (fox top 282). With the bob the bottom reaches 260, so there is room.
+ *
+ * Top must stay below 112, or a perfectly timed double jump (202px of lift,
+ * putting the fox's bottom at 118) would sail over it. With the bob the top
+ * reaches 104.
+ */
+const BALLOON_TOP = 96;
+const BALLOON_H = 156;
+const BALLOON_BOB = 8;
 
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 400;
@@ -781,6 +800,7 @@ function updateGame(delta: number) {
       'rock', 'stump', 'bush',
       'rock', 'stump', 'bush',
       'cairn', 'cairn',
+      'balloon', 'balloon',
       'pillar'
     ];
     const type = obstacleTypes[Math.floor(Math.random() * obstacleTypes.length)];
@@ -797,6 +817,11 @@ function updateGame(delta: number) {
       // but leaves 16 to 36px of margin for a scruffy one.
       w = 30 + Math.random() * 8;
       h = 78 + Math.random() * 20;
+    } else if (type === 'balloon') {
+      // The one you cannot jump: it hangs in the air and the only way past is
+      // to keep running. See BALLOON_TOP for why those numbers.
+      w = 62;
+      h = BALLOON_H;
     } else if (type === 'pillar') {
       // A single jump lifts the fox about 120px, a double about 214. Anything
       // in between forces the second jump; 132 to 144 sits clear of both edges
@@ -809,11 +834,17 @@ function updateGame(delta: number) {
     }
 
     obstacles.push({
-      x: GAME_WIDTH + 20,
-      y: GROUND_Y - h,
+      // The balloon starts further out, so there is room to land from whatever
+      // came before it rather than being caught mid-jump by something that
+      // punishes jumping.
+      x: GAME_WIDTH + (type === 'balloon' ? 150 : 20),
+      y: type === 'balloon' ? BALLOON_TOP : GROUND_Y - h,
       w,
       h,
-      type
+      type,
+      ...(type === 'balloon'
+        ? { baseY: BALLOON_TOP, bobOffset: Math.random() * Math.PI * 2 }
+        : {})
     });
 
     // Random interval between obstacles (spaced so always jumpable). A pillar
@@ -821,6 +852,7 @@ function updateGame(delta: number) {
     // and lands the fox further along.
     spawnTimer = (55 + Math.random() * 45) / (gameSpeed / 5.2);
     if (type === 'pillar') spawnTimer *= 1.6;
+    else if (type === 'balloon') spawnTimer *= 1.7;
     else if (type === 'cairn') spawnTimer *= 1.25;
   }
 
@@ -849,6 +881,9 @@ function updateGame(delta: number) {
   for (let i = obstacles.length - 1; i >= 0; i--) {
     const obs = obstacles[i];
     obs.x -= gameSpeed * delta;
+    if (obs.baseY !== undefined) {
+      obs.y = obs.baseY + Math.sin(driftClock * 0.6 + (obs.bobOffset ?? 0)) * BALLOON_BOB;
+    }
 
     // Collision check (shrink hitbox slightly for forgiving gameplay)
     const paddingX = 8;
@@ -1092,6 +1127,71 @@ function renderGame() {
       // Green sprout
       ctx.fillStyle = '#4ade80';
       ctx.fillRect(obs.x + 4, obs.y - 5, 4, 6);
+    } else if (obs.type === 'balloon') {
+      const cx = obs.x + obs.w / 2;
+      const envH = 104;
+      const basketY = obs.y + obs.h - 30;
+
+      // Ropes first, so the basket and envelope sit on top of them.
+      ctx.strokeStyle = '#78350f';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(cx - 13, basketY + 4);
+      ctx.lineTo(cx - 7, obs.y + envH);
+      ctx.moveTo(cx + 13, basketY + 4);
+      ctx.lineTo(cx + 7, obs.y + envH);
+      ctx.stroke();
+
+      // Envelope. Drawn wider than the hitbox (62), which both looks right and
+      // makes the box the forgiving one. Gores are stripes clipped to the
+      // ellipse rather than arc maths, which is easier to get right.
+      const rx = 38;
+      ctx.save();
+      ctx.beginPath();
+      ctx.ellipse(cx, obs.y + envH / 2, rx, envH / 2, 0, 0, Math.PI * 2);
+      ctx.clip();
+      const gore = (rx * 2) / 5;
+      const cols = ['#a855f7', '#e879f9', '#c026d3', '#e879f9', '#a855f7'];
+      for (let k = 0; k < 5; k++) {
+        ctx.fillStyle = cols[k];
+        ctx.fillRect(cx - rx + k * gore, obs.y - 2, gore + 1, envH + 4);
+      }
+      ctx.restore();
+      // Neck, tapering down to the ropes.
+      ctx.fillStyle = '#a855f7';
+      ctx.beginPath();
+      ctx.moveTo(cx - 11, obs.y + envH - 12);
+      ctx.lineTo(cx + 11, obs.y + envH - 12);
+      ctx.lineTo(cx + 7, obs.y + envH + 4);
+      ctx.lineTo(cx - 7, obs.y + envH + 4);
+      ctx.closePath();
+      ctx.fill();
+
+      // Basket
+      ctx.fillStyle = '#92400e';
+      ctx.fillRect(cx - 15, basketY, 30, 22);
+      ctx.fillStyle = '#b45309';
+      ctx.fillRect(cx - 15, basketY, 30, 5);
+
+      // The duck, looking over the edge
+      ctx.fillStyle = '#fde68a';
+      ctx.beginPath();
+      ctx.ellipse(cx + 1, basketY - 5, 10, 8, 0, 0, Math.PI * 2);   // kropp
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(cx + 8, basketY - 13, 6, 0, Math.PI * 2);             // hovud
+      ctx.fill();
+      ctx.fillStyle = '#f97316';
+      ctx.beginPath();                                              // nebb
+      ctx.moveTo(cx + 13, basketY - 13);
+      ctx.lineTo(cx + 21, basketY - 11);
+      ctx.lineTo(cx + 13, basketY - 9);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.arc(cx + 10, basketY - 15, 1.4, 0, Math.PI * 2);          // auge
+      ctx.fill();
     } else if (obs.type === 'cairn') {
       // Stacked stones, tapering upward, so it reads as taller than a rock but
       // plainly not a standing stone.
