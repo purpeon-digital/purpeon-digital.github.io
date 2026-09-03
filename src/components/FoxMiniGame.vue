@@ -80,7 +80,11 @@ interface Obstacle {
   /** Only the balloon has one: it floats, so it bobs around this height. */
   baseY?: number;
   bobOffset?: number;
+  /** Who is flying it. Decoration only; the hitbox does not change. */
+  rider?: Rider;
 }
+
+type Rider = 'duck' | 'owl' | 'hedgehog' | 'squirrel';
 
 interface Collectible {
   x: number;
@@ -148,6 +152,10 @@ const DRIFT_CENTRE: Partial<Record<Collectible['type'], number>> = {
  * putting the fox's bottom at 118) would sail over it. With the bob the top
  * reaches 104.
  */
+const RIDERS: Rider[] = ['duck', 'owl', 'hedgehog', 'squirrel'];
+/** Last one used, so two balloons in a row never carry the same passenger. */
+let lastRider: Rider | null = null;
+
 const BALLOON_TOP = 96;
 const BALLOON_H = 156;
 const BALLOON_BOB = 8;
@@ -536,6 +544,13 @@ function stopMusic() {
   }
 }
 
+function pickRider(): Rider {
+  const choices = RIDERS.filter(r => r !== lastRider);
+  const rider = choices[Math.floor(Math.random() * choices.length)];
+  lastRider = rider;
+  return rider;
+}
+
 function pickObstacleType(): Obstacle['type'] {
   const ready = OBSTACLE_MIX.filter(o => (spawnsSince[o.type] ?? 99) >= o.cooldown);
   const pool = ready.length ? ready : OBSTACLE_MIX;
@@ -588,6 +603,7 @@ function resetGame() {
   driftClock = 0;
   // Start every type "long overdue", so the first stretch is not all rocks.
   spawnsSince = Object.fromEntries(OBSTACLE_MIX.map(o => [o.type, 99]));
+  lastRider = null;
   fox.deathTimer = 0;
 
   obstacles = [];
@@ -888,7 +904,11 @@ function updateGame(delta: number) {
       h,
       type,
       ...(type === 'balloon'
-        ? { baseY: BALLOON_TOP, bobOffset: Math.random() * Math.PI * 2 }
+        ? {
+            baseY: BALLOON_TOP,
+            bobOffset: Math.random() * Math.PI * 2,
+            rider: pickRider()
+          }
         : {})
     });
 
@@ -1218,25 +1238,7 @@ function renderGame() {
       ctx.fillStyle = '#b45309';
       ctx.fillRect(cx - 15, basketY, 30, 5);
 
-      // The duck, looking over the edge
-      ctx.fillStyle = '#fde68a';
-      ctx.beginPath();
-      ctx.ellipse(cx + 1, basketY - 5, 10, 8, 0, 0, Math.PI * 2);   // kropp
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(cx + 8, basketY - 13, 6, 0, Math.PI * 2);             // hovud
-      ctx.fill();
-      ctx.fillStyle = '#f97316';
-      ctx.beginPath();                                              // nebb
-      ctx.moveTo(cx + 13, basketY - 13);
-      ctx.lineTo(cx + 21, basketY - 11);
-      ctx.lineTo(cx + 13, basketY - 9);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = '#0f172a';
-      ctx.beginPath();
-      ctx.arc(cx + 10, basketY - 15, 1.4, 0, Math.PI * 2);          // auge
-      ctx.fill();
+      drawRider(ctx, obs.rider ?? 'duck', cx, basketY);
     } else if (obs.type === 'cairn') {
       // Stacked stones, tapering upward, so it reads as taller than a rock but
       // plainly not a standing stone.
@@ -1380,6 +1382,137 @@ function renderGame() {
     ctx.fillText(ft.text, ft.x, ft.y);
     ctx.restore();
   });
+}
+
+/**
+ * Whoever is flying the balloon, peeking over the basket rim and facing the
+ * way it travels. All four sit in the same footprint, roughly 22px wide by
+ * 20px tall above `basketY`, so swapping one for another moves nothing.
+ */
+function drawRider(ctx: CanvasRenderingContext2D, kind: Rider, cx: number, basketY: number) {
+  const eye = (x: number, y: number, r = 1.4) => {
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  };
+  const beak = (x: number, y: number, len: number, fill: string) => {
+    ctx.fillStyle = fill;
+    ctx.beginPath();
+    ctx.moveTo(x, y - 2);
+    ctx.lineTo(x + len, y);
+    ctx.lineTo(x, y + 2);
+    ctx.closePath();
+    ctx.fill();
+  };
+
+  if (kind === 'duck') {
+    ctx.fillStyle = '#fde68a';
+    ctx.beginPath();
+    ctx.ellipse(cx + 1, basketY - 5, 10, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx + 8, basketY - 13, 6, 0, Math.PI * 2);
+    ctx.fill();
+    beak(cx + 13, basketY - 12, 8, '#f97316');
+    eye(cx + 10, basketY - 15);
+    return;
+  }
+
+  if (kind === 'owl') {
+    ctx.fillStyle = '#a16207';
+    ctx.beginPath();
+    ctx.ellipse(cx + 1, basketY - 5, 10, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#ca8a04';
+    ctx.beginPath();
+    ctx.arc(cx + 4, basketY - 13, 8, 0, Math.PI * 2);
+    ctx.fill();
+    // Ear tufts
+    ctx.fillStyle = '#78350f';
+    ctx.beginPath();
+    ctx.moveTo(cx - 4, basketY - 18);
+    ctx.lineTo(cx - 2, basketY - 26);
+    ctx.lineTo(cx + 3, basketY - 18);
+    ctx.moveTo(cx + 5, basketY - 18);
+    ctx.lineTo(cx + 10, basketY - 26);
+    ctx.lineTo(cx + 12, basketY - 18);
+    ctx.fill();
+    // The big eyes are the whole point of an owl
+    ctx.fillStyle = '#fef3c7';
+    ctx.beginPath();
+    ctx.arc(cx + 1, basketY - 14, 4, 0, Math.PI * 2);
+    ctx.arc(cx + 8, basketY - 14, 4, 0, Math.PI * 2);
+    ctx.fill();
+    eye(cx + 2, basketY - 14, 2);
+    eye(cx + 9, basketY - 14, 2);
+    beak(cx + 5, basketY - 9, 5, '#f59e0b');
+    return;
+  }
+
+  if (kind === 'hedgehog') {
+    ctx.fillStyle = '#7c5c3a';
+    ctx.beginPath();
+    ctx.ellipse(cx - 1, basketY - 5, 11, 9, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Spines on top of the body, not under it, and long enough to break the
+    // silhouette. Without that it just reads as a brown blob.
+    ctx.fillStyle = '#3f2d1e';
+    ctx.beginPath();
+    for (let i = 0; i <= 8; i++) {
+      const a = Math.PI * 1.02 + (i / 8) * Math.PI * 0.86;
+      const bx = cx - 1 + Math.cos(a) * 11;
+      const by = basketY - 5 + Math.sin(a) * 9;
+      ctx.moveTo(bx - Math.cos(a + 1.5) * 3, by - Math.sin(a + 1.5) * 3);
+      ctx.lineTo(bx + Math.cos(a) * 8, by + Math.sin(a) * 8);
+      ctx.lineTo(bx + Math.cos(a + 1.5) * 3, by + Math.sin(a + 1.5) * 3);
+    }
+    ctx.fill();
+    // Pale pointed snout, the other half of the read
+    ctx.fillStyle = '#e7e5e4';
+    ctx.beginPath();
+    ctx.moveTo(cx + 5, basketY - 11);
+    ctx.lineTo(cx + 17, basketY - 6);
+    ctx.lineTo(cx + 5, basketY - 1);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.arc(cx + 16, basketY - 6, 1.8, 0, Math.PI * 2);   // nase
+    ctx.arc(cx + 7, basketY - 9, 1.3, 0, Math.PI * 2);    // auge
+    ctx.fill();
+    return;
+  }
+
+  // Squirrel. The tail is the whole silhouette, so it is drawn big, clearly
+  // clear of the body, and outlined against it.
+  ctx.fillStyle = '#7c2d12';
+  ctx.beginPath();
+  ctx.moveTo(cx - 6, basketY - 2);
+  ctx.quadraticCurveTo(cx - 20, basketY - 6, cx - 18, basketY - 18);
+  ctx.quadraticCurveTo(cx - 16, basketY - 28, cx - 7, basketY - 26);
+  ctx.quadraticCurveTo(cx - 13, basketY - 22, cx - 12, basketY - 15);
+  ctx.quadraticCurveTo(cx - 11, basketY - 8, cx - 4, basketY - 6);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = '#c2410c';
+  ctx.beginPath();
+  ctx.ellipse(cx + 2, basketY - 5, 9, 8, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(cx + 8, basketY - 12, 6, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();                                                  // øyre
+  ctx.moveTo(cx + 5, basketY - 17);
+  ctx.lineTo(cx + 6, basketY - 24);
+  ctx.lineTo(cx + 10, basketY - 17);
+  ctx.fill();
+  ctx.fillStyle = '#fed7aa';
+  ctx.beginPath();
+  ctx.ellipse(cx + 5, basketY - 2, 4, 4, 0, 0, Math.PI * 2);        // buk
+  ctx.fill();
+  beak(cx + 13, basketY - 11, 4, '#7c2d12');
+  eye(cx + 10, basketY - 14);
 }
 
 function drawStar(ctx: CanvasRenderingContext2D, cx: number, cy: number, spikes: number, outerRadius: number, innerRadius: number) {
