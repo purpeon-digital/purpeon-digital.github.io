@@ -76,7 +76,7 @@ interface Obstacle {
   y: number;
   w: number;
   h: number;
-  type: 'rock' | 'stump' | 'bush' | 'pillar';
+  type: 'rock' | 'stump' | 'bush' | 'cairn' | 'pillar';
 }
 
 interface Collectible {
@@ -772,10 +772,17 @@ function updateGame(delta: number) {
   // Spawn obstacles
   spawnTimer -= delta;
   if (spawnTimer <= 0) {
-    // The pillar is the odd one out and is weighted to roughly one in seven,
-    // because it is the only obstacle a single jump cannot clear.
-    const obstacleTypes: Obstacle['type'][] =
-      ['rock', 'stump', 'bush', 'rock', 'stump', 'bush', 'pillar'];
+    // Three tiers, and the weighting is the difficulty curve: low hops most of
+    // the time, a cairn now and then that wants a proper jump, and the pillar
+    // rarely, since it is the only one a single jump cannot clear at all.
+    // Twelve entries: 9 low (75%), 2 cairn (17%), 1 pillar (8%).
+    const obstacleTypes: Obstacle['type'][] = [
+      'rock', 'stump', 'bush',
+      'rock', 'stump', 'bush',
+      'rock', 'stump', 'bush',
+      'cairn', 'cairn',
+      'pillar'
+    ];
     const type = obstacleTypes[Math.floor(Math.random() * obstacleTypes.length)];
     let w = 32;
     let h = 34;
@@ -785,6 +792,11 @@ function updateGame(delta: number) {
     } else if (type === 'stump') {
       w = 30 + Math.random() * 8;
       h = 38 + Math.random() * 8;
+    } else if (type === 'cairn') {
+      // Middle tier: a single jump lifts 114px, so 78 to 98 needs a real jump
+      // but leaves 16 to 36px of margin for a scruffy one.
+      w = 30 + Math.random() * 8;
+      h = 78 + Math.random() * 20;
     } else if (type === 'pillar') {
       // A single jump lifts the fox about 120px, a double about 214. Anything
       // in between forces the second jump; 132 to 144 sits clear of both edges
@@ -809,6 +821,7 @@ function updateGame(delta: number) {
     // and lands the fox further along.
     spawnTimer = (55 + Math.random() * 45) / (gameSpeed / 5.2);
     if (type === 'pillar') spawnTimer *= 1.6;
+    else if (type === 'cairn') spawnTimer *= 1.25;
   }
 
   // Spawn collectibles
@@ -1079,6 +1092,26 @@ function renderGame() {
       // Green sprout
       ctx.fillStyle = '#4ade80';
       ctx.fillRect(obs.x + 4, obs.y - 5, 4, 6);
+    } else if (obs.type === 'cairn') {
+      // Stacked stones, tapering upward, so it reads as taller than a rock but
+      // plainly not a standing stone.
+      const cx = obs.x + obs.w / 2;
+      const stones = 4;
+      for (let k = 0; k < stones; k++) {
+        const t = k / (stones - 1);
+        const ry = obs.h / (stones * 2);
+        const rx = (obs.w / 2) * (1 - t * 0.45);
+        const cy = obs.y + obs.h - ry - k * (obs.h - ry * 2) / (stones - 1);
+        ctx.fillStyle = k % 2 === 0 ? '#4b5563' : '#5b6675';
+        ctx.beginPath();
+        ctx.ellipse(cx + (k % 2 === 0 ? -1.5 : 1.5), cy, rx, ry, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      // Moss on the top stone
+      ctx.fillStyle = '#22c55e';
+      ctx.beginPath();
+      ctx.ellipse(cx, obs.y + 3, obs.w / 3.4, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
     } else if (obs.type === 'pillar') {
       // Standing stone: narrow, tall, and unmistakably not a hop.
       const cx = obs.x + obs.w / 2;
