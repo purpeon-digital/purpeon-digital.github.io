@@ -30,7 +30,15 @@ const score = ref(0);
 // 🌸 counter keeps meaning "foxgloves picked" and nothing double-counts on a
 // recompute.
 const bonusScore = ref(0);
-const flowersCollected = ref(0);
+// Three separate numbers, because the old one was all three at once: it was
+// labelled foxgloves, counted 1/2/4 depending on what you grabbed, and doubled
+// as the score currency. A crystal made the "foxglove" tally jump by two.
+/** How many things have been picked up, whatever they were. */
+const pickupsCollected = ref(0);
+/** Foxgloves only. This is the one the streak and the extra life run on. */
+const flowerCount = ref(0);
+/** Score currency: 1 per foxglove, 2 per crystal, 4 per star, 25 points each. */
+const pickupPoints = ref(0);
 const distanceMeters = ref(0);
 const highScore = ref(0);
 
@@ -59,6 +67,8 @@ interface FloatingText {
   color: string;
   alpha: number;
   vy: number;
+  fade: number;
+  size: number;
 }
 
 interface Obstacle {
@@ -66,12 +76,15 @@ interface Obstacle {
   y: number;
   w: number;
   h: number;
-  type: 'rock' | 'stump' | 'bush';
+  type: 'rock' | 'stump' | 'bush' | 'pillar';
 }
 
 interface Collectible {
   x: number;
+  /** Live position, recomputed every frame from baseY plus the type's wave. */
   y: number;
+  /** The height it was spawned at; the wave swings around this. */
+  baseY: number;
   size: number;
   type: 'flower' | 'crystal' | 'star';
   collected: boolean;
@@ -82,6 +95,21 @@ interface Collectible {
 // rather than sitting on one flat colour.
 const POWER_COAT = ['#7c3aed', '#a855f7', '#c026d3', '#ec4899'];
 const POWER_COAT_DARK = ['#5b21b6', '#7e22ce', '#86198f', '#be185d'];
+
+/**
+ * How each pickup drifts. The star is worth the most, so it is the one that
+ * refuses to sit still; the crystal moves too, but slower and over less ground.
+ * The amplitudes are capped so the lowest spawn height still clears the ground.
+ *
+ * This drives the hitbox, not just the drawing. The old bob was applied at
+ * render time only, so a collectible was caught where it looked like it was
+ * not, and moving it would have changed nothing about the difficulty.
+ */
+const DRIFT: Record<Collectible['type'], { amp: number; speed: number }> = {
+  flower: { amp: 4, speed: 2 },
+  crystal: { amp: 14, speed: 1.2 },
+  star: { amp: 34, speed: 3.4 }
+};
 
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 400;
@@ -442,7 +470,9 @@ function stopMusic() {
 function resetGame() {
   score.value = 0;
   bonusScore.value = 0;
-  flowersCollected.value = 0;
+  pickupsCollected.value = 0;
+  flowerCount.value = 0;
+  pickupPoints.value = 0;
   distanceMeters.value = 0;
   isGameOver.value = false;
   isNewRecord.value = false;
@@ -549,14 +579,24 @@ function createSparkleBurst(x: number, y: number, color: string, count: number) 
   }
 }
 
-function addFloatingText(x: number, y: number, text: string, color: string) {
+function addFloatingText(
+  x: number,
+  y: number,
+  text: string,
+  color: string,
+  opts: { vy?: number; fade?: number; size?: number } = {}
+) {
   floatingTexts.push({
     x,
     y,
     text,
     color,
     alpha: 1,
-    vy: -1.8
+    // Slower fade than before across the board: the old 0.025 per frame gave
+    // about 1.6 s at best, which was gone before you had read it.
+    vy: opts.vy ?? -1.8,
+    fade: opts.fade ?? 0.014,
+    size: opts.size ?? 16
   });
 }
 
@@ -613,7 +653,7 @@ function updateGame(delta: number) {
   const gained = (gameSpeed * 0.15) * delta;
   distanceMeters.value += gained;
   if (power.isActive.value) bonusScore.value += gained;
-  score.value = Math.floor(distanceMeters.value + bonusScore.value) + flowersCollected.value * 25;
+  score.value = Math.floor(distanceMeters.value + bonusScore.value) + pickupPoints.value * 25;
 
   // Gradually increase speed smoothly
   if (gameSpeed < 10.5) {
@@ -706,7 +746,10 @@ function updateGame(delta: number) {
   // Spawn obstacles
   spawnTimer -= delta;
   if (spawnTimer <= 0) {
-    const obstacleTypes: ('rock' | 'stump' | 'bush')[] = ['rock', 'stump', 'bush'];
+    // The pillar is the odd one out and is weighted to roughly one in seven,
+    // because it is the only obstacle a single jump cannot clear.
+    const obstacleTypes: Obstacle['type'][] =
+      ['rock', 'stump', 'bush', 'rock', 'stump', 'bush', 'pillar'];
     const type = obstacleTypes[Math.floor(Math.random() * obstacleTypes.length)];
     let w = 32;
     let h = 34;
@@ -716,6 +759,12 @@ function updateGame(delta: number) {
     } else if (type === 'stump') {
       w = 30 + Math.random() * 8;
       h = 38 + Math.random() * 8;
+    } else if (type === 'pillar') {
+      // A single jump lifts the fox about 120px, a double about 214. Anything
+      // in between forces the second jump; 132 to 144 sits clear of both edges
+      // so a sloppy double still makes it and a single never does.
+      w = 24 + Math.random() * 6;
+      h = 132 + Math.random() * 12;
     } else {
       w = 42 + Math.random() * 10;
       h = 28 + Math.random() * 8;
@@ -729,8 +778,11 @@ function updateGame(delta: number) {
       type
     });
 
-    // Random interval between obstacles (spaced so always jumpable)
+    // Random interval between obstacles (spaced so always jumpable). A pillar
+    // gets extra room after it, since the double jump needs to be started early
+    // and lands the fox further along.
     spawnTimer = (55 + Math.random() * 45) / (gameSpeed / 5.2);
+    if (type === 'pillar') spawnTimer *= 1.6;
   }
 
   // Spawn collectibles
@@ -744,6 +796,7 @@ function updateGame(delta: number) {
     collectibles.push({
       x: GAME_WIDTH + 30,
       y,
+      baseY: y,
       size: type === 'star' ? 16 : 14,
       type,
       collected: false,
@@ -791,6 +844,8 @@ function updateGame(delta: number) {
   for (let i = collectibles.length - 1; i >= 0; i--) {
     const col = collectibles[i];
     col.x -= gameSpeed * delta;
+    const drift = DRIFT[col.type];
+    col.y = col.baseY + Math.sin(fox.runTick * drift.speed + col.pulseOffset) * drift.amp;
 
     // Check pickup
     if (!col.collected) {
@@ -803,14 +858,19 @@ function updateGame(delta: number) {
         // `x2` has to be read before collectFlower(), or a foxglove that
         // lights the fox would already be counting double when it is the
         // pickup that earned the mode in the first place.
+        pickupsCollected.value++;
+        // `x2` has to be read before collectFlower(), or a foxglove that
+        // lights the fox would already be counting double when it is the
+        // pickup that earned the mode in the first place.
         const x2 = power.isActive.value;
         const worth = (base: number) => {
+          pickupPoints.value += base;
           if (x2) bonusScore.value += base * 25;
           return `+${base * 25 * (x2 ? 2 : 1)}`;
         };
 
         if (col.type === 'flower') {
-          flowersCollected.value++;
+          flowerCount.value++;
           const label = worth(1);
           const outcome = power.collectFlower();
           if (outcome === 'lit') activatePower();
@@ -820,14 +880,19 @@ function updateGame(delta: number) {
             createSparkleBurst(col.x, col.y, '#e879f9', 10);
           }
           addFloatingText(col.x, col.y - 10, `${label} 🌸`, x2 ? '#f0abfc' : '#f472b6');
+          // The running foxglove tally, thrown higher and held longer than the
+          // points so the two read as separate things rather than one line.
+          addFloatingText(col.x, col.y - 26, String(flowerCount.value), '#fbcfe8', {
+            vy: -3.1,
+            fade: 0.0105,
+            size: 21
+          });
         } else if (col.type === 'crystal') {
-          flowersCollected.value += 2;
           const label = worth(2);
           playSound('crystal');
           createSparkleBurst(col.x, col.y, '#a78bfa', 14);
           addFloatingText(col.x, col.y - 10, `${label} 💎`, '#c084fc');
         } else if (col.type === 'star') {
-          flowersCollected.value += 4;
           const label = worth(4);
           playSound('star');
           createSparkleBurst(col.x, col.y, '#fbbf24', 18);
@@ -863,7 +928,7 @@ function updateParticles(delta: number) {
   for (let i = floatingTexts.length - 1; i >= 0; i--) {
     const ft = floatingTexts[i];
     ft.y += ft.vy * delta;
-    ft.alpha -= 0.025 * delta;
+    ft.alpha -= ft.fade * delta;
 
     if (ft.alpha <= 0) {
       floatingTexts.splice(i, 1);
@@ -988,6 +1053,38 @@ function renderGame() {
       // Green sprout
       ctx.fillStyle = '#4ade80';
       ctx.fillRect(obs.x + 4, obs.y - 5, 4, 6);
+    } else if (obs.type === 'pillar') {
+      // Standing stone: narrow, tall, and unmistakably not a hop.
+      const cx = obs.x + obs.w / 2;
+      ctx.fillStyle = '#3f4a5f';
+      ctx.beginPath();
+      ctx.moveTo(obs.x + 3, obs.y + obs.h);
+      ctx.lineTo(obs.x + 1, obs.y + 14);
+      ctx.lineTo(cx, obs.y);
+      ctx.lineTo(obs.x + obs.w - 1, obs.y + 14);
+      ctx.lineTo(obs.x + obs.w - 3, obs.y + obs.h);
+      ctx.closePath();
+      ctx.fill();
+      // Lit edge down the left, so it reads as stone rather than a bar.
+      ctx.fillStyle = '#64748b';
+      ctx.beginPath();
+      ctx.moveTo(obs.x + 3, obs.y + obs.h);
+      ctx.lineTo(obs.x + 1, obs.y + 14);
+      ctx.lineTo(cx, obs.y);
+      ctx.lineTo(cx, obs.y + obs.h);
+      ctx.closePath();
+      ctx.fill();
+      // Moss at the foot and a violet cap, to tie it to the rest of the scene.
+      ctx.fillStyle = '#22c55e';
+      ctx.beginPath();
+      ctx.ellipse(cx, obs.y + obs.h - 4, obs.w / 2, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#a855f7';
+      ctx.shadowColor = '#c084fc';
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.arc(cx, obs.y + 6, 4, 0, Math.PI * 2);
+      ctx.fill();
     } else {
       // Bush
       ctx.fillStyle = '#1e3a29';
@@ -1010,8 +1107,8 @@ function renderGame() {
   collectibles.forEach(col => {
     if (col.collected) return;
     ctx.save();
-    const bobbing = Math.sin(fox.runTick * 2 + col.pulseOffset) * 4;
-    const cy = col.y + bobbing;
+    // col.y already carries the drift, so what you see is what you can catch.
+    const cy = col.y;
 
     if (col.type === 'flower') {
       // Foxglove (Revebjelle)
@@ -1071,7 +1168,7 @@ function renderGame() {
   floatingTexts.forEach(ft => {
     ctx.save();
     ctx.globalAlpha = Math.max(0, ft.alpha);
-    ctx.font = 'bold 16px -apple-system, sans-serif';
+    ctx.font = `bold ${ft.size}px -apple-system, sans-serif`;
     ctx.fillStyle = ft.color;
     ctx.shadowColor = '#000';
     ctx.shadowBlur = 6;
@@ -1389,8 +1486,11 @@ onBeforeUnmount(() => {
                 <span class="text-amber-300 flex items-center gap-1">
                   ⭐ <span class="font-mono text-base">{{ score }}</span>
                 </span>
-                <span class="text-fuchsia-300 flex items-center gap-1">
-                  🌸 <span class="font-mono text-base">{{ flowersCollected }}</span>
+                <span class="text-sky-300 flex items-center gap-1" :title="t('game.pickups')">
+                  🧺 <span class="font-mono text-base">{{ pickupsCollected }}</span>
+                </span>
+                <span class="text-fuchsia-300 flex items-center gap-1" :title="t('game.flowers')">
+                  🌸 <span class="font-mono text-base">{{ flowerCount }}</span>
                 </span>
                 <span class="text-slate-300 text-xs font-mono">
                   {{ Math.floor(distanceMeters) }}m
