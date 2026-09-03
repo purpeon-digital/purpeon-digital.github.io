@@ -105,10 +105,32 @@ const POWER_COAT_DARK = ['#5b21b6', '#7e22ce', '#86198f', '#be185d'];
  * render time only, so a collectible was caught where it looked like it was
  * not, and moving it would have changed nothing about the difficulty.
  */
+/**
+ * Drift runs on its own clock, not on `fox.runTick`. That one is scaled by
+ * `gameSpeed`, so anything keyed to it speeds up as the run goes on: the old
+ * bob was a 11 Hz jitter by the end rather than a bob. `driftClock` advances
+ * 0.06 per frame flat, so a period here means the same thing at minute five as
+ * it does at second five.
+ *
+ * At 60 fps the clock runs 3.6 units a second, so period = 2π / (3.6 * speed).
+ */
 const DRIFT: Record<Collectible['type'], { amp: number; speed: number }> = {
-  flower: { amp: 4, speed: 2 },
-  crystal: { amp: 14, speed: 1.2 },
-  star: { amp: 34, speed: 3.4 }
+  flower: { amp: 4, speed: 1.4 },     // ~1.2 s, a gentle bob
+  crystal: { amp: 42, speed: 0.79 },  // ~2.2 s
+  star: { amp: 102, speed: 0.55 }     // ~3.2 s, one long sweep per crossing
+};
+
+/**
+ * The star and the crystal swing too far to sit on the three shared spawn
+ * heights, so they get their own centre, picked so the whole arc stays between
+ * the treetops and the grass. Foxgloves still use the levels.
+ *
+ * The star's arc runs from free-while-running at the bottom to a full double
+ * jump at the top, which is the point: it is worth the most.
+ */
+const DRIFT_CENTRE: Partial<Record<Collectible['type'], number>> = {
+  crystal: 232,
+  star: 190
 };
 
 const GAME_WIDTH = 800;
@@ -144,6 +166,7 @@ let gameSpeed = 5.2;
 let hitCooldown = 0;
 let spawnTimer = 0;
 let collectibleTimer = 0;
+let driftClock = 0;
 let cloudOffset = 0;
 let mountainOffset = 0;
 let treeOffset = 0;
@@ -488,6 +511,7 @@ function resetGame() {
   fox.isSpinning = false;
   fox.spinProgress = 0;
   fox.runTick = 0;
+  driftClock = 0;
   fox.deathTimer = 0;
 
   obstacles = [];
@@ -723,6 +747,8 @@ function updateGame(delta: number) {
     });
   }
 
+  driftClock += 0.06 * delta;
+
   // Power-up countdown. `delta` is in frames, so scale it back to real time.
   power.tick(delta * 16.666);
   if (hitCooldown > 0) hitCooldown -= delta;
@@ -791,7 +817,7 @@ function updateGame(delta: number) {
     const types: ('flower' | 'crystal' | 'star')[] = ['flower', 'flower', 'crystal', 'star'];
     const type = types[Math.floor(Math.random() * types.length)];
     const heightLevels = [GROUND_Y - 55, GROUND_Y - 95, GROUND_Y - 130];
-    const y = heightLevels[Math.floor(Math.random() * heightLevels.length)];
+    const y = DRIFT_CENTRE[type] ?? heightLevels[Math.floor(Math.random() * heightLevels.length)];
 
     collectibles.push({
       x: GAME_WIDTH + 30,
@@ -845,7 +871,7 @@ function updateGame(delta: number) {
     const col = collectibles[i];
     col.x -= gameSpeed * delta;
     const drift = DRIFT[col.type];
-    col.y = col.baseY + Math.sin(fox.runTick * drift.speed + col.pulseOffset) * drift.amp;
+    col.y = col.baseY + Math.sin(driftClock * drift.speed + col.pulseOffset) * drift.amp;
 
     // Check pickup
     if (!col.collected) {
