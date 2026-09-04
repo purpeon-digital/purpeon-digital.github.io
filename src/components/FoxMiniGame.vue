@@ -1872,23 +1872,43 @@ onBeforeUnmount(() => {
             <!-- Start Screen Overlay -->
             <div
               v-if="!isPlaying && !isGameOver"
-              class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center"
+              class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm flex flex-col items-center justify-center gap-0 px-5 pt-5 pb-0 text-center overflow-y-auto"
               @click.stop
             >
-              <div class="fox-avatar text-6xl mb-3 animate-bounce">🦊</div>
-              <h2 class="text-2xl sm:text-3xl font-extrabold text-amber-300 mb-2 drop-shadow-md">
+              <div class="fox-avatar text-4xl md:text-5xl mb-1 md:mb-1.5 animate-bounce shrink-0">🦊</div>
+              <h2 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-amber-300 mb-1 drop-shadow-md shrink-0">
                 {{ t('game.title') }}
               </h2>
-              <p class="text-sm text-purple-100/90 max-w-md mb-6 leading-relaxed">
+              <p class="text-xs md:text-sm text-purple-100/90 max-w-md mb-2 leading-snug shrink-0">
                 {{ t('game.instructions') }}
               </p>
 
-              <button
-                @click.stop="startGame"
-                class="start-btn px-8 py-3.5 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-slate-950 font-bold text-lg tracking-wide shadow-xl hover:shadow-orange-500/30 transform hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
-              >
-                {{ t('game.start') }}
-              </button>
+              <div class="flex items-center gap-3 mb-1.5 text-sm font-semibold shrink-0">
+                <span class="flex items-center gap-1 text-fuchsia-200">🌸 <span class="font-mono">25</span></span>
+                <span class="flex items-center gap-1 text-purple-200">💎 <span class="font-mono">50</span></span>
+                <span class="flex items-center gap-1 text-amber-200">⭐ <span class="font-mono">100</span></span>
+              </div>
+              <p class="hidden md:block text-xs text-purple-100/70 max-w-md mb-1.5 leading-snug shrink-0">
+                {{ t('game.pickupHint') }}
+              </p>
+              <p class="text-xs text-fuchsia-100/90 max-w-md mb-1.5 leading-snug shrink-0">
+                {{ t('game.streakHint') }}
+              </p>
+              <p class="text-xs text-rose-200/90 max-w-md mb-4 leading-snug italic shrink-0">
+                ⚠️ {{ t('game.foxgloveWarning') }}
+              </p>
+
+              <!-- Sticky, because the canvas keeps a 2:1 ratio and on a phone that
+                   leaves under 200px of height. Rather than cutting the rules
+                   back to fit, the text scrolls and the button stays put. -->
+              <div class="sticky bottom-0 shrink-0 pt-2 pb-1 w-full flex justify-center bg-gradient-to-t from-slate-950/95 via-slate-950/85 to-transparent">
+                <button
+                  @click.stop="startGame"
+                  class="start-btn px-8 py-3 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-slate-950 font-bold text-lg tracking-wide shadow-xl hover:shadow-orange-500/30 transform hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+                >
+                  {{ t('game.start') }}
+                </button>
+              </div>
             </div>
 
             <!-- Game Over Overlay -->
