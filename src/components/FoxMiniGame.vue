@@ -257,8 +257,8 @@ let nextCarScore = CAR_SCORE_STEP;
 
 const CAR_W = 66;
 const CAR_H = 30;
-/** How fast a driverless car pulls away from the fox. */
-const CAR_LOOSE_SPEED = 2.4;
+/** Vertical slack for dropping back into the seat, in px. */
+const CAR_REENTRY_BAND = 22;
 /** Spawns since each type was last used, for the cooldown and drought bias. */
 let spawnsSince: Record<string, number> = {};
 let cloudOffset = 0;
@@ -688,8 +688,12 @@ function crashCar() {
   triggerGameOver();
 }
 
-/** Space while driving throws the fox clear; the car carries on without it. */
-function bailOut() {
+/**
+ * Space while driving jumps the fox out of the seat. It is a jump, not an
+ * ejection: the car holds station, so coming down lands back in it. That is
+ * what makes a star reachable from the car.
+ */
+function jumpFromCar() {
   if (!car || car.state !== 'driven') return;
   car.state = 'loose';
   isDriving.value = false;
@@ -699,7 +703,7 @@ function bailOut() {
   fox.isSpinning = true;
   fox.spinProgress = 0;
   fox.jumpsLeft = 1;
-  playSound('doubleJump');
+  playSound('jump');
   createDustPuff(fox.x + fox.w / 2, car.y + car.h, 10);
 }
 
@@ -799,7 +803,7 @@ function jump() {
 
   // In the car there is no jumping, only getting out of it.
   if (isDriving.value) {
-    bailOut();
+    jumpFromCar();
     return;
   }
 
@@ -1059,10 +1063,11 @@ function updateGame(delta: number) {
     if (car.state === 'idle') {
       car.x -= gameSpeed * delta;
       // Pick it up by running into it on the ground.
+      const foxMid = fox.x + fox.w / 2;
       if (
         fox.isGrounded &&
-        fox.x + 8 < car.x + car.w &&
-        fox.x + fox.w - 8 > car.x &&
+        foxMid > car.x + 8 &&
+        foxMid < car.x + car.w - 8 &&
         fox.y + fox.h > car.y
       ) {
         car.state = 'driven';
@@ -1078,18 +1083,48 @@ function updateGame(delta: number) {
         car = null;
       }
     } else if (car.state === 'driven') {
-      // The car holds station under the fox; the world moves instead.
-      car.x = fox.x - 4;
+      // The car holds station under the fox; the world moves instead. Eased
+      // rather than snapped, so getting in reads as the fox climbing aboard a
+      // moving car instead of the car teleporting under it.
+      car.x += (fox.x - 4 - car.x) * Math.min(1, 0.22 * delta);
       fox.y = car.y - fox.h + 4;
       fox.vy = 0;
       fox.isGrounded = true;
       fox.rotation = 0;
       fox.isSpinning = false;
     } else {
-      // Driverless. It pulls ahead of the fox, but only up to a point: left to
-      // run it drives off the right edge in a few seconds and its five, and
-      // the bang, happen where nobody can see them.
-      car.x = Math.min(car.x + CAR_LOOSE_SPEED * delta, GAME_WIDTH - 150);
+      // The fox is out of the seat but the car keeps pace rather than pulling
+      // away, so a jump comes back down into it. Anything else and jumping for
+      // a star would mean giving the car up.
+      car.x += (fox.x - 4 - car.x) * Math.min(1, 0.22 * delta);
+      // Back in the seat: falling, and at roof height.
+      const roof = car.y - fox.h + 4;
+      if (fox.vy > 0 && fox.y >= roof - CAR_REENTRY_BAND && fox.y <= roof + CAR_REENTRY_BAND) {
+        car.state = 'driven';
+        isDriving.value = true;
+        fox.isSpinning = false;
+        fox.rotation = 0;
+        createDustPuff(fox.x + fox.w / 2, car.y + car.h, 6);
+      }
+    }
+  }
+
+  // Once the five are spent the car smokes, which is the only warning that the
+  // next thing it touches is the last.
+  if (car && car.state !== 'idle' && ride.doomed.value) {
+    for (let i = 0; i < 2; i++) {
+      particles.push({
+        x: car.x + 8 + Math.random() * (car.w - 26),
+        y: car.y + 2 + Math.random() * 6,
+        vx: -gameSpeed * 0.25 - Math.random(),
+        vy: -1.1 - Math.random() * 0.9,
+        size: 4 + Math.random() * 5,
+        color: Math.random() > 0.45 ? '#475569' : '#1e293b',
+        alpha: 0.75,
+        life: 0,
+        maxLife: 26 + Math.random() * 14,
+        shape: 'circle'
+      });
     }
   }
 
@@ -2151,8 +2186,11 @@ onBeforeUnmount(() => {
               </div>
 
               <div
-                v-if="isDriving"
-                class="bg-orange-500/25 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-orange-300/60 text-orange-100 text-xs flex items-center gap-1.5 shadow-lg"
+                v-if="car"
+                class="fox-power-pill backdrop-blur-md px-3.5 py-1.5 rounded-full border text-xs flex items-center gap-1.5 shadow-lg"
+                :class="ride.doomed.value
+                  ? 'is-expiring bg-rose-500/30 border-rose-300/70 text-rose-50'
+                  : 'bg-orange-500/25 border-orange-300/60 text-orange-100'"
               >
                 <span>🚗 {{ t('game.carLabel') }}</span>
                 <span class="font-mono font-bold text-base tabular-nums">{{ ride.remaining.value }}</span>
