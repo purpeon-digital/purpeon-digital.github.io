@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { useI18n, type Locale } from '@/composables/useI18n';
 import { useFoxPower, POWER_MS } from '@/composables/useFoxPower';
 import { loadHighScore, saveHighScore } from '@/composables/useScoreStore';
+import { useCarRide, CAR_SMASH_POINTS, CAR_SCORE_STEP } from '@/composables/useCarRide';
 import IconVolumeHigh from '~icons/fa7-solid/volume-high';
 import IconVolumeXmark from '~icons/fa7-solid/volume-xmark';
 import IconXmark from '~icons/fa7-solid/xmark';
@@ -18,6 +19,14 @@ const { t } = useI18n(props.locale);
 // extra life for ten seconds. Rules live in the composable so they can be
 // tested; everything here is what they look and sound like.
 const power = useFoxPower();
+
+/**
+ * The car. It turns up every 5000 points, sitting on the ground; run into it
+ * to get in. It cannot jump, it flattens what it hits, and the sixth thing
+ * finishes it. Space jumps the fox clear; stay aboard through the crash and
+ * the run is over.
+ */
+const ride = useCarRide();
 
 const isOpen = ref(false);
 const isPlaying = ref(false);
@@ -231,6 +240,25 @@ let hitCooldown = 0;
 let spawnTimer = 0;
 let collectibleTimer = 0;
 let driftClock = 0;
+
+interface Car {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  /** idle: waiting to be picked up. driven: the fox is in it. loose: it has
+   *  been bailed out of and is running on alone. */
+  state: 'idle' | 'driven' | 'loose';
+  wheelTick: number;
+}
+let car: Car | null = null;
+const isDriving = ref(false);
+let nextCarScore = CAR_SCORE_STEP;
+
+const CAR_W = 66;
+const CAR_H = 30;
+/** How fast a driverless car pulls away from the fox. */
+const CAR_LOOSE_SPEED = 2.4;
 /** Spawns since each type was last used, for the cooldown and drought bias. */
 let spawnsSince: Record<string, number> = {};
 let cloudOffset = 0;
@@ -253,7 +281,7 @@ function getAudioContext(): AudioContext | null {
   return audioCtx;
 }
 
-function playSound(type: 'jump' | 'doubleJump' | 'flower' | 'crystal' | 'star' | 'hit' | 'record' | 'power' | 'save' | 'fail') {
+function playSound(type: 'jump' | 'doubleJump' | 'flower' | 'crystal' | 'star' | 'hit' | 'record' | 'power' | 'save' | 'fail' | 'engine' | 'smash' | 'crash') {
   if (isMuted.value) return;
   const ctx = getAudioContext();
   if (!ctx) return;
@@ -332,6 +360,68 @@ function playSound(type: 'jump' | 'doubleJump' | 'flower' | 'crystal' | 'star' |
         osc.start(now + i * 0.05);
         osc.stop(now + i * 0.05 + 0.18);
       });
+    } else if (type === 'engine') {
+      // Two notes revving up, so getting in sounds like starting something.
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(70, now);
+      osc.frequency.exponentialRampToValueAtTime(190, now + 0.28);
+      gain.gain.setValueAtTime(0.13, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.34);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.36);
+    } else if (type === 'smash') {
+      // Short burst of noise: something wooden coming apart.
+      const len = Math.floor(ctx.sampleRate * 0.16);
+      const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len);
+      const src = ctx.createBufferSource();
+      const filter = ctx.createBiquadFilter();
+      const gain = ctx.createGain();
+      src.buffer = buf;
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(900, now);
+      gain.gain.setValueAtTime(0.22, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+      src.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      src.start(now);
+    } else if (type === 'crash') {
+      // The bang: a longer noise burst swept downward, plus a low thump.
+      const len = Math.floor(ctx.sampleRate * 0.55);
+      const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 1.6);
+      const src = ctx.createBufferSource();
+      const filter = ctx.createBiquadFilter();
+      const gain = ctx.createGain();
+      src.buffer = buf;
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(2400, now);
+      filter.frequency.exponentialRampToValueAtTime(240, now + 0.5);
+      gain.gain.setValueAtTime(0.3, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+      src.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      src.start(now);
+
+      const thump = ctx.createOscillator();
+      const tg = ctx.createGain();
+      thump.type = 'sine';
+      thump.frequency.setValueAtTime(120, now);
+      thump.frequency.exponentialRampToValueAtTime(38, now + 0.35);
+      tg.gain.setValueAtTime(0.3, now);
+      tg.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+      thump.connect(tg);
+      tg.connect(ctx.destination);
+      thump.start(now);
+      thump.stop(now + 0.42);
     } else if (type === 'fail') {
       // Two notes down, dull and low: the streak just went.
       const osc = ctx.createOscillator();
@@ -556,6 +646,63 @@ function stopMusic() {
   }
 }
 
+function smashObstacle(index: number) {
+  const obs = obstacles[index];
+  obstacles.splice(index, 1);
+  bonusScore.value += CAR_SMASH_POINTS;
+  playSound('smash');
+  createSparkleBurst(obs.x + obs.w / 2, obs.y + obs.h / 2, '#f97316', 18);
+  createDustPuff(obs.x + obs.w / 2, GROUND_Y, 10);
+  addFloatingText(obs.x + obs.w / 2, obs.y - 6, `+${CAR_SMASH_POINTS}`, '#fdba74', {
+    vy: -2.4,
+    size: 18
+  });
+}
+
+function crashCar() {
+  if (!car) return;
+  const cx = car.x + car.w / 2;
+  const cy = car.y + car.h / 2;
+  playSound('crash');
+  createSparkleBurst(cx, cy, '#f97316', 30);
+  createSparkleBurst(cx, cy, '#fbbf24', 24);
+  createSparkleBurst(cx, cy, '#ef4444', 20);
+  createDustPuff(cx, GROUND_Y, 16);
+  const wasDriving = car.state === 'driven';
+  car = null;
+  isDriving.value = false;
+  ride.reset();
+  if (!wasDriving) return;
+
+  // Still aboard when it went up. The extra life covers this like any other
+  // hit; without one the run is over.
+  if (power.consumeShield()) {
+    hitCooldown = 40;
+    playSound('save');
+    addFloatingText(fox.x + fox.w / 2, fox.y - 22, t('game.powerUsed'), '#f0abfc');
+    fox.vy = JUMP_FORCE * 0.7;
+    fox.isGrounded = false;
+    fox.jumpsLeft = 1;
+    return;
+  }
+  triggerGameOver();
+}
+
+/** Space while driving throws the fox clear; the car carries on without it. */
+function bailOut() {
+  if (!car || car.state !== 'driven') return;
+  car.state = 'loose';
+  isDriving.value = false;
+  fox.y = car.y - fox.h - 2;
+  fox.vy = JUMP_FORCE;
+  fox.isGrounded = false;
+  fox.isSpinning = true;
+  fox.spinProgress = 0;
+  fox.jumpsLeft = 1;
+  playSound('doubleJump');
+  createDustPuff(fox.x + fox.w / 2, car.y + car.h, 10);
+}
+
 function pickRider(): Rider {
   const choices = RIDERS.filter(r => r !== lastRider);
   const rider = choices[Math.floor(Math.random() * choices.length)];
@@ -613,6 +760,10 @@ function resetGame() {
   fox.spinProgress = 0;
   fox.runTick = 0;
   driftClock = 0;
+  car = null;
+  isDriving.value = false;
+  ride.reset();
+  nextCarScore = CAR_SCORE_STEP;
   // Start every type "long overdue", so the first stretch is not all rocks.
   spawnsSince = Object.fromEntries(OBSTACLE_MIX.map(o => [o.type, 99]));
   lastRider = null;
@@ -643,6 +794,12 @@ function jump() {
     // startGame() enforces the cooldown itself, so a held space bar or a
     // reflex tap on the canvas cannot skip past the score either.
     startGame();
+    return;
+  }
+
+  // In the car there is no jumping, only getting out of it.
+  if (isDriving.value) {
+    bailOut();
     return;
   }
 
@@ -800,13 +957,16 @@ function updateGame(delta: number) {
   treeOffset = (treeOffset + gameSpeed * 0.35 * delta) % GAME_WIDTH;
   groundOffset = (groundOffset + gameSpeed * delta) % GAME_WIDTH;
 
-  // Fox physics
-  fox.vy += GRAVITY * delta;
-  fox.y += fox.vy * delta;
+  // Fox physics. Skipped while driving: the car block below owns the fox's
+  // position then, and gravity would fight it every frame.
+  if (!isDriving.value) {
+    fox.vy += GRAVITY * delta;
+    fox.y += fox.vy * delta;
+  }
   fox.runTick += (gameSpeed * 0.08) * delta;
 
   // Ground collision
-  if (fox.y >= GROUND_Y - fox.h) {
+  if (!isDriving.value && fox.y >= GROUND_Y - fox.h) {
     if (!fox.isGrounded) {
       createDustPuff(fox.x + 10, GROUND_Y, 5);
     }
@@ -877,6 +1037,78 @@ function updateGame(delta: number) {
       maxLife: 16 + Math.random() * 12,
       shape: 'sparkle'
     });
+  }
+
+  // ---- The car ----
+  // One turns up every 5000 points, but never while another is on the field.
+  if (!car && score.value >= nextCarScore) {
+    car = {
+      x: GAME_WIDTH + 40,
+      y: GROUND_Y - CAR_H,
+      w: CAR_W,
+      h: CAR_H,
+      state: 'idle',
+      wheelTick: 0
+    };
+    nextCarScore += CAR_SCORE_STEP;
+    while (score.value >= nextCarScore) nextCarScore += CAR_SCORE_STEP;
+  }
+
+  if (car) {
+    car.wheelTick += 0.4 * delta;
+    if (car.state === 'idle') {
+      car.x -= gameSpeed * delta;
+      // Pick it up by running into it on the ground.
+      if (
+        fox.isGrounded &&
+        fox.x + 8 < car.x + car.w &&
+        fox.x + fox.w - 8 > car.x &&
+        fox.y + fox.h > car.y
+      ) {
+        car.state = 'driven';
+        isDriving.value = true;
+        ride.reset();
+        playSound('engine');
+        createDustPuff(car.x + car.w / 2, GROUND_Y, 12);
+        addFloatingText(car.x + car.w / 2, car.y - 14, t('game.carGrabbed'), '#fdba74', {
+          vy: -2.6,
+          size: 18
+        });
+      } else if (car.x + car.w < -60) {
+        car = null;
+      }
+    } else if (car.state === 'driven') {
+      // The car holds station under the fox; the world moves instead.
+      car.x = fox.x - 4;
+      fox.y = car.y - fox.h + 4;
+      fox.vy = 0;
+      fox.isGrounded = true;
+      fox.rotation = 0;
+      fox.isSpinning = false;
+    } else {
+      // Driverless. It pulls ahead of the fox, but only up to a point: left to
+      // run it drives off the right edge in a few seconds and its five, and
+      // the bang, happen where nobody can see them.
+      car.x = Math.min(car.x + CAR_LOOSE_SPEED * delta, GAME_WIDTH - 150);
+    }
+  }
+
+  // Anything the car reaches is flattened, until the one that finishes it.
+  if (car && car.state !== 'idle') {
+    for (let i = obstacles.length - 1; i >= 0; i--) {
+      const obs = obstacles[i];
+      // The balloon floats overhead; a car on the ground drives under it.
+      if (obs.type === 'balloon') continue;
+      if (
+        car.x + 6 < obs.x + obs.w &&
+        car.x + car.w - 6 > obs.x &&
+        car.y + car.h > obs.y
+      ) {
+        if (ride.hit() === 'smashed') smashObstacle(i);
+        else crashCar();
+        break;
+      }
+    }
   }
 
   // Spawn obstacles
@@ -972,6 +1204,7 @@ function updateGame(delta: number) {
     const paddingX = 8;
     const paddingY = 6;
     if (
+      !isDriving.value &&
       hitCooldown <= 0 &&
       fox.x + paddingX < obs.x + obs.w - paddingX &&
       fox.x + fox.w - paddingX > obs.x + paddingX &&
@@ -1386,6 +1619,7 @@ function renderGame() {
   });
 
   // 8. Render Fox
+  if (car) renderCar(ctx, car);
   renderFox(ctx);
 
   // 9. Floating score text popups
@@ -1555,6 +1789,69 @@ function drawStar(ctx: CanvasRenderingContext2D, cx: number, cy: number, spikes:
   ctx.lineTo(cx, cy - outerRadius);
   ctx.closePath();
   ctx.fill();
+}
+
+function renderCar(ctx: CanvasRenderingContext2D, c: Car) {
+  const bodyY = c.y + 6;
+  const bodyH = c.h - 12;
+
+  ctx.save();
+  // Wheels first, so the body sits over them.
+  ctx.fillStyle = '#1f2937';
+  for (const wx of [c.x + 14, c.x + c.w - 14]) {
+    ctx.beginPath();
+    ctx.arc(wx, c.y + c.h - 3, 7, 0, Math.PI * 2);
+    ctx.fill();
+    // A spoke, so it is visibly rolling rather than sliding.
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(wx, c.y + c.h - 3);
+    ctx.lineTo(
+      wx + Math.cos(c.wheelTick) * 5,
+      c.y + c.h - 3 + Math.sin(c.wheelTick) * 5
+    );
+    ctx.stroke();
+  }
+
+  // Body, in Purpeon violet rather than a generic red.
+  ctx.fillStyle = '#7c3aed';
+  ctx.beginPath();
+  ctx.roundRect(c.x, bodyY, c.w, bodyH, 6);
+  ctx.fill();
+  // Cabin
+  ctx.fillStyle = '#a855f7';
+  ctx.beginPath();
+  ctx.roundRect(c.x + 16, c.y - 4, c.w - 34, 14, 5);
+  ctx.fill();
+  ctx.fillStyle = '#e0f2fe';
+  ctx.beginPath();
+  ctx.roundRect(c.x + 20, c.y - 1, c.w - 42, 8, 3);
+  ctx.fill();
+  // Headlight, and a stripe so it reads as facing right
+  ctx.fillStyle = '#fde68a';
+  ctx.beginPath();
+  ctx.roundRect(c.x + c.w - 6, bodyY + 3, 5, 6, 2);
+  ctx.fill();
+  ctx.fillStyle = '#c084fc';
+  ctx.fillRect(c.x + 6, bodyY + bodyH / 2 - 1, c.w - 18, 3);
+
+  // Exhaust puffs while it is under way
+  if (c.state !== 'idle' && Math.random() > 0.55) {
+    particles.push({
+      x: c.x - 2,
+      y: bodyY + bodyH - 2,
+      vx: -1.6 - Math.random(),
+      vy: -0.5 - Math.random() * 0.6,
+      size: 3 + Math.random() * 3,
+      color: '#94a3b8',
+      alpha: 0.5,
+      life: 0,
+      maxLife: 16,
+      shape: 'circle'
+    });
+  }
+  ctx.restore();
 }
 
 function renderFox(ctx: CanvasRenderingContext2D) {
@@ -1851,6 +2148,14 @@ onBeforeUnmount(() => {
                 <span class="text-slate-300 text-xs font-mono">
                   {{ Math.floor(distanceMeters) }}m
                 </span>
+              </div>
+
+              <div
+                v-if="isDriving"
+                class="bg-orange-500/25 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-orange-300/60 text-orange-100 text-xs flex items-center gap-1.5 shadow-lg"
+              >
+                <span>🚗 {{ t('game.carLabel') }}</span>
+                <span class="font-mono font-bold text-base tabular-nums">{{ ride.remaining.value }}</span>
               </div>
 
               <div

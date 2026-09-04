@@ -216,6 +216,8 @@
     "pickupHint": "The star is worth the most, and it drifts high and low in one long sweep. The crystal does the same on a smaller scale.",
     "streakHint": "Five foxgloves in a row and the fox lights up: one extra life for ten seconds, and double score while it lasts. Every further foxglove resets the clock to ten. Miss one and the count starts over.",
     "foxgloveWarning": "Only the fox can eat foxgloves. You must NEVER try: in real life they do not give you an extra life, they take one.",
+    "carGrabbed": "DRIVE!",
+    "carLabel": "Car",
     "pickups": "Picked up",
     "flowers": "Foxgloves",
     "gameOver": "Game Over!",
