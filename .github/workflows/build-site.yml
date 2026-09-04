@@ -6,11 +6,6 @@ name: Build site
 # throwaway runners. Secrets never share a machine with project-code execution.
 on:
   workflow_call:
-    inputs:
-      upload-pages:
-        description: "Also upload the GitHub Pages artifact"
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -47,9 +42,3 @@ jobs:
           path: dist
           retention-days: 1
           include-hidden-files: true
-
-      - name: Upload Pages artifact
-        if: inputs.upload-pages
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: ./dist

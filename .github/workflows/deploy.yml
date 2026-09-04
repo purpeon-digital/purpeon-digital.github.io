@@ -9,32 +9,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: "pages"
+  group: "deploy"
   cancel-in-progress: false
 
 jobs:
   build:
     uses: ./.github/workflows/build-site.yml
-    with:
-      upload-pages: true
-
-  deploy-pages:
-    # Production today. Retires in the Phase 4 cutover after the Cloudflare
-    # deploy has soaked. Runs on a throwaway runner — the OIDC-minting token
-    # never touches the self-hosted build machine.
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
 
   deploy-cloudflare:
     needs: build
