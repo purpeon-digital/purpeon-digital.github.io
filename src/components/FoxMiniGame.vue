@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { useI18n, type Locale } from '@/composables/useI18n';
 import { useFoxPower, POWER_MS } from '@/composables/useFoxPower';
+import { loadHighScore, saveHighScore } from '@/composables/useScoreStore';
 import IconVolumeHigh from '~icons/fa7-solid/volume-high';
 import IconVolumeXmark from '~icons/fa7-solid/volume-xmark';
 import IconXmark from '~icons/fa7-solid/xmark';
@@ -23,6 +24,17 @@ const isPlaying = ref(false);
 const isGameOver = ref(false);
 const isMuted = ref(false);
 const isNewRecord = ref(false);
+
+/**
+ * A beat after dying before the run can start again. Without it a held key or
+ * a reflex tap restarts before the score has been read, and the number you
+ * just earned is gone before you see it.
+ */
+const RESTART_COOLDOWN_MS = 3000;
+let restartReadyAt = 0;
+/** Whole seconds left, for the button. Only written when it changes. */
+const restartIn = ref(0);
+const canRestart = computed(() => restartIn.value === 0);
 
 const score = ref(0);
 // Everything earned while the fox is lit counts twice. Rather than scaling the
@@ -615,6 +627,7 @@ function resetGame() {
 }
 
 function startGame() {
+  if (!canRestart.value) return;
   resetGame();
   isPlaying.value = true;
   getAudioContext();
@@ -627,11 +640,9 @@ function startGame() {
 
 function jump() {
   if (!isPlaying.value) {
-    if (isGameOver.value) {
-      startGame();
-    } else {
-      startGame();
-    }
+    // startGame() enforces the cooldown itself, so a held space bar or a
+    // reflex tap on the canvas cannot skip past the score either.
+    startGame();
     return;
   }
 
@@ -719,6 +730,8 @@ function addFloatingText(
 function triggerGameOver() {
   isPlaying.value = false;
   isGameOver.value = true;
+  restartReadyAt = performance.now() + RESTART_COOLDOWN_MS;
+  restartIn.value = Math.ceil(RESTART_COOLDOWN_MS / 1000);
   stopMusic();
   playSound('hit');
 
@@ -730,7 +743,7 @@ function triggerGameOver() {
     highScore.value = score.value;
     isNewRecord.value = true;
     try {
-      localStorage.setItem('purpeon_fox_highscore', String(highScore.value));
+      saveHighScore(highScore.value);
     } catch (e) {}
     setTimeout(() => {
       playSound('record');
@@ -744,6 +757,11 @@ let lastFrameTime = 0;
 function gameLoop(currentTime: number) {
   const delta = Math.min((currentTime - lastFrameTime) / 16.666, 2.5);
   lastFrameTime = currentTime;
+
+  if (restartIn.value > 0) {
+    const left = Math.max(0, Math.ceil((restartReadyAt - currentTime) / 1000));
+    if (left !== restartIn.value) restartIn.value = left;
+  }
 
   updateGame(delta);
   renderGame();
@@ -1697,12 +1715,13 @@ function openGame() {
   document.body.style.overflow = 'hidden';
 
   try {
-    const saved = localStorage.getItem('purpeon_fox_highscore');
-    if (saved) highScore.value = parseInt(saved, 10) || 0;
+    highScore.value = loadHighScore();
     const muted = localStorage.getItem('foxGame_muted');
     if (muted) isMuted.value = muted === 'true';
   } catch (e) {}
 
+  restartReadyAt = 0;
+  restartIn.value = 0;
   resetGame();
   nextTick(() => {
     lastFrameTime = performance.now();
@@ -1903,10 +1922,11 @@ onBeforeUnmount(() => {
               <div class="flex items-center gap-3">
                 <button
                   @click.stop="startGame"
-                  class="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-base tracking-wide shadow-lg shadow-emerald-500/25 transform hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+                  :disabled="!canRestart"
+                  class="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold text-base tracking-wide shadow-lg shadow-emerald-500/25 transition-all enabled:hover:from-emerald-400 enabled:hover:to-teal-400 enabled:transform enabled:hover:-translate-y-0.5 enabled:active:translate-y-0 enabled:cursor-pointer disabled:opacity-45 disabled:cursor-default"
                 >
-                  <IconRotateRight class="w-4 h-4" />
-                  {{ t('game.restart') }}
+                  <IconRotateRight class="w-4 h-4" :class="{ 'animate-spin': !canRestart }" />
+                  {{ canRestart ? t('game.restart') : `${t('game.restart')} (${restartIn})` }}
                 </button>
                 <button
                   @click.stop="closeGame"
