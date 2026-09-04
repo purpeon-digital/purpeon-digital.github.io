@@ -1654,8 +1654,13 @@ function renderGame() {
   });
 
   // 8. Render Fox
-  if (car) renderCar(ctx, car);
-  renderFox(ctx);
+  if (car) {
+    // In the seat the fox is drawn first and the car over it, so the body is
+    // hidden by the chassis and only the head clears the cabin roof.
+    if (isDriving.value) renderDriverHead(ctx, car);
+    renderCar(ctx, car);
+  }
+  if (!isDriving.value) renderFox(ctx);
 
   // 9. Floating score text popups
   floatingTexts.forEach(ft => {
@@ -1824,6 +1829,76 @@ function drawStar(ctx: CanvasRenderingContext2D, cx: number, cy: number, spikes:
   ctx.lineTo(cx, cy - outerRadius);
   ctx.closePath();
   ctx.fill();
+}
+
+/**
+ * The fox in the driving seat: head, ears and snout only. Drawn under the car
+ * so the cabin roof cuts it off, which is what makes it read as sitting in
+ * rather than standing on.
+ */
+function renderDriverHead(ctx: CanvasRenderingContext2D, c: Car) {
+  const hx = c.x + c.w - 30;
+  const hy = c.y - 7;
+  const bob = Math.sin(c.wheelTick * 1.4) * 1.2;
+
+  ctx.save();
+  ctx.translate(hx, hy + bob);
+
+  // Ears
+  ctx.fillStyle = '#ea580c';
+  ctx.beginPath();
+  ctx.moveTo(-9, -3);
+  ctx.lineTo(-6, -16);
+  ctx.lineTo(1, -4);
+  ctx.closePath();
+  ctx.moveTo(4, -5);
+  ctx.lineTo(9, -17);
+  ctx.lineTo(12, -4);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.moveTo(-6, -5);
+  ctx.lineTo(-5, -12);
+  ctx.lineTo(-1, -5);
+  ctx.closePath();
+  ctx.moveTo(6, -6);
+  ctx.lineTo(8, -13);
+  ctx.lineTo(10, -6);
+  ctx.closePath();
+  ctx.fill();
+
+  // Head and snout, pointing the way it is going
+  ctx.fillStyle = '#ea580c';
+  ctx.beginPath();
+  ctx.ellipse(1, 2, 11, 9, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(6, -3);
+  ctx.lineTo(22, 3);
+  ctx.lineTo(6, 8);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.moveTo(8, 2);
+  ctx.lineTo(21, 3);
+  ctx.lineTo(8, 7);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = '#0f172a';
+  ctx.beginPath();
+  ctx.arc(21, 3, 2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.arc(6, 0, 2.6, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#0f172a';
+  ctx.beginPath();
+  ctx.arc(6.8, 0, 1.4, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
 }
 
 function renderCar(ctx: CanvasRenderingContext2D, c: Car) {
