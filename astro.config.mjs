@@ -22,9 +22,12 @@ export default defineConfig({
     ],
     // Dev/preview-server only (no effect on `astro build` output): let the
     // Pagebuilder's preview tunnel hostnames through Vite's host check.
-    // `.purpeon.dev` matches any subdomain (preview./built.purpeon.dev).
-    server: { allowedHosts: ['.purpeon.dev'] },
-    preview: { allowedHosts: ['.purpeon.dev'] }
+    // `.purpeon.dev` matches any subdomain (preview./built.purpeon.dev); 'site'
+    // is the internal container host the builder's headless screenshot capture
+    // hits directly (a *.purpeon.dev name can't be used there — .dev is
+    // HSTS-preloaded, so Chromium force-upgrades it to https).
+    server: { allowedHosts: ['.purpeon.dev', 'site'] },
+    preview: { allowedHosts: ['.purpeon.dev', 'site'] }
   },
   integrations: [
     vue(),
