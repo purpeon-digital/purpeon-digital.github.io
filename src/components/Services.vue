@@ -353,7 +353,7 @@ onBeforeUnmount(() => {
               v-for="(p, i) in slides"
               :key="`${i}-${p.id}`"
               class="pkg-slide"
-              :class="{ 'is-active': i === pos }"
+              :class="{ 'is-active': i === pos, 'is-initial': i === count }"
               role="group"
               :aria-label="slideLabel(i % count)"
               :aria-hidden="i < count || i >= count * 2 ? 'true' : undefined"
@@ -488,7 +488,9 @@ onBeforeUnmount(() => {
 .pkg-slide {
   --pkg-a: oklch(0.55 0.19 var(--pkg-hue));
   --pkg-b: oklch(0.72 0.15 var(--pkg-hue));
+  --pkg-sheen: 0.2;
   position: relative;
+  isolation: isolate;
   flex: 0 0 72%;
   display: grid;
   grid-template-columns: minmax(200px, 270px) minmax(0, 1fr);
@@ -524,7 +526,41 @@ onBeforeUnmount(() => {
 :global([data-theme="dark"] .pkg-slide) {
   --pkg-a: oklch(0.72 0.16 var(--pkg-hue));
   --pkg-b: oklch(0.85 0.11 var(--pkg-hue));
+  --pkg-sheen: 0.12;
 }
+
+/* Glass glint: one skewed band of light that sweeps across the first visible card on reveal */
+.pkg-slide::after {
+  content: '';
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: 0;
+  width: 55%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, calc(var(--pkg-sheen) * 0.35)) 26%,
+    transparent 44%,
+    rgba(255, 255, 255, calc(var(--pkg-sheen) * 0.5)) 64%,
+    rgba(255, 255, 255, var(--pkg-sheen)) 76%,
+    rgba(255, 255, 255, calc(var(--pkg-sheen) * 0.5)) 88%,
+    transparent 98%
+  );
+  transform: translateX(-130%) skewX(-18deg);
+  pointer-events: none;
+}
+
+.services-section.is-revealed .pkg-slide.is-initial::after {
+  animation: pkg-glint 1.1s cubic-bezier(0.33, 0.07, 0.25, 1) backwards;
+  animation-delay: 0.4s;
+}
+
+@keyframes pkg-glint {
+  from { transform: translateX(-130%) skewX(-18deg); }
+  to   { transform: translateX(230%) skewX(-18deg); }
+}
+
 /* The active slide's scale-up has to be suppressed during normalize() for the
    same reason the track's transform is: `is-active` moves between two
    different elements there, and the one taking over is a peek slide sitting at
@@ -536,6 +572,10 @@ onBeforeUnmount(() => {
 
 @media (prefers-reduced-motion: reduce) {
   .pkg-slide { transition: none; }
+  .pkg-slide::after {
+    transition: none;
+    animation: none !important;
+  }
 }
 @media (max-width: 1200px) {
   .pkg-slide {
