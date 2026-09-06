@@ -25,7 +25,7 @@ const toggleMap = () => {
           <SectionImage
             v-if="!showMap"
             src="/power.jpg"
-            alt="Kontakt Purpeon Digital – IT-konsulent i Førde, Vestland - Photo by Hiep Nguyen on Unsplash"
+            alt="Kontakt Purpeon Digital – IT-konsulent i Førde, Vestland"
             width="480"
             height="720"
             max-width="600px"
