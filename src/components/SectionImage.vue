@@ -13,6 +13,7 @@ interface Props {
   animationDirection?: 'left' | 'right';
   filterPreset?: 'hero' | 'services' | 'about' | 'contact';
   fetchpriority?: 'high' | 'low' | 'auto';
+  loading?: 'lazy' | 'eager';
   /** Enable scroll-driven CSS parallax on the image (requires a cover-cropped frame). */
   parallax?: boolean;
   /** How far the image drifts, in % of its own height, across the scroll range. */
@@ -26,7 +27,7 @@ const props = withDefaults(defineProps<Props>(), {
   animateOnScroll: false,
   animationDirection: 'left',
   filterPreset: 'services',
-  fetchpriority: 'auto',
+  loading: 'lazy',
   parallax: false,
   parallaxOffset: 16
 });
@@ -81,7 +82,9 @@ const frameStyle = computed(() => ({
         :alt="alt"
         :width="width"
         :height="height"
+        :loading="props.loading"
         :fetchpriority="props.fetchpriority"
+        decoding="async"
         class="section-image__media"
       />
     </div>
@@ -91,8 +94,10 @@ const frameStyle = computed(() => ({
       :alt="alt"
       :width="width"
       :height="height"
+      :loading="props.loading"
       :style="{ maxWidth, borderRadius }"
       :fetchpriority="props.fetchpriority"
+      decoding="async"
       class="w-full h-auto object-cover"
     />
     <slot name="badge" />

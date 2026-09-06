@@ -293,7 +293,8 @@ watch(activeIdx, async () => {
                   'is-active': i === activeIdx,
                   'is-leaving': i === prevIdx,
                 }"
-                :loading="i === 0 ? 'eager' : 'lazy'"
+                loading="lazy"
+                decoding="async"
                 draggable="false"
               />
             </template>
@@ -324,7 +325,7 @@ watch(activeIdx, async () => {
                 <IconCheck />
               </span>
               <div class="pick-avatar">
-                <img :src="PHOTOS[m.id]" alt="" loading="lazy" draggable="false"/>
+                <img :src="PHOTOS[m.id]" alt="" loading="lazy" decoding="async" draggable="false"/>
               </div>
               <div class="pick-name">{{ m.shortName }}</div>
               <div class="pick-role">{{ m.role }}</div>

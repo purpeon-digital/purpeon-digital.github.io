@@ -109,6 +109,7 @@ onBeforeUnmount(() => {
                 :src="`/references/${c.id}-light.png`"
                 alt=""
                 loading="lazy"
+                decoding="async"
                 draggable="false"
               />
               <img
@@ -116,6 +117,7 @@ onBeforeUnmount(() => {
                 :src="`/references/${c.id}-dark.png`"
                 alt=""
                 loading="lazy"
+                decoding="async"
                 draggable="false"
               />
             </span>

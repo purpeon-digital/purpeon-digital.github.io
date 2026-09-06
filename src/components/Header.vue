@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useI18n, type Locale } from '@/composables/useI18n';
 import { registerFoxClick } from '@/composables/useFoxEasterEgg';
 import LanguagePicker from './LanguagePicker.vue';
@@ -16,6 +16,7 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n(props.locale);
+const homeHref = computed(() => props.locale === 'en' ? '/en/' : '/');
 const mobileMenuOpen = ref(false);
 const isMobile = ref(false);
 const mobileNavRef = ref<HTMLElement | null>(null);
@@ -87,7 +88,7 @@ function scrollToSection(e: Event, href: string) {
   }
 
   // Handle scrolling to top for home/logo
-  if (href === '#' || href === '#top') {
+  if (href === '#' || href === '#top' || href === '/' || href === '/en/' || href === '/en') {
     window.scrollTo({
       top: 0,
       behavior: 'smooth'
@@ -109,14 +110,14 @@ function scrollToSection(e: Event, href: string) {
 }
 function onLogoClick(e: MouseEvent) {
   registerFoxClick(e.currentTarget as HTMLElement);
-  scrollToSection(e, '#');
+  scrollToSection(e, homeHref.value);
 }
 </script>
 
 <template>
   <header class="header-bar">
     <nav class="max-w-[1400px] mx-auto px-8 flex justify-between items-center w-full h-full max-md:px-4 max-md:h-auto max-md:min-h-[52px]">
-      <a href="#" class="logo" @click.prevent="onLogoClick($event)">
+      <a :href="homeHref" class="logo" @click.prevent="onLogoClick($event)">
         <span class="logo-icon" aria-hidden="true">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 31 31" fill="#bb33bb" class="h-full w-full">
             <g transform="translate(-63.805999,-44.420964)">
